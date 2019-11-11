@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Excel-DNA-Build",
+            "command": "MSBuild.exe", //Acordarme de meterlo en el $PATH
+            "type": "shell",
+            "args": [
+                "Excel-DNA.csproj",
+                "/t:Build",
+                "/p:Configuration=Debug",
+                "/p:Platform=\"AnyCPU\""
+            ]
+        }
+    ]
+}
