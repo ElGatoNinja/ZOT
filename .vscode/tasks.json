@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "Excel-DNA-Build",
-            "command": "MSBuild.exe", //Acordarme de meterlo en el $PATH
+            "command": "MSBuild.exe",
             "type": "shell",
             "args": [
                 "Excel-DNA.csproj",
