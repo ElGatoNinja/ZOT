@@ -5,7 +5,7 @@ using System;
 public class TimingAdvance : FileReader
 {
     public List<String[]> data; 
-    public TimingAdvance(string[] lnBtsInputs) : base("Archivo CSV (*.csv)|*.csv")
+    public TimingAdvance(string[] lnBtsInputs) : base("Archivo CSV (*.csv)|*.csv","Selecciona el archivo TimingAdvance")
     {
         data = new List<String[]>();
         using(StreamReader reader = new StreamReader(this.path))

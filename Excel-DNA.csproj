@@ -29,6 +29,7 @@
     <Compile Include="HelloExcel.cs"/>
     <Compile Include="FileReader.cs"/>
     <Compile Include="TimingAdvance.cs"/>
+    <Compile Include="RSLTE31.cs"/>
     <Reference Include="System.Windows.Forms" version="*"/>
     <Reference Include="System" version="*"/>
   </ItemGroup>
