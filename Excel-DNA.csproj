@@ -27,10 +27,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HelloExcel.cs"/>
-    <PackageReference Include="ExcelDna.AddIn" Version="*"/>
-    <PackageReference Include="ExcelDna.IntelliSense" Version="*"/>
-    <PackageReference Include="ExcelDna.Integration" Version="*"/>
-    <PackageReference Include="ExcelDna.Interop" Version="*"/>
+    <Compile Include="FileReader.cs"/>
+    <Compile Include="TimingAdvance.cs"/>
+    <Reference Include="System.Windows.Forms" version="*"/>
+    <Reference Include="System" version="*"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>
