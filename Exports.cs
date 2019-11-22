@@ -7,17 +7,17 @@ public class Exports : FileReader
     public Exports(string[] cellNames) :base("MicroSoft Data Base (*.mdb)|*.mdb","Selecciona los exports",true)
     {
         #if DEBUG
-            string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= D:\\superbecario\\SRAN.mdb";
-            string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= D:\\superbecario\\FL18.mdb";
+            string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= H:\\superbecario\\SRAN.mdb";
+            string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= H:\\superbecario\\FL18.mdb";
         #else
             string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[0] + ";";
             string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[1] + ";";
         #endif
 
-        string SQLconditions = cellNames[0];
+        string SQLconditions = "A_LTE_MRBTS_LNBTS_LNCEL.cellName = " + cellNames[0];
         for (int i = 1;i<cellNames.Length;i++)
         {
-            SQLconditions += "OR A_LTE_MRBTS_LNBTS_LNCEL.cellName = " + cellNames[1];
+            SQLconditions += " OR A_LTE_MRBTS_LNBTS_LNCEL.cellName = " + cellNames[1];
         }
 
         string SQLquerry = "SELECT \"LNREL-\" &  A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId AS Label,"
@@ -35,13 +35,13 @@ public class Exports : FileReader
                             +"AND (A_LTE_MRBTS_LNBTS_LNCEL.mrbtsId = A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId)) "
                             +"INNER JOIN A_LTE_MRBTS_LNBTS_LNCEL AS A_LTE_MRBTS_LNBTS_LNCEL_1 "
                             +"ON (A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId = A_LTE_MRBTS_LNBTS_LNCEL_1.lnCelId) "
-                            +"AND (A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId = A_LTE_MRBTS_LNBTS_LNCEL_1.mrbtsId)" 
-                            +"WHERE " + SQLconditions + ";" ;
+                            +"AND (A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId = A_LTE_MRBTS_LNBTS_LNCEL_1.mrbtsId) " 
+                            +"WHERE A_LTE_MRBTS_LNBTS_LNCEL.cellName = \"AVILES_MAGDALENA_CT_330000101_011\";";
         using(OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
         using(OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
         {
             OleDbCommand commandSRAN = new OleDbCommand(SQLquerry,connectionSRAN);
-            OleDbCommand commandFL18 = new OleDbCommand(SQLquerry,connectionSRAN);
+            OleDbCommand commandFL18 = new OleDbCommand(SQLquerry,connectionFL18);
 
             try
             {
@@ -61,7 +61,7 @@ public class Exports : FileReader
             catch (InvalidOperationException ioe)
             {
                 Console.WriteLine(ioe.Message);
-                Console.WriteLine("Posible solucion, instalar Microsoft Access Database Engine 2010 Redistributable.");
+                Console.WriteLine("Jesucristo sabe que cojones pasa.");
             }
             catch (Exception e)
             {

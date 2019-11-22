@@ -5,3 +5,9 @@ D:\BlackListinAndOffset\obj\x64\Debug\BlackListingAndOffset.csprojAssemblyRefere
 D:\BlackListinAndOffset\obj\x64\Debug\BlackListingAndOffset.csproj.CoreCompileInputs.cache
 D:\BlackListinAndOffset\obj\x64\Debug\BlacklistingAndOffset.exe
 D:\BlackListinAndOffset\obj\x64\Debug\BlacklistingAndOffset.pdb
+H:\BlackListingAndOffset\bin\x64\Debug\BlacklistingAndOffset.exe.config
+H:\BlackListingAndOffset\bin\x64\Debug\BlacklistingAndOffset.exe
+H:\BlackListingAndOffset\bin\x64\Debug\BlacklistingAndOffset.pdb
+H:\BlackListingAndOffset\obj\x64\Debug\BlackListingAndOffset.csprojAssemblyReference.cache
+H:\BlackListingAndOffset\obj\x64\Debug\BlacklistingAndOffset.exe
+H:\BlackListingAndOffset\obj\x64\Debug\BlacklistingAndOffset.pdb
