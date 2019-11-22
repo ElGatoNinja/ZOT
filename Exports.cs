@@ -7,17 +7,17 @@ public class Exports : FileReader
     public Exports(string[] cellNames) :base("MicroSoft Data Base (*.mdb)|*.mdb","Selecciona los exports",true)
     {
         #if DEBUG
-            string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= C:\\Users\\IS2-G-21\\Desktop\\SRAN.mdb";
-            string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= C:\\Users\\IS2-G-21\\Desktop\\FL18.mdb";
+            string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= D:\\superbecario\\SRAN.mdb";
+            string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= D:\\superbecario\\FL18.mdb";
         #else
             string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[0] + ";";
             string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[1] + ";";
         #endif
 
-        string SQLconditions = "";
-        foreach (string cell in cellNames)
+        string SQLconditions = cellNames[0];
+        for (int i = 1;i<cellNames.Length;i++)
         {
-            SQLconditions += "A_LTE_MRBTS_LNBTS_LNCEL.cellName = " + cell + "AND";
+            SQLconditions += "OR A_LTE_MRBTS_LNBTS_LNCEL.cellName = " + cellNames[1];
         }
 
         string SQLquerry = "SELECT \"LNREL-\" &  A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId AS Label,"
@@ -36,7 +36,7 @@ public class Exports : FileReader
                             +"INNER JOIN A_LTE_MRBTS_LNBTS_LNCEL AS A_LTE_MRBTS_LNBTS_LNCEL_1 "
                             +"ON (A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId = A_LTE_MRBTS_LNBTS_LNCEL_1.lnCelId) "
                             +"AND (A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId = A_LTE_MRBTS_LNBTS_LNCEL_1.mrbtsId)" 
-                            +"WHERE" + SQLconditions ;
+                            +"WHERE " + SQLconditions + ";" ;
         using(OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
         using(OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
         {

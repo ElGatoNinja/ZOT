@@ -27,7 +27,7 @@ public class TimingAdvance : FileReader
         radioLines = new List<Object[]>();
 
         #if DEBUG
-            _path[0] = "C:\\Users\\IS2-G-21\\Desktop\\TA.csv";
+            _path[0] = "D:\\superbecario\\TA.csv";
         #endif
         
         using(StreamReader reader = new StreamReader(_path[0]))
@@ -35,7 +35,7 @@ public class TimingAdvance : FileReader
             while(!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
-                object[] aux = line.Split(';');
+                object[] aux = (object[])line.Split(';');
 
                 //Se guarda cada una de la lineas del Timing Advance cuyo LNCEL sea uno de los que el usuario quiere comprobar 
                 foreach(string lnBts in lnBtsInputs)
@@ -45,7 +45,7 @@ public class TimingAdvance : FileReader
                         for(int i = 0;i< 75;i++) //hay que eliminar los ""
                         {
                             if (aux[i].Equals("")) 
-                                aux[i] = null;
+                                aux[i] = "0";
                         }
                         data.Rows.Add(aux);
                     }
@@ -53,30 +53,34 @@ public class TimingAdvance : FileReader
                 }
             }
         }
+        GetRadioLines();
     }
 
-    /*private void GetRadioLines(String lnBts)
+    /* funcion que calcula el radio de efecto de las lineas en funcion de el factor constante _OFF_TRUST
+     * a partir de la información extraida del TimingAdvance*/
+    private void GetRadioLines()
     {
-        foreach (String[] radioLine in data)
+        for (int j = 0; j < data.Rows.Count; j++)
         {
             double accumulatedValue = 0;
             int i = _FIRST_VALUE_COL;
             while (accumulatedValue < _OFF_TRUST)
             {
-                if(!radioLine[i].Equals(""))
-                    accumulatedValue +=Convert.ToDouble(radioLine[i]);
+                accumulatedValue +=(double)data.Rows[j][i];
                 i++;
             }
             Object[] line = new Object[2];
-            line[0] = lnBts;
+            line[0] = data.Rows[j]["LNCEL name"];
             line[1] = _RADIO_TABLE_KM[_FIRST_VALUE_COL+i];
             radioLines.Add(line);
         }
-    }*/
+    }
 
+    ///<summary>Funcion que devuelve una columna de los datos extraidos del timing advance como String[] </summary>
+    /// <param name="name" > El nombre de la columna que se quiere extraer </param>
     public String[] GetColumn(string name)
     {
-        String[] column = new String[data.Columns.Count];
+        String[] column = new String[data.Rows.Count];
         for(int i = 0;i<data.Rows.Count;i++)
         {
             column[i] = data.Rows[i][name].ToString();            

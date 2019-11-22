@@ -2,22 +2,10 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 //using ExcelDna.Integration;
-using Excel =  Microsoft.Office.Interop.Excel;
 using System.Data;
 
 public class HelloExcel
 {
-    public static void SayHello()
-    {
-        var excelApp = new Excel.Application();
-        excelApp.Visible = true;
-        excelApp.Workbooks.Add();
-        Excel.Worksheet ws = (Excel.Worksheet)excelApp.ActiveSheet;
-        Excel.Range range = ws.Range["A1:D1"];
-
-        string[] values = {"HOLA EXCEL","TE HABLO","DESDE C#","PORQUE VBA APESTA"};
-        range.Value = values;
-    }
     private static void CheckExports()
     {
         return;
@@ -46,7 +34,7 @@ public class HelloExcel
             
             TimingAdvance TA = new TimingAdvance(lnBtsInputs);
 
-            //Console.WriteLine(TA.radioLines[3][0] +": " + TA.radioLines[3][1]);
+            Console.WriteLine(TA.radioLines[3][0] +": " + TA.radioLines[3][1]);
            
 
             Exports export = new Exports(TA.GetColumn("LNCEL name"));
