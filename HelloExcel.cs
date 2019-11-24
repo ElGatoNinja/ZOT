@@ -27,27 +27,38 @@ public class HelloExcel
     [STAThread]
     public static void Main(string[] args)
     {
-            Stopwatch globalWatch = new Stopwatch();
-            globalWatch.Start();
-            string[] lnBtsInputs = {"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01"};
-            RSLTE31 R31 = new RSLTE31(lnBtsInputs);
-            
-            TimingAdvance TA = new TimingAdvance(lnBtsInputs);
+        Stopwatch globalWatch = new Stopwatch();
+        globalWatch.Start();
 
-            Console.WriteLine(TA.radioLines[3][0] +": " + TA.radioLines[3][1]);
+        string[] lnBtsInputs = {"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01"};
+        RSLTE31 R31 = new RSLTE31(lnBtsInputs);
+            
+        TimingAdvance TA = new TimingAdvance(lnBtsInputs);
+
+        Console.WriteLine(TA.radioLines[3][0] +": " + TA.radioLines[3][1]);
            
 
-            Exports export = new Exports(TA.GetColumn("LNCEL name"));
+        Exports export = new Exports(TA.GetColumn("LNCEL name"));
 
-            /*Thread Main = Thread.CurrentThread;
-            Thread TA = new Thread(CheckTimingAdvance);
-            TA.Start();
-            Thread R31 = new Thread(CheckR31);
-            R31.Start();
-            TA.Join();
-            R31.Join();
-            Console.WriteLine("Me he motivado");*/
-            globalWatch.Stop();
-            Console.WriteLine("Global time: "+ globalWatch.ElapsedMilliseconds); 
+        /*Thread Main = Thread.CurrentThread;
+        Thread TA = new Thread(CheckTimingAdvance);
+        TA.Start();
+        Thread R31 = new Thread(CheckR31);
+        R31.Start();
+        TA.Join();
+        R31.Join();
+        Console.WriteLine("Me he motivado");*/
+
+        foreach (DataRow dataRow in export.data.Rows)
+        {
+            foreach (var item in dataRow.ItemArray)
+            {
+                Console.WriteLine(item);
+            }
+            
+        }
+        globalWatch.Stop();
+        Console.ReadKey();
+        Console.WriteLine("Global time: "+ globalWatch.ElapsedMilliseconds); 
     }
 }

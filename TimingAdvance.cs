@@ -27,7 +27,7 @@ public class TimingAdvance : FileReader
         radioLines = new List<Object[]>();
 
         #if DEBUG
-            _path[0] = "H:\\superbecario\\TA.csv";
+            _path[0] = "data\\TA.csv";
         #endif
         
         using(StreamReader reader = new StreamReader(_path[0]))

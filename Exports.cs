@@ -1,14 +1,16 @@
 using System;
 using System.Data;
 using System.Data.OleDb;
+using System.IO;
+
 public class Exports : FileReader
 {
     public DataTable data;
     public Exports(string[] cellNames) :base("MicroSoft Data Base (*.mdb)|*.mdb","Selecciona los exports",true)
     {
         #if DEBUG
-            string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= H:\\superbecario\\SRAN.mdb";
-            string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source= H:\\superbecario\\FL18.mdb";
+            string directionSRAN = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}\\data\\SRAN.mdb", Directory.GetCurrentDirectory());
+            string directionFL18 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}\\data\\FL18.mdb", Directory.GetCurrentDirectory());
         #else
             string directionSRAN = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[0] + ";";
             string directionFL18 = "provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _path[1] + ";";

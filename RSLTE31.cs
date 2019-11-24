@@ -9,7 +9,7 @@ public class RSLTE31 : FileReader
     {
 
         #if DEBUG
-            _path[0] = "H:\\superbecario\\R31.csv";
+            _path[0] = "data\\R31.csv";
         #endif
 
         this.data = new List<String[]>();
