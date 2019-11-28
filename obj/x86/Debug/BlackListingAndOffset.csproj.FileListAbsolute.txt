@@ -5,3 +5,7 @@ D:\BlackListinAndOffset\obj\x86\Debug\BlackListingAndOffset.csprojAssemblyRefere
 D:\BlackListinAndOffset\obj\x86\Debug\BlackListingAndOffset.csproj.CoreCompileInputs.cache
 D:\BlackListinAndOffset\obj\x86\Debug\BlacklistingAndOffset.exe
 D:\BlackListinAndOffset\obj\x86\Debug\BlacklistingAndOffset.pdb
+D:\BlackListinAndOffset\bin\Debug\data\FL18.mdb
+D:\BlackListinAndOffset\bin\Debug\data\SRAN.mdb
+D:\BlackListinAndOffset\bin\Debug\data\R31.csv
+D:\BlackListinAndOffset\bin\Debug\data\TA.csv

@@ -31,3 +31,7 @@ H:\BlackListingAndOffset\bin\x64\Debug\data\FL18.mdb
 H:\BlackListingAndOffset\bin\x64\Debug\data\SRAN.mdb
 H:\BlackListingAndOffset\bin\x64\Debug\data\R31.csv
 H:\BlackListingAndOffset\bin\x64\Debug\data\TA.csv
+D:\BlackListinAndOffset\bin\x64\Debug\data\FL18.mdb
+D:\BlackListinAndOffset\bin\x64\Debug\data\SRAN.mdb
+D:\BlackListinAndOffset\bin\x64\Debug\data\R31.csv
+D:\BlackListinAndOffset\bin\x64\Debug\data\TA.csv
