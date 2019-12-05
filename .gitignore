@@ -3,6 +3,6 @@
 ################################################################################
 
 /.vs/BlackListingAndOffset/v16/Server/sqlite3
-data/
-bin/
-obj/
+BlackListingAndOffset/data/
+BlackListingAndOffset/bin/
+BlackListingAndOffset/obj/

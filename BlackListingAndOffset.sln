@@ -3,29 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackListingAndOffset", "BlackListingAndOffset.csproj", "{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackListingAndOffset", "BlackListingAndOffset\BlackListingAndOffset.csproj", "{CA9DAAE5-0904-44EF-A9F5-34776A86FD60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Debug|x64.ActiveCfg = Debug|x64
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Debug|x64.Build.0 = Debug|x64
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Debug|x86.ActiveCfg = Debug|x86
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Debug|x86.Build.0 = Debug|x86
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Release|x64.ActiveCfg = Release|x64
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Release|x64.Build.0 = Release|x64
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Release|x86.ActiveCfg = Release|x86
-		{C99DA6BE-4CD6-428A-B13E-B0049DB772EA}.Release|x86.Build.0 = Release|x86
+		{CA9DAAE5-0904-44EF-A9F5-34776A86FD60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA9DAAE5-0904-44EF-A9F5-34776A86FD60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA9DAAE5-0904-44EF-A9F5-34776A86FD60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA9DAAE5-0904-44EF-A9F5-34776A86FD60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7E80FEA4-4E56-433F-AA21-7919AD1228AC}
+		SolutionGuid = {4E1AA0D2-B8FE-4562-BA55-82FC0E2051EE}
 	EndGlobalSection
 EndGlobal

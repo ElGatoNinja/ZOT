@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="BlackListingAndOffset.GUI.TabControlBlnOFF"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BlackListingAndOffset.GUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <TabControl Height="auto" Width="auto" >
+            <TabItem Header="Inicio">
+                <Grid Background="#FFE5E5E5" Height="424" Width="790" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <TextBox x:Name="RSLTE31_path" HorizontalAlignment="Left" Height="23" Margin="324,77,0,0" TextWrapping="Wrap" Text="D:\superbecario\R31.csv" VerticalAlignment="Top" Width="322" MaxLines="1"/>
+                    <Button Content="Examinar" HorizontalAlignment="Left" Margin="667,77,0,0" VerticalAlignment="Top" Width="75" Click="R31_Click"/>
+                    <TextBox x:Name="TA_path" HorizontalAlignment="Left" Height="23" Margin="324,123,0,0" TextWrapping="Wrap" Text="D:\superbecario\TA.csv" VerticalAlignment="Top" Width="322"/>
+                    <Button Content="Examinar" HorizontalAlignment="Left" Margin="667,123,0,0" VerticalAlignment="Top" Width="75" Click="TA_Click"/>
+                    <TextBox x:Name="FL18_path" HorizontalAlignment="Left" Height="23" Margin="324,213,0,0" TextWrapping="Wrap" Text="D:\superbecario\SRAN.mdb" VerticalAlignment="Top" Width="322"/>
+                    <Button Content="Examinar" HorizontalAlignment="Left" Margin="667,168,0,0" VerticalAlignment="Top" Width="75" Click="SRAN_Click"/>
+                    <TextBox x:Name="SRAN_path" HorizontalAlignment="Left" Height="23" Margin="324,168,0,0" TextWrapping="Wrap" Text="D:\superbecario\FL18.mdb" VerticalAlignment="Top" Width="322"/>
+                    <Button Content="Examinar" HorizontalAlignment="Left" Margin="667,213,0,0" VerticalAlignment="Top" Width="75" Click="FL18_Click"/>
+                    <Label Content="RSLTE31:" HorizontalAlignment="Left" Margin="324,54,0,0" VerticalAlignment="Top" Width="87" Height="23"/>
+                    <Label Content="Timing Advance:" HorizontalAlignment="Left" Margin="324,100,0,0" VerticalAlignment="Top" Width="107"/>
+                    <Label Content="Export SRAN:" HorizontalAlignment="Left" Margin="324,146,0,0" VerticalAlignment="Top" Width="87"/>
+                    <Label Content="Export FL18:" HorizontalAlignment="Left" Margin="324,192,0,0" VerticalAlignment="Top" Width="87"/>
+                    <Button Content="Iniciar" HorizontalAlignment="Left" Height="29" Margin="613,331,0,0" VerticalAlignment="Top" Width="129" Click="Launch"/>
+                    <DataGrid x:Name="lnBtsVisualGrid" HorizontalAlignment="Left" Height="333" Margin="51,27,0,0" VerticalAlignment="Top" Width="207" AutoGenerateColumns="False" ColumnWidth="*">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="lnBts Name" Binding="{Binding lnBtsName}" CanUserReorder="False" CanUserResize="False" ClipboardContentBinding="{x:Null}" Foreground="#FF878787"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Colindancias">
+                <Grid Background="#FFE5E5E5" >
+                    <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Name="colinGrid"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</UserControl>
