@@ -28,7 +28,7 @@ public class Colindancias : GenericTable
         bool found = false;
 
         double dist = -1f;
-        double? HOatem;
+        double? HOatem;  //estos valores pueden no estar definidos en el data set, asi que tienen que ser nullables
         double? HOsucc;
         double? HOsuccSR;
         int interfaceX2;
@@ -66,8 +66,8 @@ public class Colindancias : GenericTable
                         ZOTUtiles.Conversion.ToDouble((string)match["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
                         interfaceX2 = 1;
                     }
-
-                    aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], Math.Round(dist,2), HOsucc, exportRow["cellIndOffNeigh"], HOatem,exportRow["handoverAllowed"],Math.Round((100-HOsucc)*HOatem/100.0,2),HOsuccSR,Math.Round((100-HOsuccSR)*HOatem/HOsuccSR,2), interfaceX2, "" };
+                    
+                    aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], Math.Round(dist,2), HOsucc, exportRow["cellIndOffNeigh"], HOatem,exportRow["handoverAllowed"], (100 - HOsucc) * HOatem / 100.0,HOsuccSR,(100-HOsuccSR)*HOatem/HOsuccSR, interfaceX2, "" };
                     break; //solo coincidira una vez
                 }
             }
@@ -102,9 +102,9 @@ public class Colindancias : GenericTable
     public void CheckColinsNotInExports(DataRow line)
     {
         double dist;
-        double HOatem;
-        double HOsucc;
-        double HOsuccSR;
+        double? HOatem;
+        double? HOsucc;
+        double? HOsuccSR;
 
         try
         {
@@ -115,22 +115,22 @@ public class Colindancias : GenericTable
             dist = siteCoords.Distance(site1, site2);
             if (dist > 0.01)
             {
-                Double.TryParse((string)line["Inter eNB neighbor HO: Att"], out HOatem);
-                Double.TryParse((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
-                Double.TryParse((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+                ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
+                ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
+                ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
             }
             else //si la distancia es 0, el site coincide y por tanto los KPI relevantes son intra en vez de inter.
             {
-                Double.TryParse((string)line["Intra eNB neighbor HO: Att"], out HOatem);
-                Double.TryParse((string)line["Intra eNB neighbor HO: SR"], out HOsucc);
-                Double.TryParse((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
+                ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Att"], out HOatem);
+                ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: SR"], out HOsucc);
+                ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
             }
             aux1 = line.Field<String>("Source LNCEL name").Split('_');
             aux2 = line.Field<String>("Target LNCEL name").Split('_');
             int srcLnCellID = Convert.ToInt32(aux1[aux1.Length - 1]);
             int trgLnCellID = Convert.ToInt32(aux2[aux2.Length - 1]);
 
-            Object[] aux = new object[17] { "", "?", srcLnCellID, line["Source LNCEL name"], line["Target LNBTS ID"], trgLnCellID, line["Target LNCEL name"], Math.Round(dist,2), HOsucc, 15, HOatem,"Blacklist?", Math.Round((100 - HOsucc) * HOatem / 100.0, 2), HOsuccSR, Math.Round((100 - HOsuccSR) * HOatem / HOsuccSR, 2), "?","No esta presente en el export" };
+            Object[] aux = new object[17] { "", "?", srcLnCellID, line["Source LNCEL name"], line["Target LNBTS ID"], trgLnCellID, line["Target LNCEL name"], Math.Round(dist,2), HOsucc, 15, HOatem,"Blacklist?", (100 - HOsucc) * HOatem / 100.0, HOsuccSR,(100 - HOsuccSR) * HOatem / HOsuccSR, "?","No esta presente en el export" };
             lock (data) //hay que porteger la escritura de la lista para hacer multithreading
             {
                 data.Rows.Add(aux);

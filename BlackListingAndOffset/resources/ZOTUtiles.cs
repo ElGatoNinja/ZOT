@@ -33,7 +33,7 @@ namespace BlackListingAndOffset.resources
         {
             public static bool ToDouble(string value, out Nullable<double> output)
             {
-                if (value == "")
+                if (value != "")
                 {
                     output = XmlConvert.ToDouble(value);
                     return true;
