@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
+using System.Xml;
 
 namespace BlackListingAndOffset.resources
 {
@@ -26,6 +27,23 @@ namespace BlackListingAndOffset.resources
             }
             return "Error";
 
+        }
+
+        public static class Conversion
+        {
+            public static bool ToDouble(string value, out Nullable<double> output)
+            {
+                if (value == "")
+                {
+                    output = XmlConvert.ToDouble(value);
+                    return true;
+                }
+                else
+                {
+                    output = null;
+                    return false;
+                }
+            }
         }
     }
 }

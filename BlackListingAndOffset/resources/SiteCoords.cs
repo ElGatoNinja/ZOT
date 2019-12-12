@@ -10,7 +10,7 @@ namespace BlackListingAndOffset.resources
     class SiteCoords
     {
         private DataTable data;
-        private string path = "..\\..\\data\\SiteCoord.csv";
+        private string path = "..\\..\\..\\data\\SiteCoord.csv";
         public SiteCoords()
         {
             data = new DataTable();
@@ -39,8 +39,8 @@ namespace BlackListingAndOffset.resources
                 throw new ArgumentNullException("Faltan emplazamientos en el fichero SiteCoords.");
             }
 
-            //distancia por su definicion geometrica (se puede asumir que en las distancias que trabajamos la tierra es plana)
-            return Math.Sqrt((Math.Pow((long)site1data[0]["Longitude"] - (long)site2data[0]["Longitude"], 2) + Math.Pow((long)site1data[0]["Latitude"] - (long)site2data[0]["Latitude"], 2))/1000.0);
+            //distancia por su definicion geometrica
+            return Math.Sqrt((Math.Pow((long)site1data[0]["Longitude"] - (long)site2data[0]["Longitude"], 2) + Math.Pow((long)site1data[0]["Latitude"] - (long)site2data[0]["Latitude"], 2)))/1000.0;
         }
     }
 }

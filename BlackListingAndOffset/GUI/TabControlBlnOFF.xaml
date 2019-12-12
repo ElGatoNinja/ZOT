@@ -32,7 +32,7 @@
             </TabItem>
             <TabItem Header="Colindancias">
                 <Grid Background="#FFE5E5E5" >
-                    <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Name="colinGrid"/>
+                    <DataGrid HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="colinGrid"/>
                 </Grid>
             </TabItem>
         </TabControl>

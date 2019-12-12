@@ -6,6 +6,7 @@ using BlackListingAndOffset.resources;
 
 public class RSLTE31 : GenericTable
 {
+    public bool[] inExports;
     public RSLTE31(string[] lnBtsInputs, string path)
     {
         data = new DataTable();
@@ -31,10 +32,17 @@ public class RSLTE31 : GenericTable
                 }
             }
         }
+        inExports = new bool[data.Rows.Count];
     }
 
-    public DataRow[] NotInExports(Exports export)
+    public List<DataRow> NotInExports()
     {
-        return this.NotIntersectingWithThis(export, "Source LNCEL name", "srcName");
+        List<DataRow> linesNotInExports = new List<DataRow>();
+        for(int i = 0;i<data.Rows.Count;i++)
+        {
+            if (!inExports[i])
+                linesNotInExports.Add(data.Rows[i]);
+        }
+        return linesNotInExports;
     }
 }

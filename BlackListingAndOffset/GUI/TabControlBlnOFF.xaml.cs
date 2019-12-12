@@ -53,6 +53,11 @@ namespace BlackListingAndOffset.GUI
         {
             FL18_path.Text = ZOTUtiles.FileFinder("Access data base |*mdb", "Export FL18");
         }
+        //funcion que simplemente numera las filas de la tabla
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
 
         private void Launch(object sender, RoutedEventArgs e)
         {
@@ -94,28 +99,18 @@ namespace BlackListingAndOffset.GUI
             {
                 colindancias.CheckColin(dataRow, R31);
             });
+            Parallel.ForEach(R31.NotInExports().AsEnumerable(), dataRow =>
+            {
+                colindancias.CheckColinsNotInExports(dataRow);
+            });
 
             globalWatch.Stop();
             Console.WriteLine("Parrallel colin time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
             globalWatch.Start();
-            /*foreach (DataRow dataRow in export.data.Rows)
-            {
-                colindancias.CheckColin(dataRow, R31);
-            }*/
-
-            /*foreach (object[] line in colindancias.colinLines)
-            {
-                foreach (object item in line)
-                {
-                    Console.Write(item + "  -  ");
-                }
-                Console.Write('\n');
-            }*/
-            colinGrid.ItemsSource = colindancias.colinLines.DefaultView;
+            colinGrid.ItemsSource = colindancias.data.DefaultView;
             globalWatch.Stop();
             Console.WriteLine("Global time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
         }
-
 
     }
     public class StringWorkArround
