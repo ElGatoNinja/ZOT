@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
@@ -7,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using BlackListingAndOffset.resources;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -15,18 +15,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
+using ZOT.resources;
+using ZOT.BLnOFF.Code;
 
-namespace BlackListingAndOffset.GUI
+namespace ZOT.BLnOFF.GUI
 {
-    /// <summary>
-    /// Lógica de interacción para TabControlBlnOFF.xaml
-    /// </summary>
+    //Todo el flujo de la aplicacion se controla desde esta clase
     public partial class TabControlBlnOFF : UserControl
     {
         private List<StringWorkArround> lnBtsInputGrid;
         public Colindancias colindancias;
+
+        //valores editables
+
+
         public TabControlBlnOFF()
         {
+            //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
+            ZOT.BlnOFF.Code.CONSTANTS.LoadConst();
+
             lnBtsInputGrid = new List<StringWorkArround>();
             colindancias = new Colindancias();
             InitializeComponent();
@@ -58,6 +66,13 @@ namespace BlackListingAndOffset.GUI
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
+
+        private void Constant_Editor(object sender, RoutedEventArgs e)
+        {
+            ConstantEditorBLnOFF constant_editor = new ConstantEditorBLnOFF();
+            constant_editor.Show();
+        }
+
 
         private void Launch(object sender, RoutedEventArgs e)
         {
@@ -118,4 +133,3 @@ namespace BlackListingAndOffset.GUI
         public string lnBtsName { get; set; }
     }
 }
-

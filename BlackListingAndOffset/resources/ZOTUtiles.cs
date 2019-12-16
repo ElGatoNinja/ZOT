@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.Xml;
 
-namespace BlackListingAndOffset.resources
+namespace ZOT.resources
 {
     public static class ZOTUtiles
     {
@@ -29,8 +29,17 @@ namespace BlackListingAndOffset.resources
 
         }
 
+        /// <summary>
+        /// Versiones alternativas de conversiones de datos adaptadas a las necesidades de los rarisimos inputs de esta empresa
+        /// </summary>
         public static class Conversion
         {
+            /// <summary>
+            /// Convierte strings en cadenas siempre que el valor sea del tipo doble o "", sino habra una excepcion
+            /// </summary>
+            /// <param name="value">Una cadena con un numero de tipo double ("10,3425") o una cadena vacía ("")</param>
+            /// <param name="output">Variable de salida</param>
+            /// <returns></returns>
             public static bool ToDouble(string value, out Nullable<double> output)
             {
                 if (value != "")

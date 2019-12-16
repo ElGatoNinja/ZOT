@@ -1,5 +1,4 @@
-﻿using BlackListingAndOffset.GUI;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BlackListingAndOffset
+namespace ZOT.GUI
 {
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml

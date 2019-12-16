@@ -5,11 +5,10 @@ using System.IO;
 using System.Threading.Tasks;
 
 
-namespace BlackListingAndOffset.resources
+namespace ZOT.resources
 {
-    class SiteCoords
+    class SiteCoords : GenericTable
     {
-        private DataTable data;
         private string path = "..\\..\\..\\data\\SiteCoord.csv";
         public SiteCoords()
         {

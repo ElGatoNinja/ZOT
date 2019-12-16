@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlackListingAndOffset.resources
+namespace ZOT.resources
 {
     public abstract class GenericTable
     {

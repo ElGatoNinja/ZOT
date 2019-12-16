@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace BlackListingAndOffset
+namespace ZOT.GUI
 {
     /// <summary>
     /// Lógica de interacción para App.xaml
