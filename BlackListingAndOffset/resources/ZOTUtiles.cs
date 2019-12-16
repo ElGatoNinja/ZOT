@@ -55,4 +55,15 @@ namespace ZOT.resources
             }
         }
     }
+
+    //referencias constantes a los numeros de cada tecnologia de LTE, para hacer el código mas legible
+    public static class TECH_NUM
+    {
+        public const byte L1800 = 0;
+        public const byte L800 = 1;
+        public const byte L2600 = 2;
+        public const byte L900 = 3;
+        public const byte L2100 = 4;
+
+    }
 }

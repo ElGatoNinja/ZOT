@@ -56,18 +56,10 @@ namespace ZOT.BlnOFF.Code
 
         public static class BL
         {
-            public static double MAX_DIST;
-            public static double MAX_DIST_2600;
-            public static double MAX_DIST_2100;
+            public static double[] MAX_DIST;
+            public static double[] MAX_PER_COLIN;   //PER-> PERcentage
+            public static double[] MAX_COLIN;
             public static double MIN_SUCCESS_HANDOVER;
-            public static double MAX_PER_COLIN_800;   //PER-> PERcentage
-            public static double MAX_PER_COLIN_1800;
-            public static double MAX_PER_COLIN_2600;
-            public static double MAX_PER_COLIN_2100;
-            public static double MAX_COLIN_800;
-            public static double MAX_COLIN_1800;
-            public static double MAX_COLIN_2600;
-            public static double MAX_COLIN_2100;
 
             /// <summary>
             /// Clase que contiene todas las definiciones necesarias para el calculo de BlackListing
@@ -75,18 +67,10 @@ namespace ZOT.BlnOFF.Code
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                MAX_DIST = values[0];
-                MAX_DIST_2600 = values[1];
-                MAX_DIST_2100 = values[2];
-                MIN_SUCCESS_HANDOVER = values[3];
-                MAX_PER_COLIN_800 = values[4];
-                MAX_PER_COLIN_1800 = values[5];
-                MAX_PER_COLIN_2600 = values[6];
-                MAX_PER_COLIN_2100 = values[7];
-                MAX_COLIN_800 = values[8];
-                MAX_COLIN_1800 = values[9];
-                MAX_COLIN_2600 = values[10];
-                MAX_COLIN_2100 = values[11];
+                MAX_DIST = new double[]{values[0],values[1],values[2],values[3],values[4]};
+                MAX_PER_COLIN= new double[] { values[5], values[6], values[7], values[8], values[9] };
+                MAX_COLIN = new double[] { values[10], values[11], values[12], values[13], values[14]};
+                MIN_SUCCESS_HANDOVER = values[15];
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -94,8 +78,9 @@ namespace ZOT.BlnOFF.Code
             /// <returns></returns>
             public static double[] GetConst()
             {
-                double[] consts = { MAX_DIST, MAX_DIST_2600, MAX_DIST_2100, MIN_SUCCESS_HANDOVER, MAX_PER_COLIN_800, MAX_PER_COLIN_1800, MAX_PER_COLIN_2600, MAX_PER_COLIN_2100, MAX_COLIN_800, MAX_COLIN_1800, MAX_COLIN_2600, MAX_COLIN_2100 };
-                return consts;
+                List<double> consts = MAX_DIST.Concat(MAX_PER_COLIN).Concat(MAX_COLIN).ToList();
+                consts.Add(MIN_SUCCESS_HANDOVER);
+                return consts.ToArray();
             } 
         }
 
@@ -103,31 +88,19 @@ namespace ZOT.BlnOFF.Code
         {
             public static double PERCENTILE_CELL_RANGE;
             public static double MIN_SUCCESS_HANDOVER;
-            public static double MAX_PER_COLIN_800;   //PER-> PERcentage
-            public static double MAX_PER_COLIN_1800;
-            public static double MAX_PER_COLIN_2600;
-            public static double MAX_PER_COLIN_2100;
-            public static double MAX_COLIN_800;
-            public static double MAX_COLIN_1800;
-            public static double MAX_COLIN_2600;
-            public static double MAX_COLIN_2100;
+            public static double[] MAX_PER_COLIN;
+            public static double[] MAX_COLIN;
 
             /// <summary>
             /// Clase que contiene todas las definiciones necesarias para el calculo del Offset
             /// </summary>
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
-            {
-                PERCENTILE_CELL_RANGE = values[0];
-                MIN_SUCCESS_HANDOVER = values[1];
-                MAX_PER_COLIN_800 = values[2];
-                MAX_PER_COLIN_1800 = values[3];
-                MAX_PER_COLIN_2600 = values[4];
-                MAX_PER_COLIN_2100 = values[5];
-                MAX_COLIN_800 = values[6];
-                MAX_COLIN_1800 = values[7];
-                MAX_COLIN_2600 = values[8];
-                MAX_COLIN_2100 = values[9];
+            {  
+                MAX_PER_COLIN = new double[] {values[0], values[1],values[2],values[3],values[4]};
+                MAX_COLIN = new double[] { values[5], values[6], values[7], values[8], values[9]};
+                PERCENTILE_CELL_RANGE = values[10];
+                MIN_SUCCESS_HANDOVER = values[11];
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -135,27 +108,24 @@ namespace ZOT.BlnOFF.Code
             /// <returns></returns>
             public static double[] GetConst()
             {
-                double[] consts = { PERCENTILE_CELL_RANGE, MIN_SUCCESS_HANDOVER, MAX_PER_COLIN_800, MAX_PER_COLIN_1800, MAX_PER_COLIN_2600, MAX_PER_COLIN_2100, MAX_COLIN_800, MAX_COLIN_1800, MAX_COLIN_2600, MAX_COLIN_2100 };
-                return consts;
+                List<double> consts = MAX_PER_COLIN.Concat(MAX_COLIN).ToList();
+                consts.Add(PERCENTILE_CELL_RANGE);
+                consts.Add(MIN_SUCCESS_HANDOVER);
+                return consts.ToArray();
             }
         }
 
         public static  class U_INTER
         {
-            public static double PER_800;
-            public static double PER_1800;
-            public static double PER_2600;
-            public static double PER_2100;
+            public static double[] PER;
+
             /// <summary>
             /// Clase que contiene todas los umbrales de INTER
             /// </summary>
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                PER_800 = values[0];
-                PER_1800 = values[1];
-                PER_2600 = values[2];
-                PER_2100 = values[3];
+                PER = new double[] { values[0], values[1], values[2], values[3], values[4] };
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -163,27 +133,20 @@ namespace ZOT.BlnOFF.Code
             /// <returns></returns>
             public static double[] GetConst()
             {
-                double[] consts = { PER_800, PER_1800, PER_2600, PER_2100 };
-                return consts;
+                return PER;
             }
         }
 
         public static class U_INTRA
         {
-            public static double PER_800;
-            public static double PER_1800;
-            public static double PER_2600;
-            public static double PER_2100;
+            public static double[] PER;
             /// <summary>
             /// Clase que contiene todas los umbrales de INTER
             /// </summary>
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                PER_800 = values[0];
-                PER_1800 = values[1];
-                PER_2600 = values[2];
-                PER_2100 = values[3];
+                PER = new double[] { values[0], values[1], values[2], values[3], values[4] };
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -191,8 +154,7 @@ namespace ZOT.BlnOFF.Code
             /// <returns></returns>
             public static double[] GetConst()
             {
-                double[] consts = { PER_800, PER_1800, PER_2600, PER_2100 };
-                return consts;
+                return PER;
             }
         }
     }
