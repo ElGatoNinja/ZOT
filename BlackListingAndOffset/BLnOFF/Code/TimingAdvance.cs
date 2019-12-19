@@ -6,8 +6,9 @@ using ZOT.resources;
 
 namespace ZOT.BLnOFF.Code
 {
-    public class TimingAdvance : GenericTable
+    public class TimingAdvance
     {
+        public DataTable data;
         public List<Object[]> radioLines;
         private const double _OFF_TRUST = 95;
         private const byte _FIRST_VALUE_COL = 7;
@@ -63,7 +64,7 @@ namespace ZOT.BLnOFF.Code
             {
                 double accumulatedValue = 0;
                 int i = _FIRST_VALUE_COL;
-                while (accumulatedValue < ZOT.BlnOFF.Code.CONSTANTS.OFF.PERCENTILE_CELL_RANGE)
+                while (accumulatedValue < ZOT.BLnOFF.Code.CONSTANTS.OFF.PERCENTILE_CELL_RANGE)
                 {
                     accumulatedValue += (double)data.Rows[j][i];
                     i++;
@@ -73,6 +74,17 @@ namespace ZOT.BLnOFF.Code
                 line[1] = _RADIO_TABLE_KM[_FIRST_VALUE_COL + i];
                 radioLines.Add(line);
             }
+        }
+        ///<summary>Funcion que devuelve una columna de la tabla como String[] </summary>
+        /// <param name="name" > El nombre de la columna que se quiere extraer </param>
+        public String[] GetColumn(string name)
+        {
+            String[] column = new String[data.Rows.Count];
+            for (int i = 0; i < data.Rows.Count; i++)
+            {
+                column[i] = data.Rows[i][name].ToString();
+            }
+            return column;
         }
     }
 

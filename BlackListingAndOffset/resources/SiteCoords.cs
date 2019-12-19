@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
+using WinSCP;
 
 
 namespace ZOT.resources
 {
-    class SiteCoords : GenericTable
+    class SiteCoords
     {
+        public DataTable data;
         private string path = "..\\..\\..\\data\\SiteCoord.csv";
         public SiteCoords()
         {

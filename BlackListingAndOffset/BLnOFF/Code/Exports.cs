@@ -6,8 +6,9 @@ using ZOT.resources;
 
 namespace ZOT.BLnOFF.Code
 {
-    public class Exports : GenericTable
+    public class Exports
     {
+        public DataTable data;
         public Exports(string[] cellNames, string pathSRAN, string pathFL18) : base()
         {
 

@@ -7,24 +7,31 @@ using System.Threading.Tasks;
 using System.Globalization;
 using ZOT.resources;
 using System.Xml;
+using System.Windows.Controls;
 
 namespace ZOT.BLnOFF.Code
 {
-    public class Colindancias : GenericTable
-    { 
+    public class Colindancias 
+    {
+        public DataTable data;
         private SiteCoords siteCoords;
         private readonly string[] colNames = { "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR", "HO Succes Prep(%)", "HO errores Prep", "InterfazX2", "Comentarios" };
-        //private readonly System.Type[] size = {typeof(string), typeof(string), typeof(long), typeof(string), typeof(string), typeof(long), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string)}
+        private readonly System.Type[] colType = { typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(int), typeof(double), typeof(int),typeof(double), typeof(double), typeof(double), typeof(int), typeof(string) };
         public Colindancias()
         {
             siteCoords = new SiteCoords();
+
             data = new DataTable();
-            foreach (string title in colNames)
+            for(int i = 0;i < colNames.Length;i++)
             {
-                data.Columns.Add(title);
+                data.Columns.Add(colNames[i],colType[i]);
             }
-            data.Columns["Distance"].DataType = typeof(double); //Si se deja como string la ordenacion es por orden alfabético en vez de numerico
         }
+        /// <summary>
+        /// (Threadsafe) Añade a la tabla de colindancias las lineas que se han extraido de los exports
+        /// </summary>
+        /// <param name="exportRow"></param>
+        /// <param name="r31"></param>
         public void CheckColin(DataRow exportRow, RSLTE31 r31)
         {
             bool found = false;
@@ -82,7 +89,7 @@ namespace ZOT.BLnOFF.Code
                     dist = siteCoords.Distance(site1, site2);
 
                     interfaceX2 = (int)exportRow["x2LinkStatus"];
-                    aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], Math.Round(dist, 2), "", exportRow["cellIndOffNeigh"], "", "BlackList?", "", exportRow["handoverAllowed"], "", interfaceX2, "No esta en el RSLTE31" };
+                    aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], Math.Round(dist, 2), null, exportRow["cellIndOffNeigh"], null, null, null, exportRow["handoverAllowed"], null, interfaceX2, "No esta en el RSLTE31" };
                 }
                 lock (data) //hay que porteger la escritura de la lista para hacer multithreading
                 {
@@ -101,6 +108,10 @@ namespace ZOT.BLnOFF.Code
 
         }
 
+        /// <summary>
+        /// (Threadsafe) Añade las lineas que solo están en la consulta 31 a la tabla de colindancias
+        /// </summary>
+        /// <param name="line"></param>
         public void CheckColinsNotInExports(DataRow line)
         {
             double dist;
@@ -132,7 +143,7 @@ namespace ZOT.BLnOFF.Code
                 int srcLnCellID = Convert.ToInt32(aux1[aux1.Length - 1]);
                 int trgLnCellID = Convert.ToInt32(aux2[aux2.Length - 1]);
 
-                Object[] aux = new object[17] { "", "?", srcLnCellID, line["Source LNCEL name"], line["Target LNBTS ID"], trgLnCellID, line["Target LNCEL name"], Math.Round(dist, 2), HOsucc, 15, HOatem, "Blacklist?", (100 - HOsucc) * HOatem / 100.0, HOsuccSR, (100 - HOsuccSR) * HOatem / HOsuccSR, "?", "No esta presente en el export" };
+                Object[] aux = new object[17] { "", "", srcLnCellID, line["Source LNCEL name"], line["Target LNBTS ID"], trgLnCellID, line["Target LNCEL name"], Math.Round(dist, 2), HOsucc, 15, HOatem, null, (100 - HOsucc) * HOatem / 100.0, HOsuccSR, (100 - HOsuccSR) * HOatem / HOsuccSR, null, "No esta presente en el export" };
                 lock (data) //hay que porteger la escritura de la lista para hacer multithreading
                 {
                     data.Rows.Add(aux);
@@ -141,6 +152,34 @@ namespace ZOT.BLnOFF.Code
             catch (ArgumentNullException ane)
             {
                 Console.WriteLine("Error en la busqueda de corrdenadas just in R31");
+            }
+        }
+
+        /// <summary>
+        /// Genera los ENBID para las lineas que no estan en los exports
+        /// </summary>
+        public void addENBID() 
+        {
+            DataView auxdv = data.DefaultView;
+            auxdv.Sort = "[Name SOURCE] desc,[ENBID SOURCE] desc";
+            data = auxdv.ToTable();
+            
+            int i = 0;
+            string enbid;
+            do{ // la primera linea podria ser una de las que no tienen enbid
+                enbid = (string)data.Rows[i]["ENBID Source"];
+                i++;
+            } while (enbid == "");
+            i = 0;
+            while (true)
+            {
+                while ( i < data.Rows.Count && ((string)data.Rows[i]["ENBID Source"] == enbid || (string)data.Rows[i]["ENBID Source"] == ""))
+                {
+                    data.Rows[i]["ENBID Source"] = enbid;
+                    i++;
+                }
+                if (i >= data.Rows.Count) break; //No soy muy fan de usar breaks en vez de condiciones en el while, pero aquí parece necesario
+                enbid = (string)data.Rows[i]["ENBID Source"];
             }
         }
 

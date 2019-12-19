@@ -27,13 +27,10 @@ namespace ZOT.BLnOFF.GUI
         private List<StringWorkArround> lnBtsInputGrid;
         public Colindancias colindancias;
 
-        //valores editables
-
-
         public TabControlBlnOFF()
         {
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
-            ZOT.BlnOFF.Code.CONSTANTS.LoadConst();
+            ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
             lnBtsInputGrid = new List<StringWorkArround>();
             colindancias = new Colindancias();
@@ -122,7 +119,11 @@ namespace ZOT.BLnOFF.GUI
             globalWatch.Stop();
             Console.WriteLine("Parrallel colin time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
             globalWatch.Start();
+            colindancias.addENBID();
             colinGrid.ItemsSource = colindancias.data.DefaultView;
+            
+            CandidatesBL candBL = new CandidatesBL(colindancias);
+            candBLGrid.ItemsSource = candBL.data.DefaultView;
             globalWatch.Stop();
             Console.WriteLine("Global time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
         }

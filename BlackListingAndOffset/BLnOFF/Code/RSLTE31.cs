@@ -6,8 +6,9 @@ using ZOT.resources;
 
 namespace ZOT.BLnOFF.Code
 {
-    public class RSLTE31 : GenericTable
+    public class RSLTE31
     {
+        public DataTable data;
         public bool[] inExports;
         public RSLTE31(string[] lnBtsInputs, string path)
         {
