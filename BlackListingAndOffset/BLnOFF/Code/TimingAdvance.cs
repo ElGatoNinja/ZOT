@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System;
 using ZOT.resources;
+using System.Globalization;
 
 namespace ZOT.BLnOFF.Code
 {
     public class TimingAdvance
     {
         public DataTable data;
-        public List<Object[]> radioLines;
-        private const double _OFF_TRUST = 95;
-        private const byte _FIRST_VALUE_COL = 7;
+        public DataTable radioLines;
+        private const byte _FIRST_VALUE_COL = 6;
         //_RADIO_TABLE_KM se corresponde con los titulos de el archivo TimingAdvance. Dios no quiera que tengas que retocar estos valores futuro becario
-        private readonly double[] _RADIO_TABLE_KM = { 0.78, 0.156, 0.312, 0.468, 0.624, 0.780, 1.092, 1.404, 1.794, 2.262, 0.5, 1, 1.5, 2, 2.7, 3.4, 4.1, 4.8, 5.6, 5.6, 1, 2, 3, 4, 5.3, 6.9, 8.6, 9.5, 11.1, 11.1, 1.5, 3, 4.5, 6, 8, 10.4, 12.9, 14.6, 16.6, 16.6, 3, 6, 9, 12, 16, 21, 26, 33, 33, 6, 12, 15, 18, 24, 32, 41, 52, 63, 63, 10, 20, 30, 40, 53, 69, 87, 105, 105 };
+        private readonly double[] _RADIO_TABLE_KM = { 0.078, 0.156, 0.312, 0.468, 0.624, 0.780, 1.092, 1.404, 1.794, 2.262, 2.262, 0.5, 1, 1.5, 2, 2.7, 3.4, 4.1, 4.8, 5.6, 5.6, 1, 2, 3, 4, 5.3, 6.9, 8.6, 9.5, 11.1, 11.1, 1.5, 3, 4.5, 6, 8, 10.4, 12.9, 14.6, 16.6, 16.6, 3, 6, 9, 12, 16, 21, 26, 33, 33, 6, 12, 15, 18, 24, 32, 41, 52, 63, 63, 10, 20, 30, 40, 53, 69, 87, 105, 105 };
 
         public TimingAdvance(string[] lnBtsInputs, string path)
         {
@@ -24,10 +24,8 @@ namespace ZOT.BLnOFF.Code
             data.Columns.Add("LNCEL name", typeof(string));
             for (int i = 4; i < 75; i++)
             {
-                data.Columns.Add("col" + i, typeof(double));
+                data.Columns.Add("col" + i, typeof(string));
             }
-
-            radioLines = new List<Object[]>();
 
             using (StreamReader reader = new StreamReader(path))
             {
@@ -56,23 +54,24 @@ namespace ZOT.BLnOFF.Code
         }
 
 
-        /* funcion que calcula el radio de efecto de las lineas en funcion de el factor constante _OFF_TRUST
+        /* funcion que calcula el radio de efecto de las lineas en funcion del valor de PERCENTILE_CELL_RANGE
          * a partir de la información extraida del TimingAdvance*/
         private void GetRadioLines()
         {
+            radioLines = new DataTable();
+            radioLines.Columns.Add("LNCELL", typeof(string));
+            radioLines.Columns.Add("RADIO", typeof(double));
             for (int j = 0; j < data.Rows.Count; j++)
             {
                 double accumulatedValue = 0;
                 int i = _FIRST_VALUE_COL;
                 while (accumulatedValue < ZOT.BLnOFF.Code.CONSTANTS.OFF.PERCENTILE_CELL_RANGE)
                 {
-                    accumulatedValue += (double)data.Rows[j][i];
+                    accumulatedValue += Convert.ToDouble(data.Rows[j][i], CultureInfo.GetCultureInfo("en-US"));
                     i++;
                 }
-                Object[] line = new Object[2];
-                line[0] = data.Rows[j]["LNCEL name"];
-                line[1] = _RADIO_TABLE_KM[_FIRST_VALUE_COL + i];
-                radioLines.Add(line);
+                Object[] line = new Object[2] { data.Rows[j]["LNCEL name"], _RADIO_TABLE_KM[i - _FIRST_VALUE_COL-1] };
+                radioLines.Rows.Add(line);
             }
         }
         ///<summary>Funcion que devuelve una columna de la tabla como String[] </summary>

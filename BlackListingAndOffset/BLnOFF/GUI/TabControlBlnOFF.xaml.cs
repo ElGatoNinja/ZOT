@@ -21,7 +21,7 @@ using ZOT.BLnOFF.Code;
 
 namespace ZOT.BLnOFF.GUI
 {
-    //Todo el flujo de la aplicacion se controla desde esta clase
+    //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBlnOFF : UserControl
     {
         private List<StringWorkArround> lnBtsInputGrid;
@@ -35,7 +35,7 @@ namespace ZOT.BLnOFF.GUI
             lnBtsInputGrid = new List<StringWorkArround>();
             colindancias = new Colindancias();
             InitializeComponent();
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 50; i++)
             {
                 lnBtsInputGrid.Add(new StringWorkArround { lnBtsName = "" });
             }
@@ -58,7 +58,7 @@ namespace ZOT.BLnOFF.GUI
         {
             FL18_path.Text = ZOTUtiles.FileFinder("Access data base |*mdb", "Export FL18");
         }
-        //funcion que simplemente numera las filas de la tabla
+        //simplemente numera las filas de las tablas que incluyan este evento
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
@@ -70,17 +70,83 @@ namespace ZOT.BLnOFF.GUI
             constant_editor.Show();
         }
 
+        private void BL_template_gen(object sender, RoutedEventArgs e)
+        {
+            DataTable data = ((DataView)candBLGrid.ItemsSource).ToTable();
+            string output_path = ZOTUtiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
+            using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameBL.Text))
+            {                
+                writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handowerAllowed;removeAllowed;;");
+                foreach (DataRow row in data.Rows)
+                {
+                    if ((bool)row["SelectedBL"])
+                    {
+                        string toCSV = "LNREL;";
+                        toCSV += (string)row["ENBID SOURCE"] + ";";
+                        toCSV += (string)row["ENBID SOURCE"] + ";";
+                        toCSV += row["LnCell SOURCE"].ToString() + ";";
+                        if ((string)row["Label"] != "")
+                            toCSV += ((string)row["Label"]).Split('-')[1] + ";";
+                        else
+                            toCSV += ";";
+                        toCSV += "1";
+                        toCSV += "0";
+                        toCSV += (string)row["Name SOURCE"] + ";";
+                        toCSV += (string)row["Name TARGET"];
+
+                        writer.WriteLine(toCSV);
+                    }
+                }
+            }
+        }
+
+        private void OFF_template_gen(object sender, RoutedEventArgs e)
+        {
+            DataTable data = ((DataView)candOFFGrid.ItemsSource).ToTable();
+            string output_path = ZOTUtiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
+            using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameOFF.Text))
+            {
+                writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;cellIndOffNeigh;;");
+                foreach (DataRow row in data.Rows)
+                {
+                    if ((bool)row["SelectedOFF"])
+                    {
+                        string toCSV = "LNREL;";
+                        toCSV += (string)row["ENBID SOURCE"] + ";";
+                        toCSV += (string)row["ENBID SOURCE"] + ";";
+                        toCSV += row["LnCell SOURCE"].ToString() + ";";
+
+                        if ((string)row["Label"] != "")
+                            toCSV += ((string)row["Label"]).Split('-')[1] + ";";
+                        else
+                            toCSV += ";";
+
+                        if ((double)row["Offset"] > 9)
+                            toCSV += ((double)row["Offset"] - 3).ToString() + ";";
+                        else
+                            toCSV += ((double)row["Offset"] - 1).ToString() + ";";
+
+                        toCSV += (string)row["Name SOURCE"] + ";";
+                        toCSV += (string)row["Name TARGET"];
+
+                        writer.WriteLine(toCSV);
+                    }
+                }
+            }
+        }
+
 
         private void Launch(object sender, RoutedEventArgs e)
         {
-            Stopwatch globalWatch = new Stopwatch();
-            globalWatch.Start();
-
+            #if DEBUG
+                Stopwatch globalWatch = new Stopwatch();
+                globalWatch.Start();
+            #endif
             //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
             //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
             String[] aux = new String[lnBtsInputGrid.Count];
             int i;
-            for (i = 0; i < 15; i++)
+            for (i = 0; i < 50; i++)
             {
                 if (lnBtsInputGrid[i].lnBtsName == "")
                     break;
@@ -93,20 +159,12 @@ namespace ZOT.BLnOFF.GUI
             }
             aux = null;
 
+            //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
             RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
             TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
-
-            globalWatch.Stop();
-            Console.WriteLine("R31+TA time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
-            globalWatch.Start();
-            lnBtsInputs = null;
-
             Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
 
-            globalWatch.Stop();
-            Console.WriteLine("Export time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
-            globalWatch.Start();
-
+            //Procesado paralelo de cada una de las colindancias, ya que son independientes salvo en la escritura, que está sincronizada
             Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
             {
                 colindancias.CheckColin(dataRow, R31);
@@ -115,17 +173,19 @@ namespace ZOT.BLnOFF.GUI
             {
                 colindancias.CheckColinsNotInExports(dataRow);
             });
-
-            globalWatch.Stop();
-            Console.WriteLine("Parrallel colin time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
-            globalWatch.Start();
             colindancias.addENBID();
             colinGrid.ItemsSource = colindancias.data.DefaultView;
             
+            //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
             CandidatesBL candBL = new CandidatesBL(colindancias);
             candBLGrid.ItemsSource = candBL.data.DefaultView;
-            globalWatch.Stop();
-            Console.WriteLine("Global time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
+            CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias,candBL);
+            candOFFGrid.ItemsSource = candOFF.data.DefaultView;
+
+            #if DEBUG
+                globalWatch.Stop();
+                Console.WriteLine("Global time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
+            #endif
         }
 
     }

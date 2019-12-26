@@ -6,6 +6,27 @@
              xmlns:local="clr-namespace:ZOT.GUI"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style x:Key="BLDatastyle" TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedBL}" Value="True">
+                    <Setter Property="Background" Value="GreenYellow"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="OFFDatastyle" TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedOFF}" Value="True">
+                    <Setter Property="Background" Value="GreenYellow"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding CandidataBL}" Value="True">
+                    <Setter Property="Background" Value="Red"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <TabControl Height="auto" Width="auto" >
             <TabItem Header="Inicio">
@@ -38,12 +59,42 @@
             </TabItem>
             <TabItem Header="Colindancias">
                 <Grid Background="#FFE5E5E5" >
-                    <DataGrid HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="colinGrid"/>
+                    <DataGrid HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="colinGrid">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SlectedBL}" Value="True">
+                                        <Setter Property="Background" Value="GreenYellow"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                    </DataGrid>
+
+
                 </Grid>
             </TabItem>
             <TabItem Header="Candidatas BL">
-                <Grid Background="#FFE5E5E5">
-                    <DataGrid HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="candBLGrid"/>
+                <Grid Background="#FFE5E5E5" Margin="0,0,0.4,-2.4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.75*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DataGrid Grid.Row="0" HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="candBLGrid" RowStyle="{StaticResource BLDatastyle}"/>
+                    <Button Grid.Row="1" Content="Generar plantilla BL" HorizontalAlignment="Right" Margin="0,0,30,0" VerticalAlignment="Center" Width="139" Height="27" Click="BL_template_gen"/>
+                    <TextBox x:Name="fileNameBL" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="50,11.6,0,0" TextWrapping="Wrap" Text="PlantillaBL.csv" VerticalAlignment="Top" Width="285"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Candidatas OFF">
+                <Grid Background="#FFE5E5E5" Margin="0,0,0.4,-2.4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.75*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DataGrid Grid.Row="0" HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" Name="candOFFGrid" RowStyle="{StaticResource OFFDatastyle}"/>
+
+                    <Button Grid.Row="1" Content="Generar plantilla OFF" HorizontalAlignment="Right" Margin="0,0,30,0" VerticalAlignment="Center" Width="139" Height="27" Click="OFF_template_gen"/>
+                    <TextBox x:Name="fileNameOFF" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="50,11.6,0,0" TextWrapping="Wrap" Text="PlantillaOFF.csv" VerticalAlignment="Top" Width="285"/>
                 </Grid>
             </TabItem>
 

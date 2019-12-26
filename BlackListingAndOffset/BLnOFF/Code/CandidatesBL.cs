@@ -12,11 +12,12 @@ namespace ZOT.BLnOFF.Code
     class CandidatesBL 
     {
         public DataTable data;
-        private readonly string[] colNames = { "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR","Nº colindancias","Cols ya en BL","Cols disp BL"};
-        private readonly System.Type[] colType = { typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double),typeof(double), typeof(int), typeof(int), typeof(int)};
+        private readonly string[] colNames = { "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR","Num colindancias","Cols ya en BL","Cols disp BL","SelectedBL"};
+        private readonly System.Type[] colType = { typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double),typeof(double), typeof(int), typeof(int), typeof(int),typeof(bool)};
 
         public CandidatesBL(Colindancias colin)
         {
+            data = new DataTable();
             for(int i = 0;i<colNames.Length;i++)
             {
                 data.Columns.Add(colNames[i],colType[i]);
@@ -24,10 +25,11 @@ namespace ZOT.BLnOFF.Code
 
             foreach (DataRow row in colin.data.Rows)
             {
+               
                 int tech_num = row.Field<int>("LnCell SOURCE") % 10; //siendo las unidades el numero de LTE (decenas el sector) 
                 if ((double)row["Distance"] >= CONSTANTS.BL.MAX_DIST[tech_num] && (row["HO Success(%)"] != DBNull.Value)  && (double)row["HO Success(%)"] < CONSTANTS.BL.MIN_SUCCESS_HANDOVER) 
                 {
-                    //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco)
+                    //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco, si hiciera falta)
                     int num_colin = 0;
                     int num_colsInBL = 0;
                     for (int i = 0;i<colin.data.Rows.Count;i++)
@@ -39,14 +41,42 @@ namespace ZOT.BLnOFF.Code
                                 num_colsInBL++;
                         }
                     }
-                    //se calcula el numro de lineas que se pueden meter en BL usando el criterio mas restrictivo 
+                    //se calcula el numero de lineas que se pueden meter en BL usando el criterio mas restrictivo 
                     int maxDispBL = (int)CONSTANTS.BL.MAX_COLIN[tech_num]-num_colsInBL;
                     int criteria2 = (int)(num_colin * CONSTANTS.BL.MAX_PER_COLIN[tech_num] / 100.0) - num_colsInBL;
                     if (criteria2 < maxDispBL)
                         maxDispBL = criteria2;
 
                     object[] candidateRow = new object[16] { row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInBL, maxDispBL };
-                    this.data.Rows.Add(candidateRow);
+                    data.Rows.Add(candidateRow);
+                }
+            }
+            DataView dt = data.DefaultView;
+            dt.Sort = " [ENBID SOURCE] desc,[LnCell Source] desc,[HO errores SR] desc";
+            data = dt.ToTable();
+
+            //seleccion de lineas a las que hacer blacklisting, se marcan en verde
+            int currentLnCell = (int)data.Rows[0]["LnCell Source"];
+            int asignedBl = 0;
+            for (int i = 0; i < data.Rows.Count; i++)
+            { 
+                if ((int)data.Rows[i]["LnCell Source"] == currentLnCell)
+                {
+                    if ((int)data.Rows[i]["Cols disp BL"] > asignedBl)
+                    {
+                        data.Rows[i]["SelectedBL"] = true;
+                        asignedBl++;
+                    }
+                    else
+                    {
+                        data.Rows[i]["SelectedBL"] = false;
+                    }
+                }
+                else
+                {
+                    currentLnCell = (int)data.Rows[i]["LnCell Source"];
+                    asignedBl = 0;
+                    i--;
                 }
             }
         }

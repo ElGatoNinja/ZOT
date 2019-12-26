@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Win32;
 using System.Xml;
 using System.IO;
 using System.Data;
+using System.Windows.Forms;
 
 namespace ZOT.resources
 {
@@ -20,15 +20,33 @@ namespace ZOT.resources
         /// <returns>El path del archivo seleccionado</returns>
         public static string FileFinder(string filter, string title)
         {
-            OpenFileDialog explorer = new OpenFileDialog();
+            System.Windows.Forms.OpenFileDialog explorer = new OpenFileDialog();
             explorer.Filter = filter;
             explorer.Title = title;
-            if (explorer.ShowDialog() == true)
+            if (explorer.ShowDialog() == DialogResult.OK)
             {
                 return explorer.FileName;
             }
-            return "Error";
+            return "error";
+        }
 
+        /// <summary>
+        /// Llama al explorador de windows para elegir un directorio
+        /// </summary>
+        /// <param name="title">El titulo de la venatana que se abre</param>
+        /// <returns>El path del directorio</returns>
+        public static string SetDirectory(string title)
+        {
+            using(FolderBrowserDialog explorer = new FolderBrowserDialog())
+            {
+                explorer.Description = title;
+                explorer.SelectedPath = Directory.GetCurrentDirectory();
+                if (explorer.ShowDialog() == DialogResult.OK)
+                {
+                    return explorer.SelectedPath;
+                }
+                return "error";
+            }
         }
 
         /// <summary>
