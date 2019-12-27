@@ -13,13 +13,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using MahApps.Metro.Controls;
 using ZOT.resources;
 namespace ZOT.BLnOFF.GUI
 { 
     /// <summary>
     /// Contiene un monton de asignaciones entre constantes de la aplicacion y cuadros de texto
     /// </summary>
-    public partial class ConstantEditorBLnOFF : Window
+    public partial class ConstantEditorBLnOFF : MetroWindow
     {
 
         public ConstantEditorBLnOFF()

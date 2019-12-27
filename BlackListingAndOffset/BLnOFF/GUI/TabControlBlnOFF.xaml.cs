@@ -22,12 +22,12 @@ using ZOT.BLnOFF.Code;
 namespace ZOT.BLnOFF.GUI
 {
     //Todo el flujo de la herramienta se controla desde esta clase
-    public partial class TabControlBlnOFF : UserControl
+    public partial class TabControlBLnOFF : UserControl
     {
         private List<StringWorkArround> lnBtsInputGrid;
         public Colindancias colindancias;
 
-        public TabControlBlnOFF()
+        public TabControlBLnOFF()
         {
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
@@ -145,17 +145,19 @@ namespace ZOT.BLnOFF.GUI
             //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
             //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
             String[] aux = new String[lnBtsInputGrid.Count];
-            int i;
-            for (i = 0; i < 50; i++)
+            int n = 0;
+            for (int i = 0; i < 50; i++)
             {
-                if (lnBtsInputGrid[i].lnBtsName == "")
-                    break;
-                aux[i] = lnBtsInputGrid[i].lnBtsName;
+                if (lnBtsInputGrid[i].lnBtsName != "")
+                {
+                    aux[i] = lnBtsInputGrid[i].lnBtsName;
+                    n++;
+                }
             }
-            string[] lnBtsInputs = new string[i];
-            for (int j = 0; j < i; j++)
+            string[] lnBtsInputs = new string[n];
+            for (int i = 0; i < n; i++)
             {
-                lnBtsInputs[j] = aux[j];
+                lnBtsInputs[i] = aux[i];
             }
             aux = null;
 
@@ -188,6 +190,10 @@ namespace ZOT.BLnOFF.GUI
             #endif
         }
 
+        private void lnBtsVisualGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
     public class StringWorkArround
     {
