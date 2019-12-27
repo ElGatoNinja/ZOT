@@ -36,7 +36,7 @@ namespace ZOT.BLnOFF.Code
         {
             bool found = false;
 
-            double dist = -1f;
+            double dist;
             double? HOatem;  //estos valores pueden no estar definidos en el data set, asi que tienen que ser nullables
             double? HOsucc;
             double? HOsuccSR;
@@ -158,7 +158,7 @@ namespace ZOT.BLnOFF.Code
         /// <summary>
         /// Genera los ENBID para las lineas que no estan en los exports
         /// </summary>
-        public void addENBID() 
+        public void AddENBID() 
         {
             DataView auxdv = data.DefaultView;
             auxdv.Sort = "[Name SOURCE] desc,[ENBID SOURCE] desc";

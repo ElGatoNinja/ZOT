@@ -173,7 +173,7 @@ namespace ZOT.BLnOFF.GUI
             {
                 colindancias.CheckColinsNotInExports(dataRow);
             });
-            colindancias.addENBID();
+            colindancias.AddENBID();
             colinGrid.ItemsSource = colindancias.data.DefaultView;
             
             //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica

@@ -13,27 +13,38 @@ namespace ZOT.BLnOFF.Code
         public RSLTE31(string[] lnBtsInputs, string path)
         {
             data = new DataTable();
-            using (StreamReader reader = new StreamReader(path))
+            try
             {
-                string[] aux = reader.ReadLine().Split(';'); //Linea de titulo
-
-                foreach (string col in aux)
+                using (StreamReader reader = new StreamReader(path))
                 {
-                    data.Columns.Add(col);
-                }
+                    string[] aux = reader.ReadLine().Split(';'); //Linea de titulo
 
-                while (!reader.EndOfStream)
-                {
-                    aux = reader.ReadLine().Split(';');
-                    foreach (string lnBts in lnBtsInputs)
+                    foreach (string col in aux)
                     {
-                        if (aux[3].Equals(lnBts))
+                        data.Columns.Add(col);
+                    }
+
+                    while (!reader.EndOfStream)
+                    {
+                        aux = reader.ReadLine().Split(';');
+                        foreach (string lnBts in lnBtsInputs)
                         {
-                            data.Rows.Add(aux);
-                            break;
+                            if (aux[3].Equals(lnBts))
+                            {
+                                data.Rows.Add(aux);
+                                break;
+                            }
                         }
                     }
                 }
+            }
+            catch(FileNotFoundException)
+            {
+                ZOTUtiles.ShowError("El no se ha podido encontrar el fichero: " + path);
+            }
+            catch(Exception e)
+            {
+                ZOTUtiles.ShowError("Algo ha salido mal en el procesado de la consulta RSLTE31. Error: " + e.Message);
             }
             inExports = new bool[data.Rows.Count];
         }

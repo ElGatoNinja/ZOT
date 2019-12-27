@@ -1,0 +1,15 @@
+﻿<Window x:Class="ZOT.GUI.ErrorBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZOT.GUI"
+        mc:Ignorable="d"
+        Title="Error" Height="150" Width="400">
+    <Grid Margin="0,0,0,0">
+
+        <TextBlock x:Name="ErrorTextBox" TextWrapping="Wrap"  Margin="78,10,9.6,0" Height="101" VerticalAlignment="Top"/>
+
+
+    </Grid>
+</Window>

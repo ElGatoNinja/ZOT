@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("BlackListingAndOffset")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Zelenza")]
 [assembly: AssemblyProduct("BlackListingAndOffset")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]

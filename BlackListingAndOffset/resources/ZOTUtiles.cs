@@ -50,6 +50,16 @@ namespace ZOT.resources
         }
 
         /// <summary>
+        /// Lanza un mensaje de error emergente que interrumpe la ejecucion hasta que se cierre
+        /// </summary>
+        /// <param name="error">Texto que debe mostrar el error</param>
+        public static void ShowError(string error)
+        {
+            GUI.ErrorBox err = new GUI.ErrorBox(error);
+            err.ShowDialog();
+        }
+
+        /// <summary>
         /// Versiones alternativas de conversiones de datos adaptadas a las necesidades de los rarisimos inputs de esta empresa
         /// </summary>
         public static class Conversion

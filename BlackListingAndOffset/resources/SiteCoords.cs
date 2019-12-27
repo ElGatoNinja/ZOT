@@ -11,7 +11,7 @@ namespace ZOT.resources
     class SiteCoords
     {
         public DataTable data;
-        private string path = "..\\..\\..\\data\\SiteCoord.csv";
+        private string path = Path.Combine(Environment.CurrentDirectory, @"Data\", "SiteCoord.csv");
         public SiteCoords()
         {
             data = new DataTable();
