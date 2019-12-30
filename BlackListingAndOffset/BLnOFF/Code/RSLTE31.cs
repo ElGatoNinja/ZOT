@@ -27,12 +27,15 @@ namespace ZOT.BLnOFF.Code
                     while (!reader.EndOfStream)
                     {
                         aux = reader.ReadLine().Split(';');
-                        foreach (string lnBts in lnBtsInputs)
+                        if (aux.Length > 4)
                         {
-                            if (aux[3].Equals(lnBts))
+                            foreach (string lnBts in lnBtsInputs)
                             {
-                                data.Rows.Add(aux);
-                                break;
+                                if (aux[3].Equals(lnBts))
+                                {
+                                    data.Rows.Add(aux);
+                                    break;
+                                }
                             }
                         }
                     }
