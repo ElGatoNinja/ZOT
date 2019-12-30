@@ -29,17 +29,23 @@ namespace ZOT.resources
             //que lo dudo, considera usar una seccion protegida de de web.config por ejemplo
             string[] credentials;
 
-            using (StreamReader reader = new StreamReader(credentials_path))
-            {
-                credentials = reader.ReadLine().Split(':');
+            try {
+                using (StreamReader reader = new StreamReader(credentials_path))
+                {
+                    credentials = reader.ReadLine().Split(':');
+                }
+                sessionOptions = new SessionOptions
+                {
+                    Protocol = Protocol.Sftp,
+                    HostName = "172.16.28.215",
+                    UserName = credentials[1],
+                    Password = credentials[2],
+                };
             }
-            sessionOptions = new SessionOptions
+            catch (FileNotFoundException)
             {
-                Protocol = Protocol.Sftp,
-                HostName = "172.16.28.215",
-                UserName = credentials[1],
-                Password = credentials[2],
-            };
+                ZOTUtiles.ShowError("No se encuentra el fichero con las credenciales del servidor");
+            }
         }
         /// <summary>
         /// Se establece una conexion entre uno de los ficheros y el ftp

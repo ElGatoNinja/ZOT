@@ -22,12 +22,12 @@ using ZOT.BLnOFF.Code;
 namespace ZOT.BLnOFF.GUI
 {
     //Todo el flujo de la herramienta se controla desde esta clase
-    public partial class TabControlBLnOFF : UserControl
+    public partial class TabControlBlnOFF : UserControl
     {
         private List<StringWorkArround> lnBtsInputGrid;
         public Colindancias colindancias;
 
-        public TabControlBLnOFF()
+        public TabControlBlnOFF()
         {
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
@@ -143,24 +143,21 @@ namespace ZOT.BLnOFF.GUI
 #if DEBUG
                 Stopwatch globalWatch = new Stopwatch();
                 globalWatch.Start();
-
 #endif
                 //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
                 //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
                 String[] aux = new String[lnBtsInputGrid.Count];
-                int n = 0;
-                for (int i = 0; i < 50; i++)
+                int i;
+                for (i = 0; i < 50; i++)
                 {
-                    if (lnBtsInputGrid[i].lnBtsName != "")
-                    {
-                        aux[i] = lnBtsInputGrid[i].lnBtsName;
-                        n++;
-                    }
+                    if (lnBtsInputGrid[i].lnBtsName == "")
+                        break;
+                    aux[i] = lnBtsInputGrid[i].lnBtsName;
                 }
-                string[] lnBtsInputs = new string[n];
-                for (int i = 0; i < n; i++)
+                string[] lnBtsInputs = new string[i];
+                for (int j = 0; j < i; j++)
                 {
-                    lnBtsInputs[i] = aux[i];
+                    lnBtsInputs[j] = aux[j];
                 }
                 aux = null;
 
@@ -208,6 +205,7 @@ namespace ZOT.BLnOFF.GUI
             }
         }
      }
+
 
     public class StringWorkArround
     {

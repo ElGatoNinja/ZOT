@@ -138,77 +138,63 @@ namespace ZOT.BLnOFF.GUI
 
         private void Launch(object sender, RoutedEventArgs e)
         {
-            try
-            {
-#if DEBUG
+            #if DEBUG
                 Stopwatch globalWatch = new Stopwatch();
                 globalWatch.Start();
-
-#endif
-                //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-                //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
-                String[] aux = new String[lnBtsInputGrid.Count];
-                int n = 0;
-                for (int i = 0; i < 50; i++)
+            #endif
+            //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
+            //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
+            String[] aux = new String[lnBtsInputGrid.Count];
+            int n = 0;
+            for (int i = 0; i < 50; i++)
+            {
+                if (lnBtsInputGrid[i].lnBtsName != "")
                 {
-                    if (lnBtsInputGrid[i].lnBtsName != "")
-                    {
-                        aux[i] = lnBtsInputGrid[i].lnBtsName;
-                        n++;
-                    }
+                    aux[i] = lnBtsInputGrid[i].lnBtsName;
+                    n++;
                 }
-                string[] lnBtsInputs = new string[n];
-                for (int i = 0; i < n; i++)
-                {
-                    lnBtsInputs[i] = aux[i];
-                }
-                aux = null;
+            }
+            string[] lnBtsInputs = new string[n];
+            for (int i = 0; i < n; i++)
+            {
+                lnBtsInputs[i] = aux[i];
+            }
+            aux = null;
 
-                //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
-                RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
-                TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
-                Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
+            //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
+            RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
+            TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
+            Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
 
-                /*Procesado paralelo de cada una de las colindancias, ya que son independientes salvo en la escritura, que está sincronizada
-                Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
-                {
-                    colindancias.CheckColin(dataRow, R31);
-                });
-                Parallel.ForEach(R31.NotInExports().AsEnumerable(), dataRow =>
-                {
-                    colindancias.CheckColinsNotInExports(dataRow);
-                });
-                */
-                foreach(DataRow dataRow in export.data.Rows)
-                {
-                    colindancias.CheckColin(dataRow, R31);
-                }
-                foreach(DataRow dataRow in R31.NotInExports())
-                {
-                    colindancias.CheckColinsNotInExports(dataRow);
-                }
+            //Procesado paralelo de cada una de las colindancias, ya que son independientes salvo en la escritura, que está sincronizada
+            Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
+            {
+                colindancias.CheckColin(dataRow, R31);
+            });
+            Parallel.ForEach(R31.NotInExports().AsEnumerable(), dataRow =>
+            {
+                colindancias.CheckColinsNotInExports(dataRow);
+            });
+            colindancias.AddENBID();
+            colinGrid.ItemsSource = colindancias.data.DefaultView;
+            
+            //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
+            CandidatesBL candBL = new CandidatesBL(colindancias);
+            candBLGrid.ItemsSource = candBL.data.DefaultView;
+            CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias,candBL);
+            candOFFGrid.ItemsSource = candOFF.data.DefaultView;
 
-                colindancias.AddENBID();
-                colinGrid.ItemsSource = colindancias.data.DefaultView;
-
-                //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
-                CandidatesBL candBL = new CandidatesBL(colindancias);
-                candBLGrid.ItemsSource = candBL.data.DefaultView;
-                CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
-                candOFFGrid.ItemsSource = candOFF.data.DefaultView;
-
-#if DEBUG
+            #if DEBUG
                 globalWatch.Stop();
                 Console.WriteLine("Global time: " + (double)globalWatch.ElapsedMilliseconds / 1000.0 + "s");
-#endif
-            }
-            catch(Exception ex)
-            {
-                ZOTUtiles.ShowError("Algo ha ido mal e la ejecucion:\n\n " + ex.Message);
-            }
+            #endif
         }
-     }
 
+        private void lnBtsVisualGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+    }
     public class StringWorkArround
     {
         public string lnBtsName { get; set; }

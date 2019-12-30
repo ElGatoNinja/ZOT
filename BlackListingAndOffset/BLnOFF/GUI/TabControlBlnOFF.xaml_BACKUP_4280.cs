@@ -143,26 +143,45 @@ namespace ZOT.BLnOFF.GUI
 #if DEBUG
                 Stopwatch globalWatch = new Stopwatch();
                 globalWatch.Start();
-
+<<<<<<< HEAD
+            #endif
+            //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
+            //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
+            String[] aux = new String[lnBtsInputGrid.Count];
+            int n = 0;
+            for (int i = 0; i < 50; i++)
+            {
+                if (lnBtsInputGrid[i].lnBtsName != "")
+                {
+                    aux[i] = lnBtsInputGrid[i].lnBtsName;
+                    n++;
+                }
+            }
+            string[] lnBtsInputs = new string[n];
+            for (int i = 0; i < n; i++)
+            {
+                lnBtsInputs[i] = aux[i];
+            }
+            aux = null;
+=======
 #endif
                 //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
                 //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
                 String[] aux = new String[lnBtsInputGrid.Count];
-                int n = 0;
-                for (int i = 0; i < 50; i++)
+                int i;
+                for (i = 0; i < 50; i++)
                 {
-                    if (lnBtsInputGrid[i].lnBtsName != "")
-                    {
-                        aux[i] = lnBtsInputGrid[i].lnBtsName;
-                        n++;
-                    }
+                    if (lnBtsInputGrid[i].lnBtsName == "")
+                        break;
+                    aux[i] = lnBtsInputGrid[i].lnBtsName;
                 }
-                string[] lnBtsInputs = new string[n];
-                for (int i = 0; i < n; i++)
+                string[] lnBtsInputs = new string[i];
+                for (int j = 0; j < i; j++)
                 {
-                    lnBtsInputs[i] = aux[i];
+                    lnBtsInputs[j] = aux[j];
                 }
                 aux = null;
+>>>>>>> master
 
                 //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
                 RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
@@ -209,6 +228,15 @@ namespace ZOT.BLnOFF.GUI
         }
      }
 
+
+<<<<<<< HEAD
+        private void lnBtsVisualGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+    }
+=======
+>>>>>>> master
     public class StringWorkArround
     {
         public string lnBtsName { get; set; }

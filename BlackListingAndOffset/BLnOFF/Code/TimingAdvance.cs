@@ -65,11 +65,15 @@ namespace ZOT.BLnOFF.Code
             {
                 double accumulatedValue = 0;
                 int i = _FIRST_VALUE_COL;
-                while (accumulatedValue < ZOT.BLnOFF.Code.CONSTANTS.OFF.PERCENTILE_CELL_RANGE)
+                while (accumulatedValue < ZOT.BLnOFF.Code.CONSTANTS.OFF.PERCENTILE_CELL_RANGE && i<75)
                 {
                     accumulatedValue += Convert.ToDouble(data.Rows[j][i], CultureInfo.GetCultureInfo("en-US"));
                     i++;
+                    
                 }
+                //Esto significa que no hay registros en timing advance, posiblemente porque esté bloqueada
+                if (i == 75) continue;
+
                 Object[] line = new Object[2] { data.Rows[j]["LNCEL name"], _RADIO_TABLE_KM[i - _FIRST_VALUE_COL-1] };
                 radioLines.Rows.Add(line);
             }
