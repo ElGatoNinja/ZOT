@@ -15,20 +15,28 @@ namespace ZOT.resources
         public SiteCoords()
         {
             data = new DataTable();
-            using (StreamReader reader = new StreamReader(path))
+            try
             {
-                string[] line = reader.ReadLine().Split(';');
-                foreach (string title in line)
+                using (StreamReader reader = new StreamReader(path))
                 {
-                    data.Columns.Add(title, typeof(long));
-                }
-                while (!reader.EndOfStream)
-                {
-                    object[] aux = (object[])reader.ReadLine().Split(';');
-                    data.Rows.Add(aux);
+                    string[] line = reader.ReadLine().Split(';');
+                    foreach (string title in line)
+                    {
+                        data.Columns.Add(title, typeof(long));
+                    }
+                    while (!reader.EndOfStream)
+                    {
+                        object[] aux = (object[])reader.ReadLine().Split(';');
+                        data.Rows.Add(aux);
+                    }
                 }
             }
+            catch(FileNotFoundException)
+            {
+                ZOTUtiles.ShowError("No se encuentra sitecoords");
+            }
         }
+
 
         public double Distance(int site1, int site2)
         {
@@ -37,7 +45,7 @@ namespace ZOT.resources
             
             if (site1data.Length == 0 || site2data.Length == 0)
             {
-                throw new ArgumentNullException("Faltan emplazamientos en el fichero SiteCoords.");
+                throw new Exception("No se encuentra el emplazamiento: " + site1 + "\nSe debe actualizar la hoja de cordenadas de la carpeta Data\\");
             }
 
             //distancia por su definicion geometrica

@@ -40,7 +40,7 @@ namespace ZOT.BLnOFF.Code
             double? HOatem;  //estos valores pueden no estar definidos en el data set, asi que tienen que ser nullables
             double? HOsucc;
             double? HOsuccSR;
-            int interfaceX2;
+            int? interfaceX2;
             Object[] aux = new object[14];
 
             try
@@ -66,7 +66,11 @@ namespace ZOT.BLnOFF.Code
                             ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Att"], out HOatem);
                             ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: SR"], out HOsucc);
                             ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
-                            interfaceX2 = (int)exportRow["x2LinkStatus"];
+
+                            if (exportRow["x2LinkStatus"] != DBNull.Value)
+                                interfaceX2 = (int)exportRow["x2LinkStatus"];
+                            else
+                                interfaceX2 = null;
                         }
                         else //si la distancia es 0, el site coincide y por tanto los KPI relevantes son intra en vez de inter.
                         {
@@ -88,7 +92,11 @@ namespace ZOT.BLnOFF.Code
                     int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
                     dist = siteCoords.Distance(site1, site2);
 
-                    interfaceX2 = (int)exportRow["x2LinkStatus"];
+                    if (exportRow["x2LinkStatus"] != DBNull.Value)
+                        interfaceX2 = (int)exportRow["x2LinkStatus"];
+                    else
+                        interfaceX2 = null;
+
                     aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], Math.Round(dist, 2), null, exportRow["cellIndOffNeigh"], null, null, null, exportRow["handoverAllowed"], null, interfaceX2, "No esta en el RSLTE31" };
                 }
                 lock (data) //hay que porteger la escritura de la lista para hacer multithreading
