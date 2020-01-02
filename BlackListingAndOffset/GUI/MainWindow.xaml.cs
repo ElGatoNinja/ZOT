@@ -25,6 +25,17 @@ namespace ZOT.GUI
         public MainWindow()
         {
             InitializeComponent();
+            toolsMenuFlyout.IsOpen = false;
+        }
+
+        public void toggle_tool_menu(object sender, RoutedEventArgs e)
+        {
+            toolsMenuFlyout.IsOpen = true;
+        }
+
+        public void click_startBtn(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

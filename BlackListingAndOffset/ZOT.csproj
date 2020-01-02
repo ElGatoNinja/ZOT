@@ -151,10 +151,17 @@
     <Compile Include="GUI\ErrorBox.xaml.cs">
       <DependentUpon>ErrorBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Items\AdvancedTile.xaml.cs">
+      <DependentUpon>AdvancedTile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="resources\SyncFiles.cs" />
     <Compile Include="resources\ZOTUtiles.cs" />
     <Compile Include="resources\SiteCoords.cs" />
     <Page Include="GUI\ErrorBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\Items\AdvancedTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

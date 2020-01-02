@@ -1,11 +1,59 @@
-﻿<Controls:MetroWindow x:Class="ZOT.GUI.MainWindow"
+﻿<Controls:MetroWindow xmlns:Items="clr-namespace:ZOT.GUI.Items"  x:Class="ZOT.GUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:BLnOFF="clr-namespace:ZOT.BLnOFF.GUI"
+    xmlns:BLnOff="clr-namespace:ZOT.BLnOFF.GUI"
     mc:Ignorable="d"
-    Title="Zelenza Omni Tool" Height="450" Width="800" >
-    <BLnOFF:TabControlBLnOFF />
+    WindowState="Maximized"
+    Title="Zelenza Omni Tool">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="55"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Controls:Tile Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="False"/>
+            <Controls:Tile Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Title="BlackListing And Offset"  Height="auto" Width="Auto">
+            </Controls:Tile>
+            <Items:AdvancedTile Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" InnerForm="{Binding TabControlBLnOFF}"  Height="auto" Width="Auto" IsEnabled="False"/>
+        </Grid>
+        <ContentControl x:Name="visibleTool" Grid.Column="1"/>
+        <Grid Grid.Column="0" Margin="0,27,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="55"/>
+            </Grid.RowDefinitions>
+
+            <Button x:Name="menuBtn" Click="toggle_tool_menu" Grid.Row="0" Content="M" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"/>
+            <Button x:Name="startBtn" Click="click_startBtn" Grid.Row="1" Content="+" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" />
+        </Grid>
+
+        <Controls:FlyoutsControl Grid.ColumnSpan="2">
+            <Controls:Flyout x:Name="toolsMenuFlyout" Background="AliceBlue" Header="Activas" Position="Left" Width="200">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <Grid>
+                        <Controls:Tile Title="BlackListing And Offset" Height="100" HorizontalTitleAlignment="Stretch" Width="Auto" VerticalAlignment="Top"/>
+                    </Grid>
+                </ScrollViewer>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+
+    </Grid>
 </Controls:MetroWindow>

@@ -48,8 +48,8 @@
                     <Label Content="Export SRAN:" HorizontalAlignment="Left" Margin="75,146,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
                     <Label Content="Export FL18:" HorizontalAlignment="Left" Margin="75,192,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
 
-                    <GroupBox Header="INPUT SITES" HorizontalAlignment="Left" Height="358" Margin="42,27,0,0" VerticalAlignment="Top" Width="232" Grid.ColumnSpan="2"/>
-                    <DataGrid x:Name="lnBtsVisualGrid" HeadersVisibility="None" HorizontalAlignment="Left" Height="323" Margin="51,54,0,0" VerticalAlignment="Top" Width="213" AutoGenerateColumns="False" ColumnWidth="*">
+                    <GroupBox Header="INPUT SITES" HorizontalAlignment="Left" Height="345" Margin="42,10,0,0" VerticalAlignment="Top" Width="232" Grid.ColumnSpan="2"/>
+                    <DataGrid x:Name="lnBtsVisualGrid" HeadersVisibility="None" HorizontalAlignment="Left" Height="306" Margin="51,37,0,0" VerticalAlignment="Top" Width="213" AutoGenerateColumns="False" ColumnWidth="*">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="lnBts Name" Binding="{Binding lnBtsName}" CanUserReorder="False" CanUserResize="False"/>
                         </DataGrid.Columns>
