@@ -23,7 +23,8 @@ namespace ZOT.GUI.Items
         public AdvancedTile()
         {
             InitializeComponent();
-            innerForm = this.InnerForm; //Se establece la interfaz oculta del tile que se haya bindeado en la propiedad innerForm en el XAML
+            innerForm.Width = advancedTile.Width;
+            innerForm.Height = advancedTile.Height;
         }
 
         public static readonly DependencyProperty InnerFormProperty =

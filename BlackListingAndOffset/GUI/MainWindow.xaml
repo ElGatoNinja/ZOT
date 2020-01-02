@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:BLnOff="clr-namespace:ZOT.BLnOFF.GUI"
+    xmlns:CompNIR="clr-namespace:ZOT.CompleteNIR.GUI"
     mc:Ignorable="d"
     WindowState="Maximized"
     Title="Zelenza Omni Tool">
@@ -32,7 +32,11 @@
             <Controls:Tile Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="False"/>
             <Controls:Tile Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Title="BlackListing And Offset"  Height="auto" Width="Auto">
             </Controls:Tile>
-            <Items:AdvancedTile Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" InnerForm="{Binding TabControlBLnOFF}"  Height="auto" Width="Auto" IsEnabled="False"/>
+            <Items:AdvancedTile Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"  Height="auto" Width="Auto" IsEnabled="False">
+                <Items:AdvancedTile.InnerForm>
+                    <CompNIR:CompleteNIRForm Background="Bisque"/>
+                </Items:AdvancedTile.InnerForm>
+            </Items:AdvancedTile>
         </Grid>
         <ContentControl x:Name="visibleTool" Grid.Column="1"/>
         <Grid Grid.Column="0" Margin="0,27,0,0">
