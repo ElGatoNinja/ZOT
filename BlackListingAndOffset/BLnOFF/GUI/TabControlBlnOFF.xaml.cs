@@ -166,7 +166,6 @@ namespace ZOT.BLnOFF.GUI
                 TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
                 Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
 
-                /*Procesado paralelo de cada una de las colindancias, ya que son independientes salvo en la escritura, que está sincronizada
                 Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
                 {
                     colindancias.CheckColin(dataRow, R31);
@@ -175,7 +174,7 @@ namespace ZOT.BLnOFF.GUI
                 {
                     colindancias.CheckColinsNotInExports(dataRow);
                 });
-                */
+                /*
                 foreach(DataRow dataRow in export.data.Rows)
                 {
                     colindancias.CheckColin(dataRow, R31);
@@ -184,6 +183,7 @@ namespace ZOT.BLnOFF.GUI
                 {
                     colindancias.CheckColinsNotInExports(dataRow);
                 }
+                */
 
                 colindancias.AddENBID();
                 colinGrid.ItemsSource = colindancias.data.DefaultView;
