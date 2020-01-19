@@ -37,13 +37,13 @@
                         <ColumnDefinition Width="18*"/>
                         <ColumnDefinition Width="54*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="RSLTE31_path" HorizontalAlignment="Left" Height="23" Margin="74.6,77,0,0" TextWrapping="Wrap" Text="D:\superbecario\R31.csv" VerticalAlignment="Top" Width="322" MaxLines="1" Grid.Column="2"/>
+                    <TextBox x:Name="RSLTE31_path" HorizontalAlignment="Left" Height="23" Margin="74.6,77,0,0" TextWrapping="Wrap" Text="D:\R31.csv" VerticalAlignment="Top" Width="322" MaxLines="1" Grid.Column="2"/>
                     <Button Content="Examinar" HorizontalAlignment="Left" Margin="417.6,77,0,0" VerticalAlignment="Top" Width="75" Click="R31_Click" Grid.Column="2"/>
-                    <TextBox x:Name="TA_path" HorizontalAlignment="Left" Height="23" Margin="74.6,123,0,0" TextWrapping="Wrap" Text="D:\superbecario\TA.csv" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
+                    <TextBox x:Name="TA_path" HorizontalAlignment="Left" Height="23" Margin="74.6,123,0,0" TextWrapping="Wrap" Text="D:\TA.csv" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
                     <Button Content="Examinar" HorizontalAlignment="Left" Margin="417.6,123,0,0" VerticalAlignment="Top" Width="75" Click="TA_Click" Grid.Column="2"/>
-                    <TextBox x:Name="FL18_path" HorizontalAlignment="Left" Height="23" Margin="74.6,213,0,0" TextWrapping="Wrap" Text="D:\superbecario\SRAN.mdb" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
+                    <TextBox x:Name="FL18_path" HorizontalAlignment="Left" Height="23" Margin="74.6,213,0,0" TextWrapping="Wrap" Text="D:\FL18.mdb" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
                     <Button Content="Examinar" HorizontalAlignment="Left" Margin="417.6,168,0,0" VerticalAlignment="Top" Width="75" Click="SRAN_Click" Grid.Column="2"/>
-                    <TextBox x:Name="SRAN_path" HorizontalAlignment="Left" Height="23" Margin="74.6,168,0,0" TextWrapping="Wrap" Text="D:\superbecario\FL18.mdb" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
+                    <TextBox x:Name="SRAN_path" HorizontalAlignment="Left" Height="23" Margin="74.6,168,0,0" TextWrapping="Wrap" Text="D:\SRAN.mdb" VerticalAlignment="Top" Width="322" Grid.Column="2"/>
                     <Button Content="Examinar" HorizontalAlignment="Left" Margin="417.6,213,0,0" VerticalAlignment="Top" Width="75" Click="FL18_Click" Grid.Column="2"/>
                     <Label Content="RSLTE31:" HorizontalAlignment="Left" Margin="74.6,54,0,0" VerticalAlignment="Top" Width="87" Height="23" Grid.Column="2"/>
                     <Label Content="Timing Advance:" HorizontalAlignment="Left" Margin="74.6,100,0,0" VerticalAlignment="Top" Width="107" Grid.Column="2"/>

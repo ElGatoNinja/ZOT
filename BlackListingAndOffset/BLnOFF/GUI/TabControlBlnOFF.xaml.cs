@@ -145,7 +145,7 @@ namespace ZOT.BLnOFF.GUI
                 globalWatch.Start();
 #endif
                 //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-                //"ENB_O_AVILES_MAGDALENA_CT_01","ENB_PO_SAN_VICENTE_EB_01" ->prueba
+                //"ENB_PO_SAN_VICENTE_EB_01", "ENB_C_COR_ESPINO_CT_01", "ENB_O_TAPIA_EB_01", "ENB_MA_MARO_ACANTILADOS_01" ->prueba
                 String[] aux = new String[lnBtsInputGrid.Count];
                 int i;
                 for (i = 0; i < 50; i++)
@@ -186,13 +186,13 @@ namespace ZOT.BLnOFF.GUI
                 */
 
                 colindancias.AddENBID();
-                colinGrid.ItemsSource = colindancias.data.DefaultView;
+                colinGrid.WorkingData = colindancias.data;
 
                 //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
                 CandidatesBL candBL = new CandidatesBL(colindancias);
-                candBLGrid.ItemsSource = candBL.data.DefaultView;
+                candBLGrid.WorkingData = candBL.data;
                 CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
-                candOFFGrid.ItemsSource = candOFF.data.DefaultView;
+                candOFFGrid.WorkingData = candOFF.data;
 
 #if DEBUG
                 globalWatch.Stop();

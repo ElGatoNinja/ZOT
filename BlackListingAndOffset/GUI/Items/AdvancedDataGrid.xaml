@@ -8,13 +8,18 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
           LoadingRow="DataGrid_LoadingRow"
-          Loaded="Data_Loaded"
+          Loaded="DataGrid_Loaded"
           PreviewKeyDown="KeyBoard_Commands"
           SelectionUnit="Cell"
           SelectedCellsChanged="Selected_Cells_Changed"
+          PreviewMouseUp="MouseUp_dataGrid"
+          CellEditEnding="Cell_Edited"
+          CanUserAddRows="False"
+          ClipboardCopyMode="ExcludeHeader"
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>
         <Style TargetType="{x:Type DataGridCell}">
+            <EventSetter Event="PreviewMouseDown" Handler="MouseDown_Cell"/>
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -51,7 +56,16 @@
                                     </Grid.RowDefinitions>
                                     <TextBox x:Name="searchBox" Grid.Row="0" Text="" TextChanged="Text_Filter_Changed"/>
                                     <Button Grid.Row="1" Content="Filtrar Todo" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" Width="Auto" Click="Clean_Filter"/>
-                                    <ListBox x:Name="filerList" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                                    <ListBox x:Name="filerList" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" Initialized="Filter_Initialized_From_Template">
+                                        <ListBox.Resources>
+                                            <Style TargetType="ListBoxItem">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTextFiltered}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ListBox.Resources>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
@@ -63,7 +77,6 @@
                                     </ListBox>
                                     <Button Grid.Row="3" Content="Filtrar" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="50" Click="Filter_Click"/>
                                     <Button Grid.Row="3" Content="Cancelar" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,6,65,5" Width="50" Click="Cancel_Filter"/>
-
                                 </Grid>
                             </Popup>
                         </Grid>
