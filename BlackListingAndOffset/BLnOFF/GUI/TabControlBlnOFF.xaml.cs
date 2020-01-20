@@ -145,7 +145,7 @@ namespace ZOT.BLnOFF.GUI
                 globalWatch.Start();
 #endif
                 //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-                //"ENB_PO_SAN_VICENTE_EB_01", "ENB_C_COR_ESPINO_CT_01", "ENB_O_TAPIA_EB_01", "ENB_MA_MARO_ACANTILADOS_01" ->prueba
+                //"ENB_PO_SAN_VICENTE_EB_01", "ENB_AL_VERA_PLAYA_01" ->prueba
                 String[] aux = new String[lnBtsInputGrid.Count];
                 int i;
                 for (i = 0; i < 50; i++)

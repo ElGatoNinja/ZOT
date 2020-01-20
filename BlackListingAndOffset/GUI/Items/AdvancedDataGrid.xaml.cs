@@ -30,13 +30,8 @@ namespace ZOT.GUI.Items
         ObservableCollection<FilterListItem>[] filterLists = null;
         ObservableCollection<FilterListItem> backUpFilterList = null;
         public AdvancedDataGridFlags Flags { get; }
-        private DataGridCell selectedCell;
+        private DataGridCell _selectedCell;
         private List<ListBox> temporalListBoxContainer = new List<ListBox>();
-
-#if DEBUG 
-        private int eventTrick = 0;
-#endif
-
 
         #region INITIALIZATION
         public AdvancedDataGrid()
@@ -152,7 +147,15 @@ namespace ZOT.GUI.Items
             var matches = _workingData.AsEnumerable()
                             .Where(row => Enumerable.Range(0, filterLists.Length)
                             .All(col => filterLists[col]
-                                .Where(item => item.NotFiltered && !item.IsTextFiltered)
+                                .Where(item =>
+                                {
+                                    if (item.IsTextFiltered) //se aplica el filtro de texto sobre los filtros individuales
+                                    {
+                                        item.NotFiltered = false;
+                                        item.IsTextFiltered = false; //y se quita el filtrado de texto para que la lista se vea correctamente tras la carga
+                                    }
+                                    return item.NotFiltered;
+                                })
                                 .Any(condition => condition.Name == row[col].ToString())));
 
             ItemsSource = matches.AsDataView();
@@ -208,23 +211,18 @@ namespace ZOT.GUI.Items
 
             if (Flags.MultiEdit) //cambiar el valor de toda la seleccion de una columna de golpe
             {
-                eventTrick++;
-                if (eventTrick > 10)
-                {
-                    int issaa = 0;
-                }
                 foreach(DataGridCellInfo cellInfo in e.AddedCells) //si se hace a mano no hace falta bucle, pero quien sabe si en un futuro..., asi que por si acaso 
                 {
                     try
                     {
                         DataGridCell cell = (DataGridCell)cellInfo.Column.GetCellContent(cellInfo.Item).Parent;
-                        if (cell.Column.DisplayIndex == selectedCell.Column.DisplayIndex)
+                        if (cell.Column.DisplayIndex == _selectedCell.Column.DisplayIndex)
                         {
                             DataGridRow row = DataGridRow.GetRowContainingElement(cell);
-                            if (selectedCell.Content is TextBlock)//si la celda tiene texto
+                            if (_selectedCell.Content is TextBlock)//si la celda tiene texto
                             {
                                 string oldValue =_workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex].ToString();
-                                _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((TextBlock)selectedCell.Content).Text;
+                                _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((TextBlock)_selectedCell.Content).Text;
 
                                 if (!_workingData.AsEnumerable().Any(item => item[cell.Column.DisplayIndex].ToString() == oldValue))
                                 {
@@ -233,9 +231,9 @@ namespace ZOT.GUI.Items
                                 //se actualiza el valor en el origen de datos
                                 
                             }
-                            else if(selectedCell.Content is CheckBox) //si la celda tiene un checkbox
+                            else if(_selectedCell.Content is CheckBox) //si la celda tiene un checkbox
                             {
-                                _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)selectedCell.Content).IsChecked;
+                                _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
                                 //((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)selectedCell.Content).IsChecked;
                             }
                         }
@@ -254,20 +252,22 @@ namespace ZOT.GUI.Items
         {
             if (Flags.MultiEdit) return;
 
-            string originalValue = _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)e.Row.Item).Row)].ItemArray[e.Column.DisplayIndex].ToString();
-
-            string currentValue = ((TextBox)e.EditingElement).Text;
-
-            //si el nuevo valor no existía en el filtro se añade
-            if (!filterLists[e.Column.DisplayIndex].Any(item => item.Name == currentValue))
+            if (e.EditingElement is TextBox) //si es True/False el contenido de los filtros nunca va a cambiar
             {
-                filterLists[e.Column.DisplayIndex].Add(new FilterListItem { IsTextFiltered = false, Name = currentValue, NotFiltered = false }) ;
-            }
-            
-            //si solo había una copia del valor original en toda la tabla, es decir, que ya no hay, se elimina del filtro
-            if (_workingData.AsEnumerable().Select(item => item.ItemArray[e.Column.DisplayIndex] == originalValue).Count() > 1)
-            {
-                filterLists[e.Column.DisplayIndex].Remove(filterLists[e.Column.DisplayIndex].Where(item => item.Name == originalValue).Single());
+                string originalValue = _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)e.Row.Item).Row)].ItemArray[e.Column.DisplayIndex].ToString();
+                string currentValue = ((TextBox)e.EditingElement).Text;
+
+                //si el nuevo valor no existía en el filtro se añade
+                if (!filterLists[e.Column.DisplayIndex].Any(item => item.Name == currentValue))
+                {
+                    filterLists[e.Column.DisplayIndex].Add(new FilterListItem { IsTextFiltered = false, Name = currentValue, NotFiltered = false });
+                }
+
+                //si solo había una copia del valor original en toda la tabla, es decir, que ya no hay, se elimina del filtro
+                if (_workingData.AsEnumerable().Select(item => item.ItemArray[e.Column.DisplayIndex] == originalValue).Count() > 1)
+                {
+                    filterLists[e.Column.DisplayIndex].Remove(filterLists[e.Column.DisplayIndex].Where(item => item.Name == originalValue).Single());
+                }
             }
         }
 
@@ -275,8 +275,7 @@ namespace ZOT.GUI.Items
         {
             if (Flags.MultiEdit)
             {
-                this.selectedCell = (DataGridCell)sender;
-                eventTrick = 0;
+                this._selectedCell = (DataGridCell)sender;
             }
         }
 
