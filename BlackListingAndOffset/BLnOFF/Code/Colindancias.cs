@@ -161,6 +161,10 @@ namespace ZOT.BLnOFF.Code
             {
                 Console.WriteLine("Error en la busqueda de corrdenadas just in R31");
             }
+            catch(IndexOutOfRangeException ioer)
+            {
+                Console.WriteLine("Error probablemente causado por una de las lineas de entrada incompleta");
+            }
         }
 
         /// <summary>

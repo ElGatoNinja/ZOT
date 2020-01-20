@@ -43,7 +43,7 @@ namespace ZOT.BLnOFF.Code
             }
             catch(FileNotFoundException)
             {
-                ZOTUtiles.ShowError("El no se ha podido encontrar el fichero: " + path);
+                ZOTUtiles.ShowError("No se ha podido encontrar el fichero: " + path);
             }
             catch(Exception e)
             {
