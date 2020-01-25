@@ -4,18 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Data;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml;
+
 using ZOT.resources;
 using ZOT.BLnOFF.Code;
 
@@ -25,7 +17,6 @@ namespace ZOT.BLnOFF.GUI
     public partial class TabControlBLnOFF : UserControl
     {
         private List<StringWorkArround> lnBtsInputGrid;
-        public Colindancias colindancias;
 
         public TabControlBLnOFF()
         {
@@ -33,30 +24,71 @@ namespace ZOT.BLnOFF.GUI
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
             lnBtsInputGrid = new List<StringWorkArround>();
-            colindancias = new Colindancias();
             InitializeComponent();
             for (int i = 0; i < 50; i++)
             {
-                lnBtsInputGrid.Add(new StringWorkArround { lnBtsName = "" });
+                lnBtsInputGrid.Add(new StringWorkArround { LnBtsName = "" });
             }
             lnBtsVisualGrid.ItemsSource = lnBtsInputGrid;
+
+            //Recuperar ultimos paths usados
+            try
+            {
+                string[] storedPaths = System.IO.File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"));
+                RSLTE31_path.Text = storedPaths[0];
+                TA_path.Text = storedPaths[1];
+                SRAN_path.Text = storedPaths[2];
+                FL18_path.Text = storedPaths[3];
+                NIR_path.Text = storedPaths[4];
+            }
+            catch (FileNotFoundException) { /*comportamiento aceptable si no existe ya se creará */}
+
         }
 
         private void R31_Click(object sender, RoutedEventArgs e)
         {
-            RSLTE31_path.Text = ZOTUtiles.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31");
+            try
+            {
+                RSLTE31_path.Text = resources.ZOTlib.Files.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31", Path.GetDirectoryName(RSLTE31_path.Text));
+            }
+            catch (Exception)
+            {
+                RSLTE31_path.Text = resources.ZOTlib.Files.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31");
+            }
         }
         private void TA_Click(object sender, RoutedEventArgs e)
         {
-            TA_path.Text = ZOTUtiles.FileFinder("Archivos CSV |*csv", "Timming Advance");
+            try
+            {
+                TA_path.Text = resources.ZOTlib.Files.FileFinder("Archivos CSV |*csv", "Timming Advance", Path.GetDirectoryName(TA_path.Text));
+            }
+            catch (Exception)
+            {
+                TA_path.Text = resources.ZOTlib.Files.FileFinder("Archivos CSV |*csv", "Timming Advance");
+            }
         }
         private void SRAN_Click(object sender, RoutedEventArgs e)
         {
-            SRAN_path.Text = ZOTUtiles.FileFinder("Access data base |*mdb", "Export SRAN");
+            try
+            {
+                SRAN_path.Text = resources.ZOTlib.Files.FileFinder("Access data base |*mdb", "Export SRAN", Path.GetDirectoryName(SRAN_path.Text));
+            }
+            catch(Exception)
+            {
+                SRAN_path.Text = resources.ZOTlib.Files.FileFinder("Access data base |*mdb", "Export SRAN");
+            }
+           
         }
         private void FL18_Click(object sender, RoutedEventArgs e)
         {
-            FL18_path.Text = ZOTUtiles.FileFinder("Access data base |*mdb", "Export FL18");
+            try
+            {
+                FL18_path.Text = resources.ZOTlib.Files.FileFinder("Access data base |*mdb", "Export FL18", Path.GetDirectoryName(SRAN_path.Text));
+            }
+            catch(Exception)
+            {
+                FL18_path.Text = resources.ZOTlib.Files.FileFinder("Access data base |*mdb", "Export FL18");
+            }
         }
         //simplemente numera las filas de las tablas que incluyan este evento
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
@@ -73,7 +105,7 @@ namespace ZOT.BLnOFF.GUI
         private void BL_template_gen(object sender, RoutedEventArgs e)
         {
             DataTable data = ((DataView)candBLGrid.ItemsSource).ToTable();
-            string output_path = ZOTUtiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
+            string output_path = resources.ZOTlib.Files.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
             using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameBL.Text))
             {                
                 writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handowerAllowed;removeAllowed;;");
@@ -103,7 +135,7 @@ namespace ZOT.BLnOFF.GUI
         private void OFF_template_gen(object sender, RoutedEventArgs e)
         {
             DataTable data = ((DataView)candOFFGrid.ItemsSource).ToTable();
-            string output_path = ZOTUtiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
+            string output_path = resources.ZOTlib.Files.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
             using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameOFF.Text))
             {
                 writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;cellIndOffNeigh;;");
@@ -146,14 +178,17 @@ namespace ZOT.BLnOFF.GUI
 
 #endif
                 //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-                //"ENB_PO_SAN_VICENTE_EB_01", "ENB_AL_VERA_PLAYA_01" ->prueba
+                //"ENB_PO_SAN_VICENTE_EB_01", "ENB_AV_BURGOHONDO_01" ->prueba
+                //prueba_ 2 -> ENB_CA_BENALUP_EB_01, ENB_GR_ZAFARRAYA_01, ENB_J_JODAR_ALMAZARA_01, ENB_SE_SUPRANORTE_01 
+                Colindancias colindancias = new Colindancias();
+
                 String[] aux = new String[lnBtsInputGrid.Count];
                 int n = 0;
-                for (int i = 0; i < 50; i++)
+                for (int i = 0; i < 49; i++)
                 {
-                    if (lnBtsInputGrid[i].lnBtsName != "")
+                    if (lnBtsInputGrid[i].LnBtsName != "")
                     {
-                        aux[i] = lnBtsInputGrid[i].lnBtsName;
+                        aux[i] = lnBtsInputGrid[i].LnBtsName;
                         n++;
                     }
                 }
@@ -164,38 +199,60 @@ namespace ZOT.BLnOFF.GUI
                 }
                 aux = null;
 
-                //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
-                RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
-                TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
-                Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
+                //Guardar el path de los ultimos archivos en un fichero de texto
+                string[] storePaths = new string[5] { RSLTE31_path.Text, TA_path.Text, SRAN_path.Text, FL18_path.Text, NIR_path.Text};
+                System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
 
-                Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
+                if ((bool)Is_BlnOFF_Enabled.IsChecked) 
                 {
-                    colindancias.CheckColin(dataRow, R31);
-                });
-                Parallel.ForEach(R31.NotInExports().AsEnumerable(), dataRow =>
-                {
-                    colindancias.CheckColinsNotInExports(dataRow);
-                });
-                /*
-                foreach(DataRow dataRow in export.data.Rows)
-                {
-                    colindancias.CheckColin(dataRow, R31);
+                    //Se crean objetos que albergan las tablas de datos que se necesitan en esta herramienta
+                    RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
+                    TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
+                    Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
+
+                    Parallel.ForEach(export.data.AsEnumerable(), dataRow =>
+                    {
+                        colindancias.CheckColin(dataRow, R31);
+                    });
+                    Parallel.ForEach(R31.NotInExports().AsEnumerable(), dataRow =>
+                    {
+                        colindancias.CheckColinsNotInExports(dataRow);
+                    });
+                    /*
+                    foreach(DataRow dataRow in export.data.Rows)
+                    {
+                        colindancias.CheckColin(dataRow, R31);
+                    }
+                    foreach(DataRow dataRow in R31.NotInExports())
+                    {
+                        colindancias.CheckColinsNotInExports(dataRow);
+                    }
+                    */
+
+                    colindancias.AddENBID();
+                    DataView dv = colindancias.data.DefaultView;
+                    dv.Sort = "[HO errores SR] DESC";
+                    colindancias.data = dv.ToTable();
+                    colinGrid.WorkingData = colindancias.data;
+
+                    //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
+                    CandidatesBL candBL = new CandidatesBL(colindancias);
+                    dv = candBL.data.DefaultView;
+                    dv.Sort = "[HO errores SR] DESC";
+                    candBL.data = dv.ToTable();
+                    candBLGrid.WorkingData = candBL.data;
+
+                    CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
+                    dv = candOFF.data.DefaultView;
+                    dv.Sort = "[HO errores SR] DESC";
+                    candOFF.data = dv.ToTable();
+                    candOFFGrid.WorkingData = candOFF.data;
                 }
-                foreach(DataRow dataRow in R31.NotInExports())
+
+                if((bool)Is_PrevAnalysis_Enabled.IsChecked)
                 {
-                    colindancias.CheckColinsNotInExports(dataRow);
+
                 }
-                */
-
-                colindancias.AddENBID();
-                colinGrid.WorkingData = colindancias.data;
-
-                //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
-                CandidatesBL candBL = new CandidatesBL(colindancias);
-                candBLGrid.WorkingData = candBL.data;
-                CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
-                candOFFGrid.WorkingData = candOFF.data;
 
 #if DEBUG
                 globalWatch.Stop();
@@ -204,13 +261,13 @@ namespace ZOT.BLnOFF.GUI
             }
             catch(Exception ex)
             {
-                ZOTUtiles.ShowError("Algo ha ido mal e la ejecucion:\n\n " + ex.Message);
+                resources.ZOTlib.ShowError("Algo ha ido mal e la ejecucion:\n\n " + ex.Message);
             }
         }
-     }
+    }
 
     public class StringWorkArround
     {
-        public string lnBtsName { get; set; }
+        public string LnBtsName { get; set; }
     }
 }

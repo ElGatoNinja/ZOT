@@ -37,16 +37,22 @@ namespace ZOT.BLnOFF.Code
                     //Se guarda cada una de la lineas del Timing Advance cuyo LNCEL sea uno de los que el usuario quiere comprobar 
                     foreach (string lnBts in lnBtsInputs)
                     {
-                        if (aux[2].Equals(lnBts))
+                        try
                         {
-                            for (int i = 0; i < 75; i++) //hay que eliminar los ""
+                            if (aux[2].Equals(lnBts))
                             {
-                                if (aux[i].Equals(""))
-                                    aux[i] = "0";
+                                for (int i = 0; i < 75; i++) //hay que eliminar los ""
+                                {
+                                    if (aux[i].Equals(""))
+                                        aux[i] = "0";
+                                }
+                                data.Rows.Add(aux);
                             }
-                            data.Rows.Add(aux);
                         }
-
+                        catch (IndexOutOfRangeException iore)
+                        {
+                            //Error en el formato de entrada de una linea, por ejemplo que esté vacía, simplemente se ignora
+                        }
                     }
                 }
             }

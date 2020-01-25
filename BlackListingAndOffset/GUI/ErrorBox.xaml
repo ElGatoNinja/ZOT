@@ -12,8 +12,6 @@
     <Grid Margin="0,0,0,0">
 
         <TextBlock x:Name="ErrorTextBox" TextWrapping="Wrap"  Margin="134,10,9.6,0" Height="101" VerticalAlignment="Top"/>
-        <Image Source="/GUI/Assets/Warning.png" HorizontalAlignment="Left" Height="78" Margin="28,23,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.464,0.523"/>
-
 
     </Grid>
 </Controls:MetroWindow>

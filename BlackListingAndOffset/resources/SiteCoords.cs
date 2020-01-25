@@ -33,7 +33,7 @@ namespace ZOT.resources
             }
             catch(FileNotFoundException)
             {
-                ZOTUtiles.ShowError("No se encuentra sitecoords");
+                ZOTlib.ShowError("No se encuentra sitecoords");
             }
         }
 

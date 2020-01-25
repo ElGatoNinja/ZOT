@@ -69,11 +69,11 @@ namespace ZOT.BLnOFF.Code
                 }
                 catch (InvalidOperationException ioe)
                 {
-                    ZOTUtiles.ShowError("Instala Microsoft database 2010 redistributable compatible con tu version de office.");
+                    resources.ZOTlib.ShowError("Instala Microsoft database 2010 redistributable compatible con tu version de office.");
                 }
                 catch (Exception e)
                 {
-                    ZOTUtiles.ShowError("Fallo en la consulta de la base de datos. \n Mensaje de error: " + e.Message);
+                    resources.ZOTlib.ShowError("Fallo en la consulta de la base de datos. \n Mensaje de error: " + e.Message);
                 }
             }
         }    

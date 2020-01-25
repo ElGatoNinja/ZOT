@@ -43,11 +43,11 @@ namespace ZOT.BLnOFF.Code
             }
             catch(FileNotFoundException)
             {
-                ZOTUtiles.ShowError("No se ha podido encontrar el fichero: " + path);
+                resources.ZOTlib.ShowError("No se ha podido encontrar el fichero: " + path);
             }
             catch(Exception e)
             {
-                ZOTUtiles.ShowError("Algo ha salido mal en el procesado de la consulta RSLTE31. Error: " + e.Message);
+                resources.ZOTlib.ShowError("Algo ha salido mal en el procesado de la consulta RSLTE31. Error: " + e.Message);
             }
             inExports = new bool[data.Rows.Count];
         }

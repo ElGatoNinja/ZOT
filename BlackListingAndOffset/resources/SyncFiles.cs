@@ -44,7 +44,7 @@ namespace ZOT.resources
             }
             catch (FileNotFoundException)
             {
-                ZOTUtiles.ShowError("No se encuentra el fichero con las credenciales del servidor");
+                ZOTlib.ShowError("No se encuentra el fichero con las credenciales del servidor");
             }
         }
         /// <summary>

@@ -10,8 +10,8 @@ namespace ZOT.BLnOFF.Code
     class CandidatesOFF
     {
         public DataTable data;
-        private readonly string[] colNames = { "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR", "Num colindancias", "Cols ya en OFF", "Cols disp OFF", "SelectedOFF", "CandidataBL" };
-        private readonly System.Type[] colType = { typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double), typeof(double), typeof(int), typeof(int), typeof(int), typeof(bool), typeof(bool) };
+        private readonly string[] colNames = { "SelectedOFF", "CandidataBL","Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR", "Num colindancias", "Cols ya en OFF", "Cols disp OFF"};
+        private readonly System.Type[] colType = { typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double), typeof(double), typeof(int), typeof(int), typeof(int)};
 
         public CandidatesOFF(TimingAdvance TA, Colindancias colin,CandidatesBL candBL)
         {
@@ -45,7 +45,7 @@ namespace ZOT.BLnOFF.Code
                     if (criteria2 < maxDispOFF)
                         maxDispOFF = criteria2;
 
-                    object[] candidateRow = new object[16] { row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInOFF, maxDispOFF };
+                    object[] candidateRow = new object[18] {false, false, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInOFF, maxDispOFF };
                     data.Rows.Add(candidateRow);
                 }
 

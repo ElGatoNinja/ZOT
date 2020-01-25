@@ -63,9 +63,9 @@ namespace ZOT.BLnOFF.Code
                         dist = siteCoords.Distance(site1, site2);
                         if (dist > 0.01)
                         {
-                            ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Att"], out HOatem);
-                            ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: SR"], out HOsucc);
-                            ZOTUtiles.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Att"], out HOatem);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Inter eNB neighbor HO: SR"], out HOsucc);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
 
                             if (exportRow["x2LinkStatus"] != DBNull.Value)
                                 interfaceX2 = (int)exportRow["x2LinkStatus"];
@@ -74,9 +74,9 @@ namespace ZOT.BLnOFF.Code
                         }
                         else //si la distancia es 0, el site coincide y por tanto los KPI relevantes son intra en vez de inter.
                         {
-                            ZOTUtiles.Conversion.ToDouble((string)match["Intra eNB neighbor HO: Att"], out HOatem);
-                            ZOTUtiles.Conversion.ToDouble((string)match["Intra eNB neighbor HO: SR"], out HOsucc);
-                            ZOTUtiles.Conversion.ToDouble((string)match["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Intra eNB neighbor HO: Att"], out HOatem);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Intra eNB neighbor HO: SR"], out HOsucc);
+                            resources.ZOTlib.Conversion.ToDouble((string)match["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
                             interfaceX2 = 1;
                         }
 
@@ -136,15 +136,15 @@ namespace ZOT.BLnOFF.Code
                 dist = siteCoords.Distance(site1, site2);
                 if (dist > 0.01)
                 {
-                    ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
-                    ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
-                    ZOTUtiles.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
                 }
                 else //si la distancia es 0, el site coincide y por tanto los KPI relevantes son intra en vez de inter.
                 {
-                    ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Att"], out HOatem);
-                    ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: SR"], out HOsucc);
-                    ZOTUtiles.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Att"], out HOatem);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: SR"], out HOsucc);
+                    resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
                 }
                 aux1 = line.Field<String>("Source LNCEL name").Split('_');
                 aux2 = line.Field<String>("Target LNCEL name").Split('_');

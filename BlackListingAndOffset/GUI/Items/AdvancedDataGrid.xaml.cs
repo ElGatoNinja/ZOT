@@ -11,11 +11,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ZOT.resources;
 using ZOT.resources;
 using System.ComponentModel;
 
@@ -28,6 +28,7 @@ namespace ZOT.GUI.Items
     {
         private DataTable _workingData;
         ObservableCollection<FilterListItem>[] filterLists = null;
+        DataGridSortOrder LastSortOrder = new DataGridSortOrder(); 
         ObservableCollection<FilterListItem> backUpFilterList = null;
         public AdvancedDataGridFlags Flags { get; }
         private DataGridCell _selectedCell;
@@ -54,6 +55,11 @@ namespace ZOT.GUI.Items
                 ItemsSource = value.DefaultView;
                 _workingData = value;
                 filterLists = null;
+                LastSortOrder = new DataGridSortOrder();
+                backUpFilterList = null;
+                Flags.ResetState();
+                _selectedCell = null;
+                temporalListBoxContainer = new List<ListBox>();
             }
         }
 
@@ -63,10 +69,32 @@ namespace ZOT.GUI.Items
         }
 
         //crea bindings en runtime, esto es necesario porque los filtros se crean dinamicamente tras vincular el dataset y saber cuantas columnas tiene
-        private void Filter_Initialized_From_Template(object sender,EventArgs e)
+        private void FilterList_Initialized_From_Template(object sender,EventArgs e)
         {
             if (((ListBox)sender).DataContext.GetType() == typeof(string))
+            {
                 temporalListBoxContainer.Add((ListBox)sender);
+            }
+        }
+
+        //cada vez que se filtra, se reinician las columnas y por tanto los filtros, hay que comprobar si esta columna esta filtrada
+        //Y cambiar el simbolo del filtro para que el usuario lo sepa
+        private void FilterBtn_Initialized_From_Template(object sender, EventArgs e)
+        {
+            try
+            {
+                int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
+                if (FilterLists[index].All(item => item.NotFiltered))
+                {
+                    ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Filter;
+                }
+                else
+                {
+                    ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.FilterMenu;
+                }
+            }
+            catch (NullReferenceException){ /*Si se inicializa una datagrid vacia, comportamiento habitual*/ }
+
         }
 
         //cuando todos los datos estan cargados se meten en los filtros con el formato adecuado
@@ -108,6 +136,7 @@ namespace ZOT.GUI.Items
         }
         #endregion
 
+        //==============================================================================================================================
         #region COLUMN FILTER EVENTS
 
 
@@ -158,6 +187,12 @@ namespace ZOT.GUI.Items
                                 })
                                 .Any(condition => condition.Name == row[col].ToString())));
 
+            //se ordena por la ultima columna ordenada
+            if (LastSortOrder.order == ListSortDirection.Ascending)
+                matches = matches.OrderBy(item => item[LastSortOrder.column]);
+            else if (LastSortOrder.order == ListSortDirection.Descending)
+                matches = matches.OrderByDescending(item => item[LastSortOrder.column]);
+
             ItemsSource = matches.AsDataView();
             backUpFilterList = null;
             temporalListBoxContainer = new List<ListBox>(); //Al reasignar ItemsSource los filtros desplegables se joden, misterios de la naturaleza
@@ -200,11 +235,29 @@ namespace ZOT.GUI.Items
             backUpFilterList = null;
             if(sender is Button)
             {
-                ((Popup)((Grid)((Button)sender).Parent).Parent).IsOpen = false;
+                ZOTlib.WPFForms.FindParent<Popup>((Button)sender).IsOpen = false;
             }
+        }
+
+        private void Column_Sorted(object sender, DataGridSortingEventArgs e)
+        {
+            switch(e.Column.SortDirection)
+            {
+                case ListSortDirection.Ascending:
+                    LastSortOrder.order = ListSortDirection.Descending;
+                    break;
+                case ListSortDirection.Descending:
+                    LastSortOrder.order = ListSortDirection.Ascending;
+                    break;
+                default:
+                    LastSortOrder.order = ListSortDirection.Ascending;
+                    break;
+            }
+            LastSortOrder.column = e.Column.DisplayIndex;
         }
         #endregion
 
+        //================================================================================================================
         #region EDITION EVENTS
         private void Selected_Cells_Changed(object sender, SelectedCellsChangedEventArgs e)
         {
@@ -264,7 +317,7 @@ namespace ZOT.GUI.Items
                 }
 
                 //si solo había una copia del valor original en toda la tabla, es decir, que ya no hay, se elimina del filtro
-                if (_workingData.AsEnumerable().Select(item => item.ItemArray[e.Column.DisplayIndex] == originalValue).Count() > 1)
+                if (_workingData.AsEnumerable().Select(item => item.ItemArray[e.Column.DisplayIndex].ToString() == originalValue).Count() > 1)
                 {
                     filterLists[e.Column.DisplayIndex].Remove(filterLists[e.Column.DisplayIndex].Where(item => item.Name == originalValue).Single());
                 }
@@ -276,6 +329,10 @@ namespace ZOT.GUI.Items
             if (Flags.MultiEdit)
             {
                 this._selectedCell = (DataGridCell)sender;
+            }
+            else if(((DataGridCell)sender).Content is CheckBox) //solo 1 click para cambiar las cell con checkbox de true a false
+            {
+                ((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex] = !(bool)((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex];
             }
         }
 
@@ -311,6 +368,9 @@ namespace ZOT.GUI.Items
         }
     }
 
+    //====================================================================================================================================
+    #region HELPER CLASSES
+    
     /// <summary>
     /// La clase que se usa dentro de la interfaz desplegable del filtro
     /// </summary>
@@ -365,6 +425,13 @@ namespace ZOT.GUI.Items
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Reinicia las flags para cargar nuevos datos
+        /// </summary>
+        public void ResetState()
+        {
+            MultiEdit = false;
+        }
         public void OnPropertyChanged(string propertyname)
         {
             if (PropertyChanged != null)
@@ -393,26 +460,28 @@ namespace ZOT.GUI.Items
             }
         }
     }
-
-    public class FilterConverter : IMultiValueConverter
+    class DataGridSortOrder
     {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public ListSortDirection? order = null;
+        public int column;
+    }
+
+    /// <summary>
+    /// Se trata de un Conversor definido para permitir a la interfaz determinar si la columna está filtrada o no, y así mostrar un icono distinto
+    /// </summary>
+    public class FilteredToIconConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            DataGridRow targetObject = values[0] as DataGridRow;
-            if (targetObject == null)
-            {
-                int index = targetObject.GetIndex();
-                if (((List<WPFBool>)values[1])[index].Value == true)
-                {
-                    return true;
-                }
-            }
-            return false;
+            int index = ((DataGridColumnHeader)((MahApps.Metro.IconPacks.PackIconMaterial)value).TemplatedParent).Column.DisplayIndex;
+            return !((AdvancedDataGrid)parameter).FilterLists[index].Any(item => item.NotFiltered);
         }
 
-        public object[] ConvertBack(object values, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+
+    #endregion
 }

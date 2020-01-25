@@ -12,8 +12,8 @@ namespace ZOT.BLnOFF.Code
     class CandidatesBL 
     {
         public DataTable data;
-        private readonly string[] colNames = { "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR","Num colindancias","Cols ya en BL","Cols disp BL","SelectedBL"};
-        private readonly System.Type[] colType = { typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double),typeof(double), typeof(int), typeof(int), typeof(int),typeof(bool)};
+        private readonly string[] colNames = {"SelectedBL", "Label", "ENBID SOURCE", "LnCell SOURCE", "Name SOURCE", "ENBID TARGET", "LnCell TARGET", "Name TARGET", "Distance", "HO Success(%)", "Offset", "HO Attempts", "Blacklist", "HO errores SR","Num colindancias","Cols ya en BL","Cols disp BL"};
+        private readonly System.Type[] colType = { typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string), typeof(string), typeof(int), typeof(string), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double),typeof(double), typeof(int), typeof(int), typeof(int)};
 
         public CandidatesBL(Colindancias colin)
         {
@@ -47,7 +47,7 @@ namespace ZOT.BLnOFF.Code
                     if (criteria2 < maxDispBL)
                         maxDispBL = criteria2;
 
-                    object[] candidateRow = new object[16] { row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInBL, maxDispBL };
+                    object[] candidateRow = new object[17] {false, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInBL, maxDispBL };
                     data.Rows.Add(candidateRow);
                 }
             }
