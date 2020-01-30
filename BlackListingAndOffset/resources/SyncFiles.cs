@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WinSCP;
 using System.IO;
 using System.Collections;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.resources
 {
@@ -44,7 +45,7 @@ namespace ZOT.resources
             }
             catch (FileNotFoundException)
             {
-                ZOTlib.ShowError("No se encuentra el fichero con las credenciales del servidor");
+                WPFForms.ShowError("No se encuentra el fichero con las credenciales del servidor");
             }
         }
         /// <summary>

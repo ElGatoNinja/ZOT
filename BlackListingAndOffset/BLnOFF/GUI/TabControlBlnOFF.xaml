@@ -34,20 +34,20 @@
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="400"/>
-                        <ColumnDefinition Width="103*"/>
+                        <ColumnDefinition Width="650"/>
                         <ColumnDefinition Width="96*"/>
                     </Grid.ColumnDefinitions>
 
                     <Label Content="BlackLisintg And Offset" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="54,54,0,0" FontWeight="Bold" FontSize="16" Height="32" Width="186"/>
                     <Controls:ToggleSwitch x:Name="Is_BlnOFF_Enabled" IsChecked="True" OnLabel="On" OffLabel="Off" Grid.Column="1" Width="100" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="64,88,0,0" />
-                    <TextBox x:Name="RSLTE31_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,151,0,0" TextWrapping="Wrap" Text="D:\R31.csv" VerticalAlignment="Top" Width="380" MaxLines="1" Grid.Column="1"/>
-                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,146,3.4,0" VerticalAlignment="Top" Width="103" Click="R31_Click" Grid.Column="1" Height="34.7" Style="{DynamicResource MetroFlatButton}"/>
-                    <TextBox x:Name="TA_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,212,0,0" TextWrapping="Wrap" Text="D:\TA.csv" VerticalAlignment="Top" Width="380" Grid.Column="1"/>
-                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,206,3.4,0" VerticalAlignment="Top" Width="103" Click="TA_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
-                    <TextBox x:Name="FL18_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,340,0,0" TextWrapping="Wrap" Text="D:\SRAN.mdb" VerticalAlignment="Top" Width="380" Grid.Column="1"/>
-                    <Button Content="Examinar"  IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,271,3.4,0" VerticalAlignment="Top" Width="103" Click="SRAN_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
-                    <TextBox x:Name="SRAN_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}"  HorizontalAlignment="Left" Height="26" Margin="57,276,0,0" TextWrapping="Wrap" Text="D:\FL18.mdb" VerticalAlignment="Top" Width="380" Grid.Column="1"/>
-                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}"  HorizontalAlignment="Right" Margin="0,335,3.4,0" VerticalAlignment="Top" Width="103" Click="FL18_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
+                    <TextBox x:Name="RSLTE31_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,151,0,0" TextWrapping="Wrap" Text="D:\R31.csv" VerticalAlignment="Top" Width="443" MaxLines="1" Grid.Column="1"/>
+                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,146,20,0" VerticalAlignment="Top" Width="103" Click="R31_Click" Grid.Column="1" Height="34.7" Style="{DynamicResource MetroFlatButton}"/>
+                    <TextBox x:Name="TA_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,212,0,0" TextWrapping="Wrap" Text="D:\TA.csv" VerticalAlignment="Top" Width="443" Grid.Column="1"/>
+                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,206,20,0" VerticalAlignment="Top" Width="103" Click="TA_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
+                    <TextBox x:Name="FL18_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,340,0,0" TextWrapping="Wrap" Text="D:\SRAN.mdb" VerticalAlignment="Top" Width="443" Grid.Column="1"/>
+                    <Button Content="Examinar"  IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,271,20,0" VerticalAlignment="Top" Width="103" Click="SRAN_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
+                    <TextBox x:Name="SRAN_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}"  HorizontalAlignment="Left" Height="26" Margin="57,276,0,0" TextWrapping="Wrap" Text="D:\FL18.mdb" VerticalAlignment="Top" Width="443" Grid.Column="1"/>
+                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}"  HorizontalAlignment="Right" Margin="0,335,20,0" VerticalAlignment="Top" Width="103" Click="FL18_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
                     <Label Content="RSLTE31:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,128,0,0" VerticalAlignment="Top" Width="87" Height="23" Grid.Column="1"/>
                     <Label Content="Timing Advance:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,188,0,0" VerticalAlignment="Top" Width="107" Grid.Column="1" Height="26"/>
                     <Label Content="Export SRAN:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,254,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
@@ -55,12 +55,12 @@
 
                     <Label Content="Analisis Previo" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="54,436,0,0" FontWeight="Bold" FontSize="16" Height="32" Width="120"/>
                     <Controls:ToggleSwitch x:Name="Is_PrevAnalysis_Enabled" IsChecked="True" OnLabel="On" OffLabel="Off" Margin="64,473,0,0" Grid.Column="1" Width="100" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                    <TextBox x:Name="NIR_path" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,534,0,0" TextWrapping="Wrap" Text="D:\SRAN.mdb" VerticalAlignment="Top" Width="380" Grid.Column="1"/>
-                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Right" Margin="0,529,3.4,0" VerticalAlignment="Top" Width="103" Click="FL18_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
+                    <TextBox x:Name="NIR_path" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,534,0,0" TextWrapping="Wrap" Text="D:\NIR.csv" VerticalAlignment="Top" Width="443" Grid.Column="1"/>
+                    <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Right" Margin="0,529,20,0" VerticalAlignment="Top" Width="103" Click="NIR_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
                     <Label Content="NIR Completa:"  IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Left" Margin="57,513,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
 
-                    <Button Content="Iniciar" Grid.Column="1" HorizontalAlignment="Right" Height="35" Margin="0,681,0,0" VerticalAlignment="Top" Width="129" Click="Launch" Style="{DynamicResource AccentedSquareButtonStyle}"/>
-                    <Button Content="Editar Umbrales" Grid.Column="1" HorizontalAlignment="Right" Margin="0,681,150,0" VerticalAlignment="Top" Width="129" Height="35" Click="Constant_Editor" Style="{DynamicResource SquareButtonStyle}"/>
+                    <Button Content="Iniciar" Grid.Column="1" HorizontalAlignment="Right" Height="35" Margin="0,681,20,0" VerticalAlignment="Top" Width="129" Click="Launch" Style="{DynamicResource AccentedSquareButtonStyle}"/>
+                    <Button Content="Editar Umbrales" Grid.Column="1" HorizontalAlignment="Right" Margin="0,681,170,0" VerticalAlignment="Top" Width="129" Height="35" Click="Constant_Editor" Style="{DynamicResource SquareButtonStyle}"/>
 
                     <GroupBox Header="INPUT SITES" HorizontalAlignment="Left" Height="689" Margin="81,27,0,0" VerticalAlignment="Top" Width="232"/>
                     <DataGrid x:Name="lnBtsVisualGrid" HeadersVisibility="None" HorizontalAlignment="Left" Height="654" Margin="90,54,0,0" VerticalAlignment="Top" Width="213" AutoGenerateColumns="False" ColumnWidth="*">
@@ -70,7 +70,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Colindancias">
+            <TabItem Header="Colindancias" Visibility="Collapsed">
                 <Grid>
                     <Items:AdvancedDataGrid HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" x:Name="colinGrid" Style="{StaticResource AzureDataGrid}">
                         <DataGrid.RowStyle>
@@ -83,11 +83,9 @@
                             </Style>
                         </DataGrid.RowStyle>
                     </Items:AdvancedDataGrid>
-
-
                 </Grid>
             </TabItem>
-            <TabItem Header="Candidatas BL">
+            <TabItem Header="Candidatas BL" Visibility="Collapsed">
                 <Grid Margin="0,0,0.4,-2.4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.75*"></RowDefinition>
@@ -98,7 +96,7 @@
                     <TextBox x:Name="fileNameBL" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="50,11.6,0,0" TextWrapping="Wrap" Text="PlantillaBL.csv" VerticalAlignment="Top" Width="285"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Candidatas OFF">
+            <TabItem Header="Candidatas OFF" Visibility="Collapsed">
                 <Grid Margin="0,0,0.4,-2.4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.75*"></RowDefinition>
@@ -107,6 +105,11 @@
                     <Items:AdvancedDataGrid Grid.Row="0" HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" x:Name="candOFFGrid" RowStyle="{StaticResource OFFDatastyle}" Style="{StaticResource AzureDataGrid}"/>
                     <Button Grid.Row="1" Content="guardar" HorizontalAlignment="Right" Margin="0,10.2,30,10.2" VerticalAlignment="Center" Width="139" Height="30" Click="OFF_template_gen" Style="{DynamicResource SquareButtonStyle}"/>
                     <TextBox x:Name="fileNameOFF" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="50,11.6,0,0" TextWrapping="Wrap" Text="PlantillaOFF.csv" VerticalAlignment="Top" Width="285"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Errores" Visibility="Collapsed">
+                <Grid Margin="0,0,0.4,-2.4">
+                    <Items:AdvancedDataGrid Grid.Row="0" HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" x:Name="errGrid" RowStyle="{StaticResource OFFDatastyle}" Style="{StaticResource AzureDataGrid}"/>
                 </Grid>
             </TabItem>
 

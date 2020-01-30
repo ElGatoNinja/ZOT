@@ -193,6 +193,7 @@
     <Compile Include="BLnOFF\Code\CandidatesBL.cs" />
     <Compile Include="BLnOFF\Code\CandidatesOFF.cs" />
     <Compile Include="BLnOFF\Code\CONSTANTS.cs" />
+    <Compile Include="BLnOFF\Code\NIR48H.cs" />
     <Compile Include="BLnOFF\GUI\TabControlBlnOFF.xaml.cs">
       <DependentUpon>TabControlBlnOFF.xaml</DependentUpon>
     </Compile>

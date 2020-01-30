@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Editor de Constantes y Umbrales" Height="450" Width="800">
     <Grid>
-        <GroupBox Header="Black List" HorizontalAlignment="Left" Height="180" Margin="30,18,0,0" VerticalAlignment="Top" Width="519"/>
+        <GroupBox Header="Black List" HorizontalAlignment="Left" Height="188" Margin="30,10,0,0" VerticalAlignment="Top" Width="519"/>
 
         <Label Content="L1800" HorizontalAlignment="Left" Margin="223,38,0,0" VerticalAlignment="Top"/>
         <Label Content="L800" HorizontalAlignment="Left" Margin="290,38,0,0" VerticalAlignment="Top"/>
@@ -35,7 +35,7 @@
         <TextBox x:Name="BL_MAX_ABS_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,119,0,0"/>
         <TextBox x:Name="BL_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,119,0,0"/>
 
-        <GroupBox Header="Offset" HorizontalAlignment="Left" Height="180" Margin="30,214,0,0" VerticalAlignment="Top" Width="519"/>
+        <GroupBox Header="Offset" HorizontalAlignment="Left" Height="191" Margin="30,203,0,0" VerticalAlignment="Top" Width="519"/>
 
         <Label Content="L1800" HorizontalAlignment="Left" Margin="223,231,0,0" VerticalAlignment="Top"/>
         <Label Content="L800" HorizontalAlignment="Left" Margin="290,231,0,0" VerticalAlignment="Top"/>
@@ -58,7 +58,7 @@
         <TextBox x:Name="OFF_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,283,0,0"/>
         <Label Content="Percentil para rango de celda:" HorizontalAlignment="Left" Margin="42,327,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
         <TextBox x:Name="OFF_PERCENTILE_CELL_RANGE" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,328,0,0"/>
-        <GroupBox Header="Objetivo Umbral HO Inter" HorizontalAlignment="Left" Height="175" Margin="583,22,0,0" VerticalAlignment="Top" Width="189"/>
+        <GroupBox Header="Objetivo Umbral HO Inter" HorizontalAlignment="Left" Height="187" Margin="583,10,0,0" VerticalAlignment="Top" Width="189"/>
         <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,50,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
         <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,77,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
         <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,104,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
@@ -67,7 +67,7 @@
         <TextBox x:Name="U_INTER_PER_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,79,0,0"/>
         <TextBox x:Name="U_INTER_PER_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,106,0,0"/>
         <TextBox x:Name="U_INTER_PER_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,133,0,0"/>
-        <GroupBox Header="Objetivo Umbral HO Inter" HorizontalAlignment="Left" Height="165" Margin="583,202,0,0" VerticalAlignment="Top" Width="189"/>
+        <GroupBox Header="Objetivo Umbral HO Intra" HorizontalAlignment="Left" Height="165" Margin="583,202,0,0" VerticalAlignment="Top" Width="189"/>
         <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,228,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
         <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,253,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
         <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,280,0,0" VerticalAlignment="Top" Width="71" Height="27"/>

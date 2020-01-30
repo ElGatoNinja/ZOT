@@ -24,7 +24,7 @@ namespace ZOT.BLnOFF.Code
             foreach (DataRow row in colin.data.Rows)
             {
                 int tech_num = row.Field<int>("LnCell SOURCE") % 10; //siendo las unidades el numero de LTE (decenas el sector) 
-                if ((double)row["Distance"] >= TA.radioLines.Select("[LNCELL] = '" + (string)row["Name SOURCE"] + "'")[0].Field<double>("RADIO") && (row["HO Success(%)"] != DBNull.Value) && (double)row["HO Success(%)"] < CONSTANTS.OFF.MIN_SUCCESS_HANDOVER)
+                if (row["Distance"] != DBNull.Value && (double)row["Distance"] >= TA.radioLines.Select("[LNCELL] = '" + (string)row["Name SOURCE"] + "'")[0].Field<double>("RADIO") && (row["HO Success(%)"] != DBNull.Value) && (double)row["HO Success(%)"] < CONSTANTS.OFF.MIN_SUCCESS_HANDOVER)
                 {
                     //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco, si hiciera falta)
                     int num_colin = 0;

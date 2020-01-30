@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using System.Xml;
 using MahApps.Metro.Controls;
 using ZOT.resources;
+using ZOT.resources.ZOTlib;
+
 namespace ZOT.BLnOFF.GUI
 { 
     /// <summary>

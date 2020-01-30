@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using ZOT.resources;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -69,11 +70,11 @@ namespace ZOT.BLnOFF.Code
                 }
                 catch (InvalidOperationException ioe)
                 {
-                    resources.ZOTlib.ShowError("Instala Microsoft database 2010 redistributable compatible con tu version de office.");
+                    WPFForms.ShowError("Instala Microsoft database 2010 redistributable compatible con tu version de office.");
                 }
                 catch (Exception e)
                 {
-                    resources.ZOTlib.ShowError("Fallo en la consulta de la base de datos. \n Mensaje de error: " + e.Message);
+                    WPFForms.ShowError("Fallo en la consulta de la base de datos. \n Mensaje de error: " + e.Message);
                 }
             }
         }    

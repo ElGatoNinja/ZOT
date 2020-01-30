@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using ZOT.resources;
 using ZOT.resources;
 using System.ComponentModel;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.GUI.Items
 {
@@ -235,7 +236,7 @@ namespace ZOT.GUI.Items
             backUpFilterList = null;
             if(sender is Button)
             {
-                ZOTlib.WPFForms.FindParent<Popup>((Button)sender).IsOpen = false;
+                WPFForms.FindParent<Popup>((Button)sender).IsOpen = false;
             }
         }
 

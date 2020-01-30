@@ -12,9 +12,9 @@ using System.Windows.Media;
 
 namespace ZOT.resources
 {
-    public static class ZOTlib
+    namespace ZOTlib
     {
-        public static class Files
+        public static class ZOTFiles
         {
             /// <summary>
             /// Llama al explorador de windows para buscar archivos
@@ -73,17 +73,7 @@ namespace ZOT.resources
                 }
             }
         }
-        
-
-        /// <summary>
-        /// Lanza un mensaje de error emergente que interrumpe la ejecucion hasta que se cierre
-        /// </summary>
-        /// <param name="error">Texto que debe mostrar el error</param>
-        public static void ShowError(string error)
-        {
-            GUI.ErrorBox err = new GUI.ErrorBox(error);
-            err.ShowDialog();
-        }
+       
 
         /// <summary>
         /// Versiones alternativas de conversiones de datos adaptadas a las necesidades de los rarisimos inputs de esta empresa
@@ -134,17 +124,67 @@ namespace ZOT.resources
                 } while (item != null);
                 return null;
             }
+
+            /// <summary>
+            /// Lanza un mensaje de error emergente que interrumpe la ejecucion hasta que se cierre
+            /// </summary>
+            /// <param name="error">Texto que debe mostrar el error</param>
+            public static void ShowError(string error)
+            {
+                GUI.ErrorBox err = new GUI.ErrorBox(error);
+                err.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// referencias constantes a los numeros de cada tecnologia de LTE, para hacer el código mas legible 
+        /// y metodos utiles para usarlas
+        /// </summary>
+        public static class TECH_NUM
+        {
+            public const byte L1800 = 0;
+            public const byte L800 = 1;
+            public const byte L2600 = 2;
+            public const byte L900 = 3;
+            public const byte L2100 = 4;
+
+            /// <summary>
+            /// Extrae la tecnología de los ultimos 3 numeros del LNCEL
+            /// </summary>
+            /// <param name="LNCELname">El LNCEL que del que se quiere extraer la tecnología</param>
+            /// <returns></returns>
+            public static byte GetTechFromLNCEL(string LNCELname)
+            {
+                string[] aux = LNCELname.Split('_');
+                return (byte)(Convert.ToInt32(aux[aux.Length - 1]) % 10);
+            }
+
+            /// <summary>
+            /// Retorna el nombre de la tecnología de 4G correspondiente
+            /// </summary>
+            /// <param name="techNum">Numero de la tecnología</param>
+            /// <returns></returns>
+            public static string GetName(byte techNum)
+            {
+                switch(techNum)
+                {
+                    case 0:
+                        return "L1800";
+                    case 1:
+                        return "L800";
+                    case 2:
+                        return "L2600";
+                    case 3:
+                        return "L900";
+                    case 4:
+                        return "L2100";
+                    default:
+                        return "error";
+                }
+            }
         }
     }
 
-    //referencias constantes a los numeros de cada tecnologia de LTE, para hacer el código mas legible
-    public static class TECH_NUM
-    {
-        public const byte L1800 = 0;
-        public const byte L800 = 1;
-        public const byte L2600 = 2;
-        public const byte L900 = 3;
-        public const byte L2100 = 4;
+    
 
-    }
 }

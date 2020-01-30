@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Data;
 using ZOT.resources;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -43,11 +44,7 @@ namespace ZOT.BLnOFF.Code
             }
             catch(FileNotFoundException)
             {
-                resources.ZOTlib.ShowError("No se ha podido encontrar el fichero: " + path);
-            }
-            catch(Exception e)
-            {
-                resources.ZOTlib.ShowError("Algo ha salido mal en el procesado de la consulta RSLTE31. Error: " + e.Message);
+                WPFForms.ShowError("No se ha podido encontrar el fichero: " + path);
             }
             inExports = new bool[data.Rows.Count];
         }
