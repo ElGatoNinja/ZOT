@@ -34,6 +34,15 @@ namespace ZOT.BLnOFF.Code
                             {
                                 if (aux[3].Equals(lnBts))
                                 {
+                                    if(aux[7] == "") //Taget desconocido
+                                    {
+                                        int eci_id = Convert.ToInt32(aux[14]);
+                                        int cell_id = eci_id & 0b1111_1111;
+                                        int enb_id = (eci_id - cell_id) >> 8;
+
+                                        aux[11] = cell_id.ToString();
+                                        aux[8] = enb_id.ToString();
+                                    }
                                     data.Rows.Add(aux);
                                     break;
                                 }

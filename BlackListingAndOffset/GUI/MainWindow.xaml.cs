@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using ZOT.GUI.Items;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.GUI
 {
@@ -22,10 +24,14 @@ namespace ZOT.GUI
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private List<UserControl> Tools = new List<UserControl>();
+        private List<IZotApp> Tools = new List<IZotApp>();
+        private Grid _grid;
+
+        public Grid Grid { get { return _grid; } }
         public MainWindow()
         { 
             InitializeComponent();
+            _grid = toolBar;
             toolsMenuFlyout.IsOpen = false;
         }
 
@@ -41,38 +47,61 @@ namespace ZOT.GUI
 
         //Evento generado al hacer click en una de las herramientas ya instanciadas de la barra
         //Vuelve a renderizarla en pantalla
-        private void ReOpen_App_FromToolBar(object sender, RoutedEventArgs e)
+        public void ReOpen_App_FromToolBar(object sender, RoutedEventArgs e)
         {
-            int index = Grid.GetRow((Tile)sender);
+            int index = Grid.GetRow(WPFForms.FindParent<NavBarTile>((Tile)sender));
             visibleTool.Content = Tools[index];
             visibleTool.Visibility = Visibility.Visible;
             toolsMenuFlyout.IsOpen = false;
         }
 
+        public void RemoveApp(IZotApp app)
+        {
+            visibleTool.Content = null;
+            visibleTool.Visibility = Visibility.Collapsed;
+            Tools.Remove(app);
+        }
         private void Launch_BLnOFF(object sender, RoutedEventArgs e)
         {
-            var BLnOFFApp = new ZOT.BLnOFF.GUI.TabControlBLnOFF();
-            visibleTool.Content = BLnOFFApp;
+            StartApp(new ZOT.BLnOFF.GUI.TabControlBLnOFF());
+        }
+        private void StartApp(IZotApp app)
+        {
+            IZotApp zotApp = app;
+            visibleTool.Content = app;
 
-            Tools.Add(BLnOFFApp); //La ventana tiene que mantener la referencia de todas las herramientas abiertas
+            Tools.Add(zotApp); //La ventana tiene que mantener la referencia de todas las herramientas abiertas
 
             // Mostrar en la barra de tareas
-            var toolTile = new Tile();
-            toolTile.Title = "BlackListing y Offset";
-            toolTile.HorizontalTitleAlignment = HorizontalAlignment.Stretch;
-            toolTile.Width = Double.NaN; //auto
-            toolTile.Height = 100;
-            toolTile.Click += new RoutedEventHandler(ReOpen_App_FromToolBar);
-            toolTile.VerticalAlignment = VerticalAlignment.Top;
+            var toolTile = new NavBarTile(this, app)
+            {
+                Width = Double.NaN, //auto
+                Height = 100,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 100 * toolBar.Children.Count, 0, 0)
 
-            var rowDef = new RowDefinition();
-            rowDef.Height = new GridLength(100);
-            toolBar.RowDefinitions.Add(rowDef);
+        };
+            //var rowDef = new RowDefinition();
+            //rowDef.Height = new GridLength(100);
+            //toolBar.RowDefinitions.Add(rowDef);
             toolBar.Children.Add(toolTile);
-            Grid.SetRow(toolTile, toolBar.RowDefinitions.Count - 1);
-
+            //Grid.SetRow(toolTile, toolBar.RowDefinitions.Count - 1);
  
             visibleTool.Visibility = Visibility.Visible;
         }
+    }
+
+    /// <summary>
+    /// Las herramientas que implementen esta interfaz podrán usar el launcher y sus elementos
+    /// </summary>
+    public interface IZotApp
+    {
+        /// <summary>
+        /// El nombre de la aplicacion que el launcher debe mostrar
+        /// </summary>
+        string AppName { get; }
+
+        bool Notify { get; set; }
+
     }
 }

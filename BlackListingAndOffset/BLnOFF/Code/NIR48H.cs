@@ -113,10 +113,15 @@ namespace ZOT.BLnOFF.Code
                 do
                 {
                     byte tech = TECH_NUM.GetTechFromLNCEL((string)data.Rows[i]["LNCEL name"]);
-                    currentData[tech, 0] += (double)data.Rows[i]["Inter X2 based HO prep"];
-                    currentData[tech, 1] += (double)data.Rows[i]["Exitos HO INTER"];
-                    currentData[tech, 2] += (double)data.Rows[i]["Intra HO Att"];
-                    currentData[tech, 3] += (double)data.Rows[i]["Exitos HO INTRA"];
+                    if(data.Rows[i]["Inter X2 based HO prep"] != DBNull.Value)
+                        currentData[tech, 0] += (double)data.Rows[i]["Inter X2 based HO prep"];
+                    if(data.Rows[i]["Exitos HO INTER"] != DBNull.Value) 
+                        currentData[tech, 1] += (double)data.Rows[i]["Exitos HO INTER"];
+                    if(data.Rows[i]["Intra HO Att"] != DBNull.Value)
+                        currentData[tech, 2] += (double)data.Rows[i]["Intra HO Att"];
+                    if(data.Rows[i]["Exitos HO INTRA"] != DBNull.Value)
+                        currentData[tech, 3] += (double)data.Rows[i]["Exitos HO INTRA"];
+                    
                     i++;
 
                 } while (i < data.Rows.Count && (string)data.Rows[i]["PERIOD_START_TIME"] == (string)data.Rows[i - 1]["PERIOD_START_TIME"] && (string)data.Rows[i]["LNBTS name"] == (string)data.Rows[i - 1]["LNBTS name"]);

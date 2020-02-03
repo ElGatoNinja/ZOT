@@ -209,6 +209,9 @@
     <Compile Include="GUI\Items\AdvancedDataGrid.xaml.cs">
       <DependentUpon>AdvancedDataGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Items\NavBarTile.xaml.cs">
+      <DependentUpon>NavBarTile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="resources\SyncFiles.cs" />
     <Compile Include="resources\ZOTlib.cs" />
     <Compile Include="resources\SiteCoords.cs" />
@@ -221,6 +224,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GUI\Items\AdvancedDataGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\Items\NavBarTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

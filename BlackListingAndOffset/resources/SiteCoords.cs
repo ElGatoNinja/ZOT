@@ -44,9 +44,14 @@ namespace ZOT.resources
             DataRow[] site1data = data.Select("SiteID = " + site1);
             DataRow[] site2data = data.Select("SiteID = " + site2 );
             
-            if (site1data.Length == 0 || site2data.Length == 0)
+            if (site1data.Length == 0)
             {
                 errorLog += "No se encuentra el emplazamiento: " + site1 +"\n";
+                return null;
+            }
+            else if(site2data.Length == 0)
+            {
+                errorLog += "No se encuentra el emplazamiento: " + site2 + "\n";
                 return null;
             }
 

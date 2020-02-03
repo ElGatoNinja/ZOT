@@ -11,15 +11,28 @@ using System.Windows.Controls;
 using ZOT.resources;
 using ZOT.BLnOFF.Code;
 using ZOT.resources.ZOTlib;
+using ZOT.GUI;
 using System.Threading;
 using System.ComponentModel;
 
 namespace ZOT.BLnOFF.GUI
 {
     //Todo el flujo de la herramienta se controla desde esta clase
-    public partial class TabControlBLnOFF : UserControl
+    public partial class TabControlBLnOFF : UserControl ,IZotApp
     {
         private List<StringWorkArround> lnBtsInputGrid;
+
+        #region IZOTAPP
+        public string AppName
+        {
+            get { return "BlackListing And Offset"; }
+        }
+        public bool Notify
+        {
+            get { return false; }
+            set { value = false; }
+        }
+        #endregion
 
         public TabControlBLnOFF()
         {
@@ -187,8 +200,7 @@ namespace ZOT.BLnOFF.GUI
         {
             //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
             //"ENB_PO_SAN_VICENTE_EB_01", "ENB_AV_BURGOHONDO_01" ->prueba
-            //prueba_ 2 -> ENB_CA_BENALUP_EB_01, ENB_GR_ZAFARRAYA_01, ENB_J_JODAR_ALMAZARA_01, ENB_SE_SUPRANORTE_01 
-            //PRUEBA_3 -> ENB_PO_VIGO_FLORIDA_01, ENB_LE_VALLENON_ER_01
+            //prueba cris -> ENB_AV_BLASCOSANCHO_01 ENB_LE_VILLACEID_01 ENB_LU_GUITIRIZ_VILLARES_01 ENB_O_AVILES_EL_MUELLE_01 ENB_O_AVILES_EL_MUELLE_02 ENB_PO_POIO_CACHAROLA_01 ENB_PO_MORANA_AMIL_01 ENB_LU_GUTRIZ_VILLARES_01
 
             String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;

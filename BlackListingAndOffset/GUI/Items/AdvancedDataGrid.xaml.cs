@@ -363,7 +363,6 @@ namespace ZOT.GUI.Items
                     e.Handled = true;
                     Flags.MultiEdit = false;
                     this.SelectionUnit = (DataGridSelectionUnit)(((int)this.SelectionUnit + 1) % 2);
-                    this.ClipboardCopyMode = (DataGridClipboardCopyMode)(((int)this.ClipboardCopyMode) % 2 + 1);
                 }
             }
         }

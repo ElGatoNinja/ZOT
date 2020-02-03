@@ -16,7 +16,8 @@
           PreviewMouseUp="MouseUp_dataGrid"
           CellEditEnding="Cell_Edited"
           CanUserAddRows="False"
-          ClipboardCopyMode="ExcludeHeader"
+          ClipboardCopyMode="IncludeHeader"
+          CanUserResizeColumns="True"
           Sorting="Column_Sorted"
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>

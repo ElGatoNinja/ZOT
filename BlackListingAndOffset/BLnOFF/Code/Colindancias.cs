@@ -173,11 +173,14 @@ namespace ZOT.BLnOFF.Code
             }
             catch (ArgumentNullException ane)
             {
-                Console.WriteLine("Error en la busqueda de corrdenadas just in R31");
+                Console.WriteLine("Error en la busqueda de corrdenadas en R31");
             }
             catch(IndexOutOfRangeException ioer)
             {
-                
+                dist = null;
+                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
+                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
+                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
             }
         }
 
@@ -187,7 +190,7 @@ namespace ZOT.BLnOFF.Code
         public void AddENBID() 
         {
             DataView auxdv = data.DefaultView;
-            auxdv.Sort = "[Name SOURCE] desc,[ENBID SOURCE] desc";
+            auxdv.Sort = "[ENBID SOURCE] desc, [Name SOURCE] desc";
             data = auxdv.ToTable();
             
             int i = 0;
@@ -195,7 +198,7 @@ namespace ZOT.BLnOFF.Code
             do{ // la primera linea podria ser una de las que no tienen enbid
                 enbid = (string)data.Rows[i]["ENBID Source"];
                 i++;
-            } while (enbid == "");
+            } while (enbid == "" && i < data.Rows.Count);
             i = 0;
             while (true)
             {
