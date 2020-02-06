@@ -31,6 +31,7 @@ namespace ZOT.GUI
         public MainWindow()
         { 
             InitializeComponent();
+            WPFForms.window = this; //permite a ZOTlib lanzar mensajes sobre esta ventana
             _grid = toolBar;
             toolsMenuFlyout.IsOpen = false;
         }

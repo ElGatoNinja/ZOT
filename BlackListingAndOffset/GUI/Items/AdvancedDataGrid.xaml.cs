@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ZOT.resources;
-using ZOT.resources;
 using System.ComponentModel;
 using ZOT.resources.ZOTlib;
+using System.Text.RegularExpressions;
 
 namespace ZOT.GUI.Items
 {
@@ -61,6 +53,28 @@ namespace ZOT.GUI.Items
                 Flags.ResetState();
                 _selectedCell = null;
                 temporalListBoxContainer = new List<ListBox>();
+
+                filterLists = new ObservableCollection<FilterListItem>[value.Columns.Count];
+                try
+                {
+                    for (int i = 0; i < value.Columns.Count; i++)
+                    {
+                        List<object> columnValues = new List<object>();
+                        //valores unicos de toda la columna
+                        columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
+
+                        filterLists[i] = new ObservableCollection<FilterListItem>();
+                        foreach (object item in columnValues)
+                        {
+                            filterLists[i].Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false });
+                        }
+
+                    }
+                }
+                catch (NullReferenceException)  //causado por inicializacion sin ItemSource, es decir la mayoria de las veces
+                {
+                    temporalListBoxContainer = new List<ListBox>();
+                }
             }
         }
 
@@ -82,51 +96,25 @@ namespace ZOT.GUI.Items
         //Y cambiar el simbolo del filtro para que el usuario lo sepa
         private void FilterBtn_Initialized_From_Template(object sender, EventArgs e)
         {
-            try
+            //inicializacion vacía
+            if (_workingData == null) return;
+            if (((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column == null) return;
+
+            int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
+            if (index == null) return;
+
+            if (FilterLists[(int)index].All(item => item.NotFiltered))
             {
-                int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
-                if (FilterLists[index].All(item => item.NotFiltered))
-                {
-                    ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Filter;
-                }
-                else
-                {
-                    ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.FilterMenu;
-                }
+                ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Filter;
             }
-            catch (NullReferenceException){ /*Si se inicializa una datagrid vacia, comportamiento habitual*/ }
+            else
+            {
+                ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.FilterMenu;
+            }
+                
 
         }
 
-        //cuando todos los datos estan cargados se meten en los filtros con el formato adecuado
-        private void DataGrid_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (filterLists != null)
-                return;
-
-            filterLists = new ObservableCollection<FilterListItem>[this.Columns.Count];
-            try
-            {
-                for (int i = 0; i < this.Columns.Count; i++)
-                {
-                    List<object> columnValues = new List<object>();
-                    //valores unicos de toda la columna
-                    columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
-
-                    filterLists[i] = new ObservableCollection<FilterListItem>();
-                    foreach (object item in columnValues)
-                    {
-                        filterLists[i].Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false });
-                    }
-
-                }
-            }
-            catch (NullReferenceException)  //causado por inicializacion sin ItemSource, es decir la mayoria de las veces
-            {
-                temporalListBoxContainer = new List<ListBox>();
-            }  
-
-        }
 
         public ObservableCollection<FilterListItem>[] FilterLists
         {
@@ -327,11 +315,10 @@ namespace ZOT.GUI.Items
 
         private void MouseDown_Cell(object sender, MouseButtonEventArgs e)
         {
-            if (Flags.MultiEdit)
-            {
-                this._selectedCell = (DataGridCell)sender;
-            }
-            else if(((DataGridCell)sender).Content is CheckBox) //solo 1 click para cambiar las cell con checkbox de true a false
+
+            this._selectedCell = (DataGridCell)sender;
+
+            if(((DataGridCell)sender).Content is CheckBox) //solo 1 click para cambiar las cell con checkbox de true a false
             {
                 ((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex] = !(bool)((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex];
             }
@@ -343,6 +330,47 @@ namespace ZOT.GUI.Items
             {
                 Flags.MultiEdit = false;
                 e.Handled = true;
+            }
+        }
+
+        private void PasteToGrid()
+        {
+            try
+            {
+                string clipBoardText = Clipboard.GetText();
+                DataGridRow dgrow = DataGridRow.GetRowContainingElement(_selectedCell);
+                int x_index = dgrow.GetIndex();
+                DataRowView row = (DataRowView)dgrow.Item;
+                DataView view = row.DataView;
+
+                string[] rows = clipBoardText.Split(new[] { "\r\n" }, StringSplitOptions.None);
+                for (int i = 0; i < rows.Length; i++)
+                {
+                    string[] cols = rows[i].Split('\t');
+                    for (int j = 0; j < cols.Length; j++)
+                    {
+                        //cada columna de la tabla puede emplear un tipo de datos distinto, si no coinciden no se pega
+                        Type typeOfCell = _workingData.Rows[_workingData.Rows.IndexOf(view[i].Row)][_selectedCell.Column.DisplayIndex + j].GetType();
+                        if (typeOfCell == typeof(string))
+                            _workingData.Rows[_workingData.Rows.IndexOf(view[i].Row)][_selectedCell.Column.DisplayIndex + j] = cols[j].Trim();
+                        else if (typeOfCell == typeof(double))
+                        {
+                            double? aux;
+                            if (Conversion.ToDouble(cols[j].Trim(), out aux))
+                                _workingData.Rows[_workingData.Rows.IndexOf(view[i].Row)][_selectedCell.Column.DisplayIndex + j] = aux;
+                        }
+                        else if (typeOfCell == typeof(int))
+                        {
+                            int? aux;
+                            if (Conversion.ToInt(cols[j].Trim(), out aux))
+                                _workingData.Rows[_workingData.Rows.IndexOf(view[i].Row)][_selectedCell.Column.DisplayIndex + j] = aux;
+                        }
+                    }
+                }
+            }
+            catch(Exception)
+            {
+                WPFForms.ShowError("No se han podido pegar correctamente los datos", "Puede ser por un tamaño de datos superior al de esta tabla o al uso de un tipo de dato inesperado");
             }
         }
 
@@ -363,6 +391,11 @@ namespace ZOT.GUI.Items
                     e.Handled = true;
                     Flags.MultiEdit = false;
                     this.SelectionUnit = (DataGridSelectionUnit)(((int)this.SelectionUnit + 1) % 2);
+                }
+                else if (e.Key == Key.V)
+                {
+                    e.Handled = true;
+                    PasteToGrid();
                 }
             }
         }

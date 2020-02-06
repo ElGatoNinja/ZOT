@@ -11,7 +11,7 @@ namespace ZOT.resources
     class SiteCoords
     {
         public DataTable data;
-        public string errorLog = "";
+        public List<int> errorLog = new List<int>();
         private string path = Path.Combine(Environment.CurrentDirectory, @"Data\", "SiteCoord.csv");
         public SiteCoords()
         {
@@ -34,7 +34,7 @@ namespace ZOT.resources
             }
             catch(FileNotFoundException)
             {
-                WPFForms.ShowError("No se encuentra sitecoords");
+                WPFForms.ShowError("No se encuentra el fichero de coordenadas","Deberia estar en data/ dentro del directorio de la aplicacion");
             }
         }
 
@@ -46,12 +46,12 @@ namespace ZOT.resources
             
             if (site1data.Length == 0)
             {
-                errorLog += "No se encuentra el emplazamiento: " + site1 +"\n";
+                errorLog.Add(site1);
                 return null;
             }
             else if(site2data.Length == 0)
             {
-                errorLog += "No se encuentra el emplazamiento: " + site2 + "\n";
+                errorLog.Add(site2);
                 return null;
             }
 

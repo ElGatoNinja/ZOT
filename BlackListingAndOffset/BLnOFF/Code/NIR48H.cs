@@ -87,7 +87,7 @@ namespace ZOT.BLnOFF.Code
             }
             catch (FileNotFoundException)
             {
-                WPFForms.ShowError("No se ha podido encontrar el fichero: " + path);
+                WPFForms.ShowError("No se ha podido encontrar el fichero", path);
             }
         }
 

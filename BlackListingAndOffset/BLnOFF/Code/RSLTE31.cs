@@ -4,6 +4,8 @@ using System;
 using System.Data;
 using ZOT.resources;
 using ZOT.resources.ZOTlib;
+using System.Linq;
+using System.Data.OleDb;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -34,7 +36,7 @@ namespace ZOT.BLnOFF.Code
                             {
                                 if (aux[3].Equals(lnBts))
                                 {
-                                    if(aux[7] == "") //Taget desconocido
+                                    if(aux[9] == "" || aux[9] == "0") //Taget desconocido
                                     {
                                         int eci_id = Convert.ToInt32(aux[14]);
                                         int cell_id = eci_id & 0b1111_1111;
@@ -42,6 +44,7 @@ namespace ZOT.BLnOFF.Code
 
                                         aux[11] = cell_id.ToString();
                                         aux[8] = enb_id.ToString();
+                                        aux[9] = "UNKNOWN";
                                     }
                                     data.Rows.Add(aux);
                                     break;
@@ -53,9 +56,94 @@ namespace ZOT.BLnOFF.Code
             }
             catch(FileNotFoundException)
             {
-                WPFForms.ShowError("No se ha podido encontrar el fichero: " + path);
+                WPFForms.ShowError("No se ha podido encontrar el fichero", path);
             }
             inExports = new bool[data.Rows.Count];
+
+        }
+        /// <summary>
+        /// Intenta completar la consulta 31 a partir de los exports, en caso de faltar algo
+        /// </summary>
+        /// <param name="pathSRAN">Direccion de el export SRAN</param>
+        /// <param name="pathFL18">Direccion del export FL18</param>
+        public void completeR31(string pathSRAN, string pathFL18)
+        {
+            var emptyData = data.AsEnumerable().Where(row => (string)row[9] == "UNKNOWN").ToList();
+            if (emptyData == null)
+                return;
+
+            string directionSRAN = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathSRAN);
+            string directionFL18 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathFL18);
+
+            DataTable exportData = new DataTable();
+
+            //no se pueden hacer busquedas sql con mas de 99 OR y AND, así que el siguiente bucle hace consultas "paginadas"
+            //hace una busqueda para cada 48 emplazamientos, 49 * (1OR + 1AND) + 1AND = 99
+            int i = 0;
+            while (i < emptyData.Count)
+            {
+                string SQLconditions = "(lnCelId = " + emptyData[0][11] + " AND lnBtsId = " + emptyData[0][8] + ")";
+                for (int j = 0; j < 49 && i < emptyData.Count; j++)
+                {
+                    SQLconditions += " OR (lnCelId = " + emptyData[i][11] + " AND lnBtsId = " + emptyData[i][8] + ")";
+                    i++;
+                }
+
+                string SQLquerry = "SELECT name, lnCelId, lnBtsId "
+                    + "FROM A_LTE_MRBTS_LNBTS_LNCEL "
+                    + "WHERE  " + SQLconditions + ";";
+ 
+                using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
+                using (OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
+                {
+                    OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
+                    OleDbCommand commandFL18 = new OleDbCommand(SQLquerry, connectionFL18);
+
+                    //se cargan los resultados de la base de datos en una unica tabla
+
+                    try
+                    {
+                        connectionSRAN.Open();
+                        using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
+                        {
+                            exportData.Load(SRANreader);
+                        }
+
+                        connectionFL18.Open();
+                        using (OleDbDataReader FL18reader = commandFL18.ExecuteReader())
+                        {
+                            exportData.Load(FL18reader);
+                        }
+                    }
+                    catch (InvalidOperationException ioe)
+                    {
+                        WPFForms.ShowError("No se ha podido acceder a la base de datos", "Instala Microsoft database 2010 redistributable compatible con tu version de office." +
+                            "O asegurate de que la compilacion de esta aplicacion tiene como objetivo el mismo numero de bits que la de tu verison de office");
+                    }
+                    catch (Exception e)
+                    {
+                        WPFForms.ShowError("Fallo en la consulta de la base de datos", e.Message);
+                    }
+                }
+            }
+            /*busca en el dataset cada fila que se corresponde a un hueco vacío y lo rellena en la tabla
+                ENB_CA_BENALUP_EB_01
+                ENB_GR_VENTAS_DE_ZAFARRAYA_01
+                ENB_J_JODAR_ALMAZARA_01
+                ENB_SE_CARTUJA_MONASTERIO_01
+                ENB_SE_SUPRANORTE_01 */
+
+
+            foreach (DataRow dataRow in emptyData)
+            {
+                foreach(DataRow exportRow in exportData.Rows)
+                {
+                    if ((string)dataRow[8] == exportRow[2].ToString() && (string)dataRow[11] == exportRow[1].ToString()) // si conincide enbid y cell id 
+                    {
+                        dataRow[9] = exportRow[0]; //se rellena el nombre 
+                    }
+                }
+            }
         }
 
         public List<DataRow> NotInExports()

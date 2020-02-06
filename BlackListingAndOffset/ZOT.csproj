@@ -212,7 +212,6 @@
     <Compile Include="GUI\Items\NavBarTile.xaml.cs">
       <DependentUpon>NavBarTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="resources\SyncFiles.cs" />
     <Compile Include="resources\ZOTlib.cs" />
     <Compile Include="resources\SiteCoords.cs" />
     <Page Include="GUI\ErrorBox.xaml">

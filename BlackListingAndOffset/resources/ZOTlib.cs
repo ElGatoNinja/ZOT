@@ -9,6 +9,8 @@ using System.Data;
 using System.Windows.Forms;
 using System.Windows;
 using System.Windows.Media;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace ZOT.resources
 {
@@ -55,19 +57,51 @@ namespace ZOT.resources
             }
 
             /// <summary>
-            /// Llama al explorador de windows para elegir un directorio
+            /// Llama al explorador de windows para guardar un fichero
             /// </summary>
+            /// <param name="filter">Filter</param>
+            /// <param name="defaultExtension"></param>
             /// <param name="title">El titulo de la venatana que se abre</param>
             /// <returns>El path del directorio</returns>
-            public static string SetDirectory(string title)
+            public static string FileSaver(string filter, string defaultExtension, string title)
             {
-                using (FolderBrowserDialog explorer = new FolderBrowserDialog())
+                using (SaveFileDialog explorer = new SaveFileDialog())
                 {
-                    explorer.Description = title;
-                    explorer.SelectedPath = Directory.GetCurrentDirectory();
+                    explorer.Title = title;
+                    explorer.Filter = filter;
+                    explorer.DefaultExt = defaultExtension;
+                    explorer.CheckPathExists = true;
+                    explorer.RestoreDirectory = true;
+                    //explorer.SelectedPath = Directory.GetCurrentDirectory();
                     if (explorer.ShowDialog() == DialogResult.OK)
                     {
-                        return explorer.SelectedPath;
+                        return explorer.FileName;
+                    }
+                    return "error";
+                }
+            }
+
+            /// <summary>
+            /// Llama al explorador de windows para guardar un fichero
+            /// </summary>
+            /// <param name="filter">Filter</param>
+            /// <param name="defaultExtension"></param>
+            /// <param name="title">El titulo de la venatana que se abre</param>
+            /// <returns>El path del directorio</returns>
+            public static string FileSaver(string filter, string defaultExtension, string title, string initDir)
+            {
+                using (SaveFileDialog explorer = new SaveFileDialog())
+                {
+                    explorer.Title = title;
+                    explorer.Filter = filter;
+                    explorer.DefaultExt = defaultExtension;
+                    explorer.CheckPathExists = true;
+                    explorer.RestoreDirectory = true;
+                    explorer.InitialDirectory = initDir;
+                    //explorer.SelectedPath = Directory.GetCurrentDirectory();
+                    if (explorer.ShowDialog() == DialogResult.OK)
+                    {
+                        return explorer.FileName;
                     }
                     return "error";
                 }
@@ -81,19 +115,48 @@ namespace ZOT.resources
         public static class Conversion
         {
             /// <summary>
-            /// Convierte strings en cadenas siempre que el valor sea del tipo doble o "", sino habra una excepcion
+            /// Convierte strings en cadenas siempre que el valor sea del tipo doble o "", si no puede retorna false
             /// </summary>
             /// <param name="value">Una cadena con un numero de tipo double ("10,3425") o una cadena vacía ("")</param>
             /// <param name="output">Variable de salida</param>
-            /// <returns></returns>
+            /// <returns>Falso si la conversion no se ha podido realizar</returns>
             public static bool ToDouble(string value, out Nullable<double> output)
             {
-                if (value != "")
+                try
                 {
-                    output = XmlConvert.ToDouble(value);
+                    output = null;
+                    if (value != "")
+                    {
+                        output = XmlConvert.ToDouble(value);
+                    }
                     return true;
                 }
-                else
+                catch(Exception)
+                {
+                    output = null;
+                    return false;
+                }
+
+            }
+
+            /// <summary>
+            /// Convierte strings en cadenas siempre que el valor sea del tipo entero o "", si no puede retorna false
+            /// </summary>
+            /// <param name="value">Una cadena con un numero de tipo int ("10") o una cadena vacía ("")</param>
+            /// <param name="output">Variable de salida</param>
+            /// <returns>Falso si la conversion no se ha podido realizar</returns>
+            public static bool ToInt(string value, out Nullable<int> output)
+            {
+                try
+                {
+                    output = null;
+                    if (value != "")
+                    {
+                        output = XmlConvert.ToInt32(value);
+                    }
+                    return true;
+                }
+                catch(Exception)
                 {
                     output = null;
                     return false;
@@ -106,6 +169,7 @@ namespace ZOT.resources
         /// </summary>
         public static class WPFForms
         {
+            public static MetroWindow window;
             /// <summary>
             /// Escala el arbol visual de wpf hasta encontrar un elemento del tipo de T
             /// </summary>
@@ -129,11 +193,11 @@ namespace ZOT.resources
             /// <summary>
             /// Lanza un mensaje de error emergente que interrumpe la ejecucion hasta que se cierre
             /// </summary>
-            /// <param name="error">Texto que debe mostrar el error</param>
-            public static void ShowError(string error)
+            /// <param name="error">Resumen del error</param>
+            /// <param name="info">Informacion relevante</param>
+            public async static void ShowError(string error,string info)
             {
-                GUI.ErrorBox err = new GUI.ErrorBox(error);
-                err.ShowDialog();
+               await window.ShowMessageAsync(error,info);
             }
         }
 

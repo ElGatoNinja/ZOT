@@ -9,7 +9,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
           LoadingRow="DataGrid_LoadingRow"
-          Loaded="DataGrid_Loaded"
           PreviewKeyDown="KeyBoard_Commands"
           SelectionUnit="Cell"
           SelectedCellsChanged="Selected_Cells_Changed"

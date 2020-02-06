@@ -8,6 +8,7 @@ using System.Globalization;
 using ZOT.resources;
 using System.Xml;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -141,7 +142,8 @@ namespace ZOT.BLnOFF.Code
                 int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
                 int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
                 dist = siteCoords.Distance(site1, site2);
-                if (dist > 0.01)
+
+                if (dist == null || dist > 0.01) //si la distancia es desconocida, se saca igual pero no aplicara ni a Blacklisting ni a offset
                 {
                     resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
                     resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
@@ -171,16 +173,11 @@ namespace ZOT.BLnOFF.Code
                     data.Rows.Add(aux);
                 }
             }
-            catch (ArgumentNullException ane)
-            {
-                Console.WriteLine("Error en la busqueda de corrdenadas en R31");
-            }
             catch(IndexOutOfRangeException ioer)
             {
-                dist = null;
-                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
-                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
-                resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+                Console.WriteLine("Error en colindancias: " + ioer.Message);
+                //Errores en los ficheros de entrada suelen acabar dando un error de este tipo al intentar parear tipos de dato inesperados
+                //simplemente se ignora la linea
             }
         }
 
@@ -219,8 +216,14 @@ namespace ZOT.BLnOFF.Code
         public string GetSiteCoordErr()
         {
             string output ="";
-            if (siteCoords.errorLog != "")
-                output = siteCoords.errorLog + "\nActualiza el fichero siteCords.csv en la carpeta Data/";
+            if (siteCoords.errorLog.Count > 0)
+            {
+                foreach(int site in siteCoords.errorLog.Distinct())
+                {
+                    output += site + "\n";
+                }
+            }
+                
             return output;
         }
 

@@ -7,7 +7,6 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using ZOT.resources;
 using ZOT.BLnOFF.Code;
 using ZOT.resources.ZOTlib;
@@ -20,7 +19,7 @@ namespace ZOT.BLnOFF.GUI
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl ,IZotApp
     {
-        private List<StringWorkArround> lnBtsInputGrid;
+        private DataTable lnBtsInputGrid;
 
         #region IZOTAPP
         public string AppName
@@ -39,13 +38,14 @@ namespace ZOT.BLnOFF.GUI
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
-            lnBtsInputGrid = new List<StringWorkArround>();
+            lnBtsInputGrid = new DataTable();
+            lnBtsInputGrid.Columns.Add("lnbts inputs");
             InitializeComponent();
             for (int i = 0; i < 50; i++)
             {
-                lnBtsInputGrid.Add(new StringWorkArround { LnBtsName = "" });
+                lnBtsInputGrid.Rows.Add("");
             }
-            lnBtsVisualGrid.ItemsSource = lnBtsInputGrid;
+            lnBtsVisualGrid.WorkingData = lnBtsInputGrid;
 
             //Recuperar ultimos paths usados
             try
@@ -133,8 +133,8 @@ namespace ZOT.BLnOFF.GUI
         private void BL_template_gen(object sender, RoutedEventArgs e)
         {
             DataTable data = ((DataView)candBLGrid.ItemsSource).ToTable();
-            string output_path = ZOTFiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
-            using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameBL.Text))
+            string output_path = ZOTFiles.FileSaver("Archivos CSV |*csv","csv","Exportando plantilla de Blacklisting");
+            using (StreamWriter writer = new StreamWriter(output_path))
             {                
                 writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handowerAllowed;removeAllowed;;");
                 foreach (DataRow row in data.Rows)
@@ -163,8 +163,8 @@ namespace ZOT.BLnOFF.GUI
         private void OFF_template_gen(object sender, RoutedEventArgs e)
         {
             DataTable data = ((DataView)candOFFGrid.ItemsSource).ToTable();
-            string output_path = ZOTFiles.SetDirectory("Seleciona el directorio en el que guardar la plantilla generada");
-            using (StreamWriter writer = new StreamWriter(output_path + "\\" + fileNameOFF.Text))
+            string output_path = ZOTFiles.FileSaver("Archivos CSV |*csv", "csv", "Exportando plantilla de Offset");
+            using (StreamWriter writer = new StreamWriter(output_path))
             {
                 writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;cellIndOffNeigh;;");
                 foreach (DataRow row in data.Rows)
@@ -199,16 +199,23 @@ namespace ZOT.BLnOFF.GUI
         private void Launch(object sender, RoutedEventArgs e)
         {
             //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-            //"ENB_PO_SAN_VICENTE_EB_01", "ENB_AV_BURGOHONDO_01" ->prueba
+            //"ENB_PO_SAN_VICENTE_EB_01", "ENB_PO_SAN_JULIAN_EB_01" ->prueba
             //prueba cris -> ENB_AV_BLASCOSANCHO_01 ENB_LE_VILLACEID_01 ENB_LU_GUITIRIZ_VILLARES_01 ENB_O_AVILES_EL_MUELLE_01 ENB_O_AVILES_EL_MUELLE_02 ENB_PO_POIO_CACHAROLA_01 ENB_PO_MORANA_AMIL_01 ENB_LU_GUTRIZ_VILLARES_01
 
-            String[] aux = new String[lnBtsInputGrid.Count];
+#if DEBUG
+            var totalTimer = new Stopwatch();
+            totalTimer.Start();
+            var timer = new Stopwatch();
+            timer.Start();
+#endif
+
+            String[] aux = new String[lnBtsInputGrid.Rows.Count];
             int n = 0;
-            for (int i = 0; i < 49; i++)
+            for (int i = 0; i < lnBtsInputGrid.Rows.Count; i++)
             {
-                if (lnBtsInputGrid[i].LnBtsName != "")
+                if ((string)lnBtsInputGrid.Rows[i][0] != "")
                 {
-                    aux[i] = lnBtsInputGrid[i].LnBtsName;
+                    aux[i] = (string)lnBtsInputGrid.Rows[i][0];
                     n++;
                 }
             }
@@ -219,11 +226,23 @@ namespace ZOT.BLnOFF.GUI
             }
             aux = null;
 
+            if(lnBtsInputs.Length == 0)
+            {
+                WPFForms.ShowError("No hay nodos de entrada", "Rellena la tabla de INPUT SITES");
+                return;
+            }
+
             //Guardar el path de los ultimos archivos en un fichero de texto
             string[] storePaths = new string[5] { RSLTE31_path.Text, TA_path.Text, SRAN_path.Text, FL18_path.Text, NIR_path.Text };
             System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
 
-   
+#if DEBUG
+            timer.Stop();
+            Console.WriteLine("Guardando los direcotrios y recogiendo los inputs: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+            timer.Reset();
+            timer.Start();
+#endif
+
             try
             {
                 if ((bool)Is_BlnOFF_Enabled.IsChecked)
@@ -231,8 +250,30 @@ namespace ZOT.BLnOFF.GUI
                     //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
                     Colindancias colindancias = new Colindancias();
                     RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
+                    R31.completeR31(SRAN_path.Text, FL18_path.Text);
+
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Completar consulta31: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
+
                     TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
+
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Sacar Timing Advance: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
                     Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
 
                     foreach(DataRow dataRow in export.data.Rows)
                     {
@@ -242,16 +283,25 @@ namespace ZOT.BLnOFF.GUI
                     {
                         colindancias.CheckColinsNotInExports(dataRow);
                     }
-
-
                     colindancias.AddENBID();
+
+
+
+                    //Dibujar tablas
                     DataView dv = colindancias.data.DefaultView;
                     dv.Sort = "[HO errores SR] DESC";
                     colindancias.data = dv.ToTable();
                     colinGrid.WorkingData = colindancias.data;
                     WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
                     if (colindancias.GetSiteCoordErr() != "")
-                        WPFForms.ShowError(colindancias.GetSiteCoordErr());
+                        WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", colindancias.GetSiteCoordErr());
+
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Calcular Colindancias: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
 
                     //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
                     CandidatesBL candBL = new CandidatesBL(colindancias);
@@ -261,29 +311,49 @@ namespace ZOT.BLnOFF.GUI
                     candBLGrid.WorkingData = candBL.data;
                     WPFForms.FindParent<TabItem>(candBLGrid).Visibility = Visibility.Visible;
 
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Calcular candidatas de blacklisting: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
+
                     CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
                     dv = candOFF.data.DefaultView;
                     dv.Sort = "[HO errores SR] DESC";
                     candOFF.data = dv.ToTable();
                     candOFFGrid.WorkingData = candOFF.data;
                     WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
+
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Calcular candidatas de offset: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
+
                 }
-                if((bool)Is_PrevAnalysis_Enabled.IsChecked)
+                if ((bool)Is_PrevAnalysis_Enabled.IsChecked)
                 {
                     NIR48H nir = new NIR48H(lnBtsInputs, NIR_path.Text);
                     errGrid.WorkingData = nir.errors;
                     WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
+#if DEBUG
+                    timer.Stop();
+                    Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                    timer.Reset();
+                    timer.Start();
+#endif
                 }
+#if DEBUG
+                totalTimer.Stop();
+                Console.WriteLine("Tiempo Total: " + totalTimer.Elapsed.ToString(@"m\:ss\.fff"));
+#endif
             }
             catch(Exception ex)
             {
-                WPFForms.ShowError("Algo ha ido mal en la ejecucion:\n\n " + ex.Message);
+                WPFForms.ShowError("Algo ha ido mal en la ejecucion" , ex.Message);
             }
         }
-    }
-
-    public class StringWorkArround
-    {
-        public string LnBtsName { get; set; }
     }
 }
