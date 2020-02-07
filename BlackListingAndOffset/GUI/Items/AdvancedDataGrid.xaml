@@ -20,7 +20,6 @@
           Sorting="Column_Sorted"
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>
-        <local:FilteredToIconConverter x:Key="FilteredToIcon" />
 
         <Style TargetType="{x:Type DataGridCell}">
             <EventSetter Event="PreviewMouseDown" Handler="MouseDown_Cell"/>

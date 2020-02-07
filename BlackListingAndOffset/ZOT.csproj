@@ -94,6 +94,12 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
@@ -181,9 +187,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WinSCPnet, Version=1.6.5.10071, Culture=neutral, PublicKeyToken=2271ec4a3c56d0bf, processorArchitecture=MSIL">
-      <HintPath>..\packages\WinSCP.5.15.9\lib\net\WinSCPnet.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="GUI\App.xaml">
@@ -194,14 +197,14 @@
     <Compile Include="BLnOFF\Code\CandidatesOFF.cs" />
     <Compile Include="BLnOFF\Code\CONSTANTS.cs" />
     <Compile Include="BLnOFF\Code\NIR48H.cs" />
+    <Compile Include="BLnOFF\GUI\Graphs.xaml.cs">
+      <DependentUpon>Graphs.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BLnOFF\GUI\TabControlBlnOFF.xaml.cs">
       <DependentUpon>TabControlBlnOFF.xaml</DependentUpon>
     </Compile>
     <Compile Include="BLnOFF\GUI\ConstantEditorBLnOFF.xaml.cs">
       <DependentUpon>ConstantEditorBLnOFF.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\ErrorBox.xaml.cs">
-      <DependentUpon>ErrorBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUI\Items\AdvancedTile.xaml.cs">
       <DependentUpon>AdvancedTile.xaml</DependentUpon>
@@ -214,7 +217,7 @@
     </Compile>
     <Compile Include="resources\ZOTlib.cs" />
     <Compile Include="resources\SiteCoords.cs" />
-    <Page Include="GUI\ErrorBox.xaml">
+    <Page Include="BLnOFF\GUI\Graphs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -319,12 +322,10 @@
     <Resource Include="Z.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\WinSCP.5.15.9\build\WinSCP.targets" Condition="Exists('..\packages\WinSCP.5.15.9\build\WinSCP.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\WinSCP.5.15.9\build\WinSCP.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WinSCP.5.15.9\build\WinSCP.targets'))" />
     <Error Condition="!Exists('..\packages\docfx.console.2.48.1\build\docfx.console.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\docfx.console.2.48.1\build\docfx.console.targets'))" />
   </Target>
   <Import Project="..\packages\docfx.console.2.48.1\build\docfx.console.targets" Condition="Exists('..\packages\docfx.console.2.48.1\build\docfx.console.targets')" />

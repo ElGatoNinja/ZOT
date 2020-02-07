@@ -8,6 +8,16 @@
     mc:Ignorable="d"
     WindowState="Maximized"
     Title="Zelenza Omni Tool">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button>
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconModern Width="24" Height="24" Kind="FoodCupcake" />
+                    <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Info" />
+                </StackPanel>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="55"/>
@@ -55,7 +65,7 @@
         </Grid>
 
         <Controls:FlyoutsControl Grid.ColumnSpan="2">
-            <Controls:Flyout x:Name="toolsMenuFlyout" Background="AliceBlue" Header="Activas" Position="Left" Width="200">
+            <Controls:Flyout x:Name="toolsMenuFlyout" Header="Activas" Position="Left" Width="200">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <Grid x:Name="toolBar">
                         <!-- Se añaden elementos en runtime-->

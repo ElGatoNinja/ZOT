@@ -130,7 +130,7 @@ namespace ZOT.BLnOFF.Code
         /// <param name="line"></param>
         public void CheckColinsNotInExports(DataRow line)
         {
-            double? dist;
+            double? dist = null;
             double? HOatem;
             double? HOsucc;
             double? HOsuccSR;
@@ -138,10 +138,14 @@ namespace ZOT.BLnOFF.Code
             try
             {
                 aux1 = line.Field<String>("Source LNCEL name").Split('_');
-                String[] aux2 = line.Field<String>("Target LNCEL name").Split('_');
-                int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
-                dist = siteCoords.Distance(site1, site2);
+                String[] aux2 = null;
+                if (line.Field<String>("Target LNCEL name") != "UNKNOWN")
+                {
+                    aux2 = line.Field<String>("Target LNCEL name").Split('_');
+                    int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
+                    int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
+                    dist = siteCoords.Distance(site1, site2);
+                }
 
                 if (dist == null || dist > 0.01) //si la distancia es desconocida, se saca igual pero no aplicara ni a Blacklisting ni a offset
                 {
@@ -155,10 +159,13 @@ namespace ZOT.BLnOFF.Code
                     resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: SR"], out HOsucc);
                     resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
                 }
-                aux1 = line.Field<String>("Source LNCEL name").Split('_');
-                aux2 = line.Field<String>("Target LNCEL name").Split('_');
+
                 int srcLnCellID = Convert.ToInt32(aux1[aux1.Length - 1]);
-                int trgLnCellID = Convert.ToInt32(aux2[aux2.Length - 1]);
+                int? trgLnCellID = null;
+                if (aux2 != null)
+                {
+                    trgLnCellID = Convert.ToInt32(aux2[aux2.Length - 1]);
+                }
                 double? HOerrSR = (100 - HOsucc) * HOatem / 100.0;
                 if (HOerrSR != null)
                     HOerrSR = Math.Round((double)HOerrSR, 0);
@@ -187,25 +194,21 @@ namespace ZOT.BLnOFF.Code
         public void AddENBID() 
         {
             DataView auxdv = data.DefaultView;
-            auxdv.Sort = "[ENBID SOURCE] desc, [Name SOURCE] desc";
+            auxdv.Sort = "[Name SOURCE] desc, [ENBID SOURCE] desc";
             data = auxdv.ToTable();
-            
+
             int i = 0;
-            string enbid;
-            do{ // la primera linea podria ser una de las que no tienen enbid
-                enbid = (string)data.Rows[i]["ENBID Source"];
-                i++;
-            } while (enbid == "" && i < data.Rows.Count);
-            i = 0;
+            string enbid = (string)data.Rows[0]["ENBID SOURCE"];
+         
             while (true)
             {
-                while ( i < data.Rows.Count && ((string)data.Rows[i]["ENBID Source"] == enbid || (string)data.Rows[i]["ENBID Source"] == ""))
+                while ( i < data.Rows.Count && ((string)data.Rows[i]["ENBID SOURCE"] == enbid || (string)data.Rows[i]["ENBID SOURCE"] == ""))
                 {
-                    data.Rows[i]["ENBID Source"] = enbid;
+                    data.Rows[i]["ENBID SOURCE"] = enbid;
                     i++;
                 }
-                if (i >= data.Rows.Count) break; //No soy muy fan de usar breaks en vez de condiciones en el while, pero aquí parece necesario
-                enbid = (string)data.Rows[i]["ENBID Source"];
+                if (i >= data.Rows.Count) break; 
+                enbid = (string)data.Rows[i]["ENBID SOURCE"];
             }
         }
 

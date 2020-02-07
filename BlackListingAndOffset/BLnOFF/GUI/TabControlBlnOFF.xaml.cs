@@ -1,25 +1,22 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
 using System.Data;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using ZOT.resources;
 using ZOT.BLnOFF.Code;
 using ZOT.resources.ZOTlib;
 using ZOT.GUI;
-using System.Threading;
 using System.ComponentModel;
+using System.Windows.Input;
+using System.Diagnostics;
 
 namespace ZOT.BLnOFF.GUI
 {
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl ,IZotApp
     {
-        private DataTable lnBtsInputGrid;
+        private List<StringWorkArround> lnBtsInputGrid;
 
         #region IZOTAPP
         public string AppName
@@ -38,14 +35,17 @@ namespace ZOT.BLnOFF.GUI
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
-            lnBtsInputGrid = new DataTable();
-            lnBtsInputGrid.Columns.Add("lnbts inputs");
+            lnBtsInputGrid = new List<StringWorkArround>();
             InitializeComponent();
             for (int i = 0; i < 50; i++)
             {
-                lnBtsInputGrid.Rows.Add("");
+                lnBtsInputGrid.Add(new StringWorkArround { LnBtsName = "" });
             }
-            lnBtsVisualGrid.WorkingData = lnBtsInputGrid;
+            lnBtsVisualGrid.ItemsSource = lnBtsInputGrid;
+
+            //relacciona las funciones que permiten pegar celdas por lotes con la grid de inputs
+            CommandBinding PasteCmdBinding = new CommandBinding(ApplicationCommands.Paste,PasteExecuted);
+            lnBtsVisualGrid.CommandBindings.Add(PasteCmdBinding);
 
             //Recuperar ultimos paths usados
             try
@@ -58,6 +58,19 @@ namespace ZOT.BLnOFF.GUI
                 NIR_path.Text = storedPaths[4];
             }
             catch (FileNotFoundException) { /*comportamiento aceptable si no existe ya se creará */}
+        }
+
+        private void PasteExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            string clipBoardText = Clipboard.GetText();
+            int index = ((List<StringWorkArround>)((DataGrid)target).ItemsSource).IndexOf((StringWorkArround)((DataGrid)target).SelectedCells[0].Item);
+
+            string[] rows = clipBoardText.Split(new[] { "\r\n" }, StringSplitOptions.None);
+            for (int i = 0; i < rows.Length; i++)
+            {
+                string value = rows[i].Split('\t')[0].Trim();
+                lnBtsInputGrid[index + i].LnBtsName = value; 
+            }
         }
 
         private void R31_Click(object sender, RoutedEventArgs e)
@@ -149,8 +162,8 @@ namespace ZOT.BLnOFF.GUI
                             toCSV += ((string)row["Label"]).Split('-')[1] + ";";
                         else
                             toCSV += ";";
-                        toCSV += "1";
-                        toCSV += "0";
+                        toCSV += "1;";
+                        toCSV += "0;";
                         toCSV += (string)row["Name SOURCE"] + ";";
                         toCSV += (string)row["Name TARGET"];
 
@@ -195,7 +208,6 @@ namespace ZOT.BLnOFF.GUI
             }
         }
 
-
         private void Launch(object sender, RoutedEventArgs e)
         {
             //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
@@ -209,13 +221,13 @@ namespace ZOT.BLnOFF.GUI
             timer.Start();
 #endif
 
-            String[] aux = new String[lnBtsInputGrid.Rows.Count];
+            String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;
-            for (int i = 0; i < lnBtsInputGrid.Rows.Count; i++)
+            for (int i = 0; i < lnBtsInputGrid.Count; i++)
             {
-                if ((string)lnBtsInputGrid.Rows[i][0] != "")
+                if (lnBtsInputGrid[i].LnBtsName != "")
                 {
-                    aux[i] = (string)lnBtsInputGrid.Rows[i][0];
+                    aux[i] = lnBtsInputGrid[i].LnBtsName;
                     n++;
                 }
             }
@@ -247,6 +259,7 @@ namespace ZOT.BLnOFF.GUI
             {
                 if ((bool)Is_BlnOFF_Enabled.IsChecked)
                 {
+
                     //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
                     Colindancias colindancias = new Colindancias();
                     RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
@@ -284,8 +297,6 @@ namespace ZOT.BLnOFF.GUI
                         colindancias.CheckColinsNotInExports(dataRow);
                     }
                     colindancias.AddENBID();
-
-
 
                     //Dibujar tablas
                     DataView dv = colindancias.data.DefaultView;
@@ -353,6 +364,25 @@ namespace ZOT.BLnOFF.GUI
             catch(Exception ex)
             {
                 WPFForms.ShowError("Algo ha ido mal en la ejecucion" , ex.Message);
+            }
+        }
+    }
+
+    public class StringWorkArround : INotifyPropertyChanged
+    {
+        private string _value;
+        public string LnBtsName
+        {
+            get { return _value; }
+            set { _value = value; OnPropertyChanged("LnBtsName"); }        
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyname)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyname));
             }
         }
     }

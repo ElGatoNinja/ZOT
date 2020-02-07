@@ -36,6 +36,9 @@ namespace ZOT.GUI.Items
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Establece el origen de datos con el que la tabla va a trabajar 
+        /// </summary>
         public DataTable WorkingData
         {
             get
@@ -101,7 +104,6 @@ namespace ZOT.GUI.Items
             if (((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column == null) return;
 
             int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
-            if (index == null) return;
 
             if (FilterLists[(int)index].All(item => item.NotFiltered))
             {
@@ -318,8 +320,9 @@ namespace ZOT.GUI.Items
 
             this._selectedCell = (DataGridCell)sender;
 
-            if(((DataGridCell)sender).Content is CheckBox) //solo 1 click para cambiar las cell con checkbox de true a false
+            if(((DataGridCell)sender).Content is CheckBox && !Flags.MultiEdit) //solo 1 click para cambiar las cell con checkbox de true a false
             {
+                e.Handled = true;
                 ((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex] = !(bool)((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex];
             }
         }
@@ -392,10 +395,10 @@ namespace ZOT.GUI.Items
                     Flags.MultiEdit = false;
                     this.SelectionUnit = (DataGridSelectionUnit)(((int)this.SelectionUnit + 1) % 2);
                 }
-                else if (e.Key == Key.V)
+                else if (e.Key == Key.V) //no activo aun 
                 {
-                    e.Handled = true;
-                    PasteToGrid();
+                    //e.Handled = true;
+                    //PasteToGrid();
                 }
             }
         }
@@ -412,6 +415,7 @@ namespace ZOT.GUI.Items
         private bool notFiltered = true;
         private bool isTextFiltered = false;
         private string name;
+        private bool isFilteredInOtherFilter = false;
         public bool NotFiltered
         {
             get { return notFiltered; }
@@ -428,6 +432,12 @@ namespace ZOT.GUI.Items
         {
             get { return isTextFiltered; }
             set { isTextFiltered = value; OnPropertyChanged("IsTextFiltered"); }
+        }
+
+        public bool IsFilteredInOtherFilter
+        {
+            get { return isFilteredInOtherFilter; }
+            set { isFilteredInOtherFilter = value; OnPropertyChanged("IsFilteredInOtherFilter"); }
         }
 
 
@@ -497,23 +507,6 @@ namespace ZOT.GUI.Items
     {
         public ListSortDirection? order = null;
         public int column;
-    }
-
-    /// <summary>
-    /// Se trata de un Conversor definido para permitir a la interfaz determinar si la columna está filtrada o no, y así mostrar un icono distinto
-    /// </summary>
-    public class FilteredToIconConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int index = ((DataGridColumnHeader)((MahApps.Metro.IconPacks.PackIconMaterial)value).TemplatedParent).Column.DisplayIndex;
-            return !((AdvancedDataGrid)parameter).FilterLists[index].Any(item => item.NotFiltered);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     #endregion

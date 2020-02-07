@@ -16,6 +16,9 @@ namespace ZOT.resources
 {
     namespace ZOTlib
     {
+        /// <summary>
+        /// Contiene Metodos para buscar y gruardar archivos facilmente
+        /// </summary>
         public static class ZOTFiles
         {
             /// <summary>
