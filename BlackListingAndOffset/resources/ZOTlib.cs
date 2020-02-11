@@ -202,6 +202,11 @@ namespace ZOT.resources
             {
                await window.ShowMessageAsync(error,info);
             }
+
+            public async static Task<ProgressDialogController> ShowProgress(string mainText, string info)
+            {
+                return await window.ShowProgressAsync(mainText, info);
+            }
         }
 
         /// <summary>

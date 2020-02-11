@@ -10,6 +10,8 @@ using ZOT.GUI;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Diagnostics;
+using MahApps.Metro.Controls.Dialogs;
+using System.Threading.Tasks;
 
 namespace ZOT.BLnOFF.GUI
 {
@@ -17,6 +19,7 @@ namespace ZOT.BLnOFF.GUI
     public partial class TabControlBLnOFF : UserControl ,IZotApp
     {
         private List<StringWorkArround> lnBtsInputGrid;
+        Task<ProgressDialogController> progressBar;
 
         #region IZOTAPP
         public string AppName
@@ -207,20 +210,28 @@ namespace ZOT.BLnOFF.GUI
                 }
             }
         }
+        struct bgwBlnOffArgument
+        {
+            public string[] lnBtsInputs;
+            public string pathR31;
+            public string pathTA;
+            public string pathSRAN;
+            public string pathFL18;
+            public string pathNIR48;
+            public bool BLnOffEnabled;
+            public bool prevAnalisysEnabled;
+        }
+        struct bgwBlnOffResult
+        {
+            public DataTable colindancias;
+            public DataTable candBl;
+            public DataTable candOff;
+            public DataTable error;
+            public string siteCoordErrors;
+        }
 
         private void Launch(object sender, RoutedEventArgs e)
         {
-            //Al tener que usar un wraper para poder pasar una lista de strings al Data grid ahora hay que hacer esta movida para recuperarlo
-            //"ENB_PO_SAN_VICENTE_EB_01", "ENB_PO_SAN_JULIAN_EB_01" ->prueba
-            //prueba cris -> ENB_AV_BLASCOSANCHO_01 ENB_LE_VILLACEID_01 ENB_LU_GUITIRIZ_VILLARES_01 ENB_O_AVILES_EL_MUELLE_01 ENB_O_AVILES_EL_MUELLE_02 ENB_PO_POIO_CACHAROLA_01 ENB_PO_MORANA_AMIL_01 ENB_LU_GUTRIZ_VILLARES_01
-
-#if DEBUG
-            var totalTimer = new Stopwatch();
-            totalTimer.Start();
-            var timer = new Stopwatch();
-            timer.Start();
-#endif
-
             String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;
             for (int i = 0; i < lnBtsInputGrid.Count; i++)
@@ -238,32 +249,93 @@ namespace ZOT.BLnOFF.GUI
             }
             aux = null;
 
-            if(lnBtsInputs.Length == 0)
+            if (lnBtsInputs.Length == 0)
             {
                 WPFForms.ShowError("No hay nodos de entrada", "Rellena la tabla de INPUT SITES");
                 return;
             }
+            //se preparan los inputs para pasarlos como argumento al background worker
+            bgwBlnOffArgument args = new bgwBlnOffArgument();
+            args.lnBtsInputs = lnBtsInputs;
+            args.pathR31 = RSLTE31_path.Text;
+            args.pathTA = TA_path.Text;
+            args.pathSRAN = SRAN_path.Text;
+            args.pathFL18 = FL18_path.Text;
+            args.pathNIR48 = NIR_path.Text;
+            args.BLnOffEnabled = (bool)Is_BlnOFF_Enabled.IsChecked;
+            args.prevAnalisysEnabled = (bool)Is_PrevAnalysis_Enabled.IsChecked;
+
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += BackGround_Work;
+            worker.ProgressChanged += BackGround_Progress;
+            worker.RunWorkerCompleted += BackGround_Completed;
+            worker.RunWorkerAsync(args);
+
+            //Task<ProgressDialogController> progressBar = WPFForms.ShowProgress("Ejecutando BlackListing y Offset","Procesando consulta 31");
 
             //Guardar el path de los ultimos archivos en un fichero de texto
             string[] storePaths = new string[5] { RSLTE31_path.Text, TA_path.Text, SRAN_path.Text, FL18_path.Text, NIR_path.Text };
             System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
+        }
 
+        private void BackGround_Progress(object sender, ProgressChangedEventArgs e)
+        {
+            
+        }
+
+        //tras acabar el procesado en segundo plano se actualiza la interfaz con ellos
+        private void BackGround_Completed(object sender, RunWorkerCompletedEventArgs e)
+        {
+            bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
+            if (output.colindancias != null)
+            {
+                colinGrid.WorkingData = output.colindancias;
+                WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
+            }
+
+            if (output.siteCoordErrors != "")
+                WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", output.siteCoordErrors);
+            
+            if (output.candBl != null)
+            {
+                candBLGrid.WorkingData = output.candBl;
+                WPFForms.FindParent<TabItem>(candBLGrid).Visibility = Visibility.Visible;
+            }
+            if (output.candOff != null)
+            {
+                candOFFGrid.WorkingData = output.candOff;
+                WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
+            }
+            if (output.error != null)
+            {
+                errGrid.WorkingData = output.error;
+                WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
+            }
+        }
+
+        //nunca se puede acceder a elementos de la interfaz directamente desde este metodo, acceder a la interfaz desde otro thread
+        //bloquea la aplicacion
+        private void BackGround_Work(object sender, DoWorkEventArgs e)
+        {
 #if DEBUG
-            timer.Stop();
-            Console.WriteLine("Guardando los direcotrios y recogiendo los inputs: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-            timer.Reset();
+            var totalTimer = new Stopwatch();
+            totalTimer.Start();
+            var timer = new Stopwatch();
             timer.Start();
 #endif
-
+            bgwBlnOffArgument args = (bgwBlnOffArgument)e.Argument;
+            bgwBlnOffResult results = new bgwBlnOffResult();
+            
             try
             {
-                if ((bool)Is_BlnOFF_Enabled.IsChecked)
+                if (args.BLnOffEnabled)
                 {
 
                     //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
                     Colindancias colindancias = new Colindancias();
-                    RSLTE31 R31 = new RSLTE31(lnBtsInputs, RSLTE31_path.Text);
-                    R31.completeR31(SRAN_path.Text, FL18_path.Text);
+                    RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
+                    R31.completeR31(args.pathSRAN, args.pathFL18);
 
 #if DEBUG
                     timer.Stop();
@@ -272,7 +344,7 @@ namespace ZOT.BLnOFF.GUI
                     timer.Start();
 #endif
 
-                    TimingAdvance TA = new TimingAdvance(lnBtsInputs, TA_path.Text);
+                    TimingAdvance TA = new TimingAdvance(args.lnBtsInputs, args.pathTA);
 
 #if DEBUG
                     timer.Stop();
@@ -280,7 +352,7 @@ namespace ZOT.BLnOFF.GUI
                     timer.Reset();
                     timer.Start();
 #endif
-                    Exports export = new Exports(TA.GetColumn("LNCEL name"), SRAN_path.Text, FL18_path.Text);
+                    Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18);
 #if DEBUG
                     timer.Stop();
                     Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -302,10 +374,9 @@ namespace ZOT.BLnOFF.GUI
                     DataView dv = colindancias.data.DefaultView;
                     dv.Sort = "[HO errores SR] DESC";
                     colindancias.data = dv.ToTable();
-                    colinGrid.WorkingData = colindancias.data;
-                    WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
-                    if (colindancias.GetSiteCoordErr() != "")
-                        WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", colindancias.GetSiteCoordErr());
+                    results.colindancias = colindancias.data;
+                    results.siteCoordErrors = colindancias.GetSiteCoordErr();
+  
 
 #if DEBUG
                     timer.Stop();
@@ -319,9 +390,7 @@ namespace ZOT.BLnOFF.GUI
                     dv = candBL.data.DefaultView;
                     dv.Sort = "[HO errores SR] DESC";
                     candBL.data = dv.ToTable();
-                    candBLGrid.WorkingData = candBL.data;
-                    WPFForms.FindParent<TabItem>(candBLGrid).Visibility = Visibility.Visible;
-
+                    results.candBl = candBL.data;
 #if DEBUG
                     timer.Stop();
                     Console.WriteLine("Calcular candidatas de blacklisting: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -333,8 +402,7 @@ namespace ZOT.BLnOFF.GUI
                     dv = candOFF.data.DefaultView;
                     dv.Sort = "[HO errores SR] DESC";
                     candOFF.data = dv.ToTable();
-                    candOFFGrid.WorkingData = candOFF.data;
-                    WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
+                    results.candOff = candOFF.data;
 
 #if DEBUG
                     timer.Stop();
@@ -344,19 +412,18 @@ namespace ZOT.BLnOFF.GUI
 #endif
 
                 }
-                if ((bool)Is_PrevAnalysis_Enabled.IsChecked)
+                if (args.prevAnalisysEnabled)
                 {
-                    NIR48H nir = new NIR48H(lnBtsInputs, NIR_path.Text);
-                    errGrid.WorkingData = nir.errors;
-                    WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
+                    NIR48H nir = new NIR48H(args.lnBtsInputs, args.pathNIR48);
+                    results.error = nir.errors;
 #if DEBUG
                     timer.Stop();
                     Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
 #endif
                 }
+                e.Result = results;
 #if DEBUG
+                timer.Stop();
                 totalTimer.Stop();
                 Console.WriteLine("Tiempo Total: " + totalTimer.Elapsed.ToString(@"m\:ss\.fff"));
 #endif

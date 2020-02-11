@@ -206,8 +206,8 @@
     <Compile Include="BLnOFF\GUI\ConstantEditorBLnOFF.xaml.cs">
       <DependentUpon>ConstantEditorBLnOFF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Items\AdvancedTile.xaml.cs">
-      <DependentUpon>AdvancedTile.xaml</DependentUpon>
+    <Compile Include="GUI\InfoPage.xaml.cs">
+      <DependentUpon>InfoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUI\Items\AdvancedDataGrid.xaml.cs">
       <DependentUpon>AdvancedDataGrid.xaml</DependentUpon>
@@ -221,7 +221,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GUI\Items\AdvancedTile.xaml">
+    <Page Include="GUI\InfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -281,11 +281,9 @@
     <None Include="api\index.md" />
     <None Include="articles\intro.md" />
     <None Include="articles\toc.md" />
-    <None Include="data\R31.csv" />
     <None Include="data\SiteCoord.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="data\TA.csv" />
     <None Include="docfx.json" />
     <None Include="index.md" />
     <None Include="packages.config" />
@@ -299,11 +297,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\ZOTCredentials.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="BLnOFF\Data\BLnOFFconstants.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -320,6 +315,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Z.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\images\CtrlD_1.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

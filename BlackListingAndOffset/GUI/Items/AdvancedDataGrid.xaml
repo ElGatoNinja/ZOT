@@ -74,7 +74,7 @@
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
-                                <Popup x:Name="pop" Width="auto" IsOpen="{Binding IsChecked, ElementName=Y,Mode=TwoWay}" Closed="Cancel_Filter" StaysOpen="False">
+                                <Popup x:Name="pop" Width="auto" IsOpen="{Binding IsChecked, ElementName=Y,Mode=TwoWay}" Closed="Cancel_Filter" StaysOpen="True">
                                     <Border BorderThickness="0.5" BorderBrush="#FF9EBFD9">
                                         <Grid Background="White" Width="170">
                                             <Grid.RowDefinitions>
@@ -90,6 +90,9 @@
                                                     <Style TargetType="ListBoxItem">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsTextFiltered}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsFilteredInOtherFilter}" Value="True">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>

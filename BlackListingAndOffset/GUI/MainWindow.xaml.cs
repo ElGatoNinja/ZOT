@@ -44,14 +44,19 @@ namespace ZOT.GUI
         public void click_menuBtn(object sender, RoutedEventArgs e)
         {
             visibleTool.Visibility = Visibility.Collapsed;
+            infoPage.Visibility = Visibility.Collapsed;
+        }
+
+        public void Click_ShowInfo(object sender, RoutedEventArgs e)
+        {
+            infoFlyout.IsOpen = true;
         }
 
         //Evento generado al hacer click en una de las herramientas ya instanciadas de la barra
         //Vuelve a renderizarla en pantalla
         public void ReOpen_App_FromToolBar(object sender, RoutedEventArgs e)
         {
-            int index = Grid.GetRow(WPFForms.FindParent<NavBarTile>((Tile)sender));
-            visibleTool.Content = Tools[index];
+            visibleTool.Content = WPFForms.FindParent<NavBarTile>((Tile)sender).app;
             visibleTool.Visibility = Visibility.Visible;
             toolsMenuFlyout.IsOpen = false;
         }
@@ -66,6 +71,7 @@ namespace ZOT.GUI
         {
             StartApp(new ZOT.BLnOFF.GUI.TabControlBLnOFF());
         }
+
         private void StartApp(IZotApp app)
         {
             IZotApp zotApp = app;
@@ -82,11 +88,9 @@ namespace ZOT.GUI
                 Margin = new Thickness(0, 100 * toolBar.Children.Count, 0, 0)
 
         };
-            //var rowDef = new RowDefinition();
-            //rowDef.Height = new GridLength(100);
-            //toolBar.RowDefinitions.Add(rowDef);
+;
             toolBar.Children.Add(toolTile);
-            //Grid.SetRow(toolTile, toolBar.RowDefinitions.Count - 1);
+
  
             visibleTool.Visibility = Visibility.Visible;
         }

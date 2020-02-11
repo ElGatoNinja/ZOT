@@ -23,7 +23,7 @@ namespace ZOT.GUI.Items
     public partial class NavBarTile : UserControl
     {
         private MainWindow window;
-        private IZotApp app;
+        public IZotApp app;
 
         /// <summary>
         /// Informacion que muestra el contexto de la instancia de la aplicacion

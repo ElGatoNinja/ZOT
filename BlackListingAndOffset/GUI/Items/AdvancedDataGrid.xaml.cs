@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.ComponentModel;
 using ZOT.resources.ZOTlib;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace ZOT.GUI.Items
 {
@@ -20,9 +21,11 @@ namespace ZOT.GUI.Items
     public partial class AdvancedDataGrid : DataGrid
     {
         private DataTable _workingData;
-        ObservableCollection<FilterListItem>[] filterLists = null;
-        DataGridSortOrder LastSortOrder = new DataGridSortOrder(); 
-        ObservableCollection<FilterListItem> backUpFilterList = null;
+        public List<FilterHierarchyC> FilterHierarchy { get; set; }
+        private int activeFilters = 0;
+
+        private ObservableCollection<FilterListItem> backUpFilterList = null;
+        private DataGridSortOrder LastSortOrder;
         public AdvancedDataGridFlags Flags { get; }
         private DataGridCell _selectedCell;
         private List<ListBox> temporalListBoxContainer = new List<ListBox>();
@@ -50,14 +53,14 @@ namespace ZOT.GUI.Items
             {
                 ItemsSource = value.DefaultView;
                 _workingData = value;
-                filterLists = null;
+                FilterHierarchy = null;
                 LastSortOrder = new DataGridSortOrder();
                 backUpFilterList = null;
                 Flags.ResetState();
                 _selectedCell = null;
                 temporalListBoxContainer = new List<ListBox>();
 
-                filterLists = new ObservableCollection<FilterListItem>[value.Columns.Count];
+                FilterHierarchy = new List<FilterHierarchyC>() ;
                 try
                 {
                     for (int i = 0; i < value.Columns.Count; i++)
@@ -66,10 +69,13 @@ namespace ZOT.GUI.Items
                         //valores unicos de toda la columna
                         columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
 
-                        filterLists[i] = new ObservableCollection<FilterListItem>();
+                        FilterHierarchy.Add(new FilterHierarchyC());
+                        FilterHierarchy[i].Filter = new ObservableCollection<FilterListItem>();
                         foreach (object item in columnValues)
                         {
-                            filterLists[i].Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false });
+                            FilterHierarchy[i].Filter.Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false, IsFilteredInOtherFilter = false });
+                            FilterHierarchy[i].priority = 0;
+                            FilterHierarchy[i].column = i;
                         }
 
                     }
@@ -103,11 +109,20 @@ namespace ZOT.GUI.Items
             if (_workingData == null) return;
             if (((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column == null) return;
 
-            int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
-
-            if (FilterLists[(int)index].All(item => item.NotFiltered))
+            int column = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
+           
+            if (FilterHierarchy[column].Filter.All(item => item.NotFiltered))
             {
                 ((MahApps.Metro.IconPacks.PackIconMaterial)((ToggleButton)sender).Content).Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Filter;
+                if (FilterHierarchy[column].priority > 0)
+                {
+                    foreach (FilterHierarchyC fh in FilterHierarchy)
+                    {
+                        if (fh.priority > FilterHierarchy[column].priority)
+                            fh.priority--;
+                    }
+                    FilterHierarchy[column].priority = 0;
+                }
             }
             else
             {
@@ -115,15 +130,6 @@ namespace ZOT.GUI.Items
             }
                 
 
-        }
-
-
-        public ObservableCollection<FilterListItem>[] FilterLists
-        {
-            get
-            {
-                return filterLists;
-            }
         }
         #endregion
 
@@ -134,11 +140,11 @@ namespace ZOT.GUI.Items
         private void On_Filter_Open(object sender, RoutedEventArgs e)
         {
             //crea una copia que permite al usuario editar tranquilamente permitiendo resetear los valores del filtro en caso de cancelar
-            int index = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
-            Binding codeBinding = new Binding("FilterLists[" + index + "]");
+            int column = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
+            Binding codeBinding = new Binding("FilterHierarchy[" + column + "].Filter");
             codeBinding.Source = this;
-            temporalListBoxContainer[index].SetBinding(ListBox.ItemsSourceProperty, codeBinding);
-            backUpFilterList = new ObservableCollection<FilterListItem>(filterLists[index].Select(item => (FilterListItem)item.Clone()));
+            temporalListBoxContainer[column].SetBinding(ListBox.ItemsSourceProperty, codeBinding);
+            backUpFilterList = new ObservableCollection<FilterListItem>(FilterHierarchy[column].Filter.Select(item => (FilterListItem)item.Clone()));
         }
 
         //Hace invisibles para el usuario las columnas que estén filtradas por texto
@@ -146,12 +152,12 @@ namespace ZOT.GUI.Items
         {
             try
             {
-                int index = ((DataGridColumnHeader)((TextBox)sender).TemplatedParent).Column.DisplayIndex;
-                foreach (FilterListItem filterItem in filterLists[index])
+                int column = ((DataGridColumnHeader)((TextBox)sender).TemplatedParent).Column.DisplayIndex;
+                foreach (FilterListItem filterItem in FilterHierarchy[column].Filter)
                 {
                     filterItem.IsTextFiltered = true;
                 }
-                foreach (FilterListItem filterItem in filterLists[index].Where(item => item.Name.Contains(((TextBox)sender).Text)))
+                foreach (FilterListItem filterItem in FilterHierarchy[column].Filter.Where(item => item.Name.Contains(((TextBox)sender).Text)))
                 {
                     filterItem.IsTextFiltered = false;
                 }
@@ -164,27 +170,99 @@ namespace ZOT.GUI.Items
         //hacer filtros compuestos de todo el data set
         private void Filter_Click(object sender, RoutedEventArgs e)
         {
-            var matches = _workingData.AsEnumerable()
-                            .Where(row => Enumerable.Range(0, filterLists.Length)
-                            .All(col => filterLists[col]
-                                .Where(item =>
-                                {
-                                    if (item.IsTextFiltered) //se aplica el filtro de texto sobre los filtros individuales
+#if DEBUG
+            var timer = new Stopwatch();
+            timer.Start();
+#endif
+
+            int index = ((DataGridColumnHeader)((Control)sender).TemplatedParent).Column.DisplayIndex;
+            if (FilterHierarchy[index].priority == 0)
+            {
+                //al añadir un filtro este se añade con la minima prioridad posible y los demas filtros avanzan en la jerarquia
+                for (int i = 0; i < FilterHierarchy.Count; i++)
+                {
+                    if (FilterHierarchy[i].priority != 0)
+                        FilterHierarchy[i].priority++;
+                }
+                FilterHierarchy[index].priority++;
+            }
+            var orderedFilterHierarchy = FilterHierarchy.OrderByDescending(item => item.priority).ToList();
+
+#if DEBUG
+            timer.Stop();
+            Console.WriteLine("Ordenar Filtros: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+            timer.Reset();
+            timer.Start();
+#endif
+
+            List<DataRow> auxData = _workingData.AsEnumerable().ToList();
+            for (int i = 0; i < orderedFilterHierarchy[0].priority ; i++)
+            {
+                //se filtra el dataset con cada filtro que tenga prioridad > 0
+                auxData = auxData.AsEnumerable().Where(row => orderedFilterHierarchy[i].Filter
+                                    .Where(item =>
                                     {
-                                        item.NotFiltered = false;
-                                        item.IsTextFiltered = false; //y se quita el filtrado de texto para que la lista se vea correctamente tras la carga
-                                    }
-                                    return item.NotFiltered;
-                                })
-                                .Any(condition => condition.Name == row[col].ToString())));
+                                        if (item.IsTextFiltered) //se aplica el filtro de texto sobre los filtros individuales
+                                        {                       
+                                            item.NotFiltered = false;
+                                            item.IsTextFiltered = false; //y se quita el filtrado de texto para que la lista se vea correctamente tras la carga
+                                        }                               
+                                        return item.NotFiltered;
+                                    })
+                                    .Any(condition => condition.Name == row[orderedFilterHierarchy[i].column].ToString())).ToList();
+                //se ocultan los valores que han quedado inaccesibles en el siguiente filtro
+                var aux = auxData.AsEnumerable().Select(col => col[orderedFilterHierarchy[i + 1].column].ToString()).Distinct();
+                foreach (FilterListItem filterItem in orderedFilterHierarchy[i + 1].Filter)
+                {
+                    
+                    if(!aux.Contains(filterItem.Name))
+                    {
+                        filterItem.IsFilteredInOtherFilter = true;
+                    }
+                    else
+                    {
+                        filterItem.IsFilteredInOtherFilter = false;
+                    }
+                }
+            }
+#if DEBUG
+            timer.Stop();
+            Console.WriteLine("Filtros con prioridad: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+            timer.Reset();
+            timer.Start();
+#endif
+
+            //Se filtran las listas de los filtros vacios
+            for (int i = orderedFilterHierarchy[0].priority; i < orderedFilterHierarchy.Count; i++) 
+            {
+                var aux = auxData.AsEnumerable().Select(col => col[orderedFilterHierarchy[i].column].ToString()).Distinct();
+                foreach (FilterListItem filterItem in orderedFilterHierarchy[i].Filter)
+                {
+                    if (!aux.Contains(filterItem.Name))
+                    {
+                        filterItem.IsFilteredInOtherFilter = true;
+                    }
+                    else
+                    {
+                        filterItem.IsFilteredInOtherFilter = false;
+                    }
+                }
+            }
+
+#if DEBUG
+            timer.Stop();
+            Console.WriteLine("Quitar valores inacesibles de los otros filtros: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+#endif
+
 
             //se ordena por la ultima columna ordenada
             if (LastSortOrder.order == ListSortDirection.Ascending)
-                matches = matches.OrderBy(item => item[LastSortOrder.column]);
+                auxData = auxData.AsEnumerable().OrderBy(item => item[LastSortOrder.column]).ToList();
             else if (LastSortOrder.order == ListSortDirection.Descending)
-                matches = matches.OrderByDescending(item => item[LastSortOrder.column]);
+                auxData = auxData.AsEnumerable().OrderByDescending(item => item[LastSortOrder.column]).ToList();
 
-            ItemsSource = matches.AsDataView();
+            ItemsSource = auxData.CopyToDataTable().AsDataView();
+
             backUpFilterList = null;
             temporalListBoxContainer = new List<ListBox>(); //Al reasignar ItemsSource los filtros desplegables se joden, misterios de la naturaleza
         }
@@ -193,36 +271,60 @@ namespace ZOT.GUI.Items
         //o 2 cosas sin tener que quitar todas las casillas a mano
         private void Clean_Filter(object sender, EventArgs e)
         {
-            int index = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
-            if (filterLists[index].All(item => item.NotFiltered))
+            int column = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
+
+            if (FilterHierarchy[column].Filter.All(item => item.NotFiltered))
             {
-                foreach (FilterListItem item in filterLists[index])
+                foreach (FilterListItem item in FilterHierarchy[column].Filter)
                 {
                     item.NotFiltered = false;
                 }
             }
             else
             {
-                foreach (FilterListItem item in filterLists[index])
+                foreach (FilterListItem item in FilterHierarchy[column].Filter)
                 {
                     item.NotFiltered = true;
                 }
             }
         }
+        //devuelve todos los filtros y el dataset a su estado inicial
+        private void ResetFilters()
+        {
+            FilterHierarchy = new List<FilterHierarchyC>();
+            ItemsSource = _workingData.AsDataView();
+            for (int i = 0; i < _workingData.Columns.Count; i++)
+            {
+                List<object> columnValues = new List<object>();
+                //valores unicos de toda la columna
+                columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
+
+                FilterHierarchy.Add(new FilterHierarchyC());
+                FilterHierarchy[i].Filter = new ObservableCollection<FilterListItem>();
+                foreach (object item in columnValues)
+                {
+                    FilterHierarchy[i].Filter.Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false, IsFilteredInOtherFilter = false });
+                    FilterHierarchy[i].priority = 0;
+                    FilterHierarchy[i].column = i;
+                }
+
+            }
+
+        }
 
         //Deshace todos los cambios temporales que el usuario haya hecho sobre la interfaz del filtro y lo cierra
         private void Cancel_Filter(object sender, EventArgs e)
         {
-            int index = 0;
             if (backUpFilterList == null)
                 return;
 
-            if(sender is Popup)
-                index = ((DataGridColumnHeader)((Popup)sender).TemplatedParent).Column.DisplayIndex;
+            int column = 0;
+            if (sender is Popup)
+                column = ((DataGridColumnHeader)((Popup)sender).TemplatedParent).Column.DisplayIndex;
             else if (sender is Button)
-                index = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
+                column = ((DataGridColumnHeader)((Control)sender).TemplatedParent).Column.DisplayIndex;
 
-            filterLists[index] = new ObservableCollection<FilterListItem>(backUpFilterList.Select(item => (FilterListItem)item.Clone()));
+            FilterHierarchy[column].Filter = new ObservableCollection<FilterListItem>(backUpFilterList.Select(item => (FilterListItem)item.Clone()));
             backUpFilterList = null;
             if(sender is Button)
             {
@@ -270,7 +372,7 @@ namespace ZOT.GUI.Items
 
                                 if (!_workingData.AsEnumerable().Any(item => item[cell.Column.DisplayIndex].ToString() == oldValue))
                                 {
-                                    filterLists[cell.Column.DisplayIndex].Remove(filterLists[cell.Column.DisplayIndex].Where(item => item.Name == oldValue).Single());
+                                    FilterHierarchy[cell.Column.DisplayIndex].Filter.Remove(FilterHierarchy[cell.Column.DisplayIndex].Filter.Where(item => item.Name == oldValue).Single());
                                 }
                                 //se actualiza el valor en el origen de datos
                                 
@@ -300,17 +402,18 @@ namespace ZOT.GUI.Items
             {
                 string originalValue = _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)e.Row.Item).Row)].ItemArray[e.Column.DisplayIndex].ToString();
                 string currentValue = ((TextBox)e.EditingElement).Text;
+                int column = e.Column.DisplayIndex;
 
                 //si el nuevo valor no existía en el filtro se añade
-                if (!filterLists[e.Column.DisplayIndex].Any(item => item.Name == currentValue))
+                if (!FilterHierarchy[e.Column.DisplayIndex].Filter.Any(item => item.Name == currentValue))
                 {
-                    filterLists[e.Column.DisplayIndex].Add(new FilterListItem { IsTextFiltered = false, Name = currentValue, NotFiltered = false });
+                    FilterHierarchy[e.Column.DisplayIndex].Filter.Add(new FilterListItem { IsTextFiltered = false, Name = currentValue, NotFiltered = false });
                 }
 
                 //si solo había una copia del valor original en toda la tabla, es decir, que ya no hay, se elimina del filtro
                 if (_workingData.AsEnumerable().Select(item => item.ItemArray[e.Column.DisplayIndex].ToString() == originalValue).Count() > 1)
                 {
-                    filterLists[e.Column.DisplayIndex].Remove(filterLists[e.Column.DisplayIndex].Where(item => item.Name == originalValue).Single());
+                    FilterHierarchy[e.Column.DisplayIndex].Filter.Remove(FilterHierarchy[e.Column.DisplayIndex].Filter.Where(item => item.Name == originalValue).Single());
                 }
             }
         }
@@ -399,6 +502,16 @@ namespace ZOT.GUI.Items
                 {
                     //e.Handled = true;
                     //PasteToGrid();
+                }
+                else if(e.Key == Key.F)
+                {
+                    e.Handled = true;
+                    ResetFilters();
+                }
+                else if(e.Key == Key.H)
+                {
+                    e.Handled = true;
+                    ClipboardCopyMode = (DataGridClipboardCopyMode)((int)ClipboardCopyMode % 2 + 1);
                 }
             }
         }
@@ -506,6 +619,13 @@ namespace ZOT.GUI.Items
     class DataGridSortOrder
     {
         public ListSortDirection? order = null;
+        public int column;
+    }
+
+    public class FilterHierarchyC
+    {
+        public ObservableCollection<FilterListItem> Filter { get; set; }
+        public int priority;
         public int column;
     }
 
