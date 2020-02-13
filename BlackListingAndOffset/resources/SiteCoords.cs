@@ -33,7 +33,7 @@ namespace ZOT.resources
             }
             catch(FileNotFoundException)
             {
-                WPFForms.ShowError("No se encuentra el fichero de coordenadas","Deberia estar en data/ dentro del directorio de la aplicacion");
+                throw new FileNotFoundException("No se encuentra el fichero de coordenadas, debería estar en el directorio ZOT\\data\\");
             }
         }
 

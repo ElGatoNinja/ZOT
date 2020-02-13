@@ -84,7 +84,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ZOT.App</StartupObject>
+    <StartupObject>ZOT.GUI.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -320,6 +320,18 @@
     <Resource Include="GUI\images\CtrlD_1.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\images\filterInfo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\images\resizeCol.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\images\menubtn.jpg" />
+    <Resource Include="GUI\images\TilesImg.JPG" />
+    <Resource Include="GUI\images\toolbar.JPG" />
+    <Resource Include="GUI\images\toolbarbtn.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

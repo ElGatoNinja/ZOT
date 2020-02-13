@@ -6,6 +6,8 @@ using ZOT.resources;
 using ZOT.resources.ZOTlib;
 using System.Linq;
 using System.Data.OleDb;
+using static ZOT.BLnOFF.GUI.TabControlBLnOFF;
+using System.ComponentModel;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -53,10 +55,11 @@ namespace ZOT.BLnOFF.Code
                         }
                     }
                 }
+                 
             }
             catch(FileNotFoundException)
             {
-                WPFForms.ShowError("No se ha podido encontrar el fichero", path);
+                throw new FileNotFoundException("No se ha podido encontrar la consulta 31 en " + path);
             }
             inExports = new bool[data.Rows.Count];
 
@@ -115,14 +118,11 @@ namespace ZOT.BLnOFF.Code
                             exportData.Load(FL18reader);
                         }
                     }
-                    catch (InvalidOperationException ioe)
+                    catch (InvalidOperationException)
                     {
-                        WPFForms.ShowError("No se ha podido acceder a la base de datos", "Instala Microsoft database 2010 redistributable compatible con tu version de office." +
-                            "O asegurate de que la compilacion de esta aplicacion tiene como objetivo el mismo numero de bits que la de tu verison de office");
-                    }
-                    catch (Exception e)
-                    {
-                        WPFForms.ShowError("Fallo en la consulta de la base de datos", e.Message);
+                        throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
+                            "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema" +
+                            "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje");
                     }
                 }
             }

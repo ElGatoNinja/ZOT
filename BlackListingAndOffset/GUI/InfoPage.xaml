@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Expander Margin="10,10,10,10" Grid.Row="0">
             <Expander.Header>
@@ -22,8 +23,9 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Expander Margin="10,10,10,10" Grid.Row="0">
+                <Expander Margin="10,10,10,10" Grid.Row="0" MaxHeight="500">
                     <Expander.Header>
                         <StackPanel>
                             <Border Height="5" Width="5" />
@@ -53,16 +55,108 @@
                                 <Image Source="images/CtrlD_1.JPG" Width=" 200" Margin="30,10,10,0"/>
 
                             </Paragraph>
+
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Filtrado:</Paragraph>
+                            <Paragraph FontSize="14">
+                                Los filtros imitan el funcionamiento de los filtros de Excel, se pueden aplicar varios filtros que funcionan
+                                de forma jerarquica
+                                <LineBreak/>
+                                <Image Source="images/filterInfo.jpg" Width=" 200" Margin="30,10,10,0"/>
+                                <LineBreak/>
+                                
+                                <Bold>1-</Bold> Busqueda por texto, (sensible a mayúsculas).
+                                <LineBreak/>
+                                <Bold>2-</Bold> Si hay valores filtrados los restaura todos. Si están todos los filtra todos.
+                                <LineBreak/>
+                                <Bold>3-</Bold> Lista con todos los elementos unicos de la columna.
+                                <LineBreak/>
+                                <Bold>4-</Bold> Filtra los valores elegidos despues de cualquier filtro aplicado previamente
+                                <LineBreak/>
+                                <Bold>5-</Bold> Hacer click en el boton o fuera de la caja, restaura los valores que hubiera antes de abrir el filtro
+                                <LineBreak/>
+                            </Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Expandir Columnas:</Paragraph>
+                            <Paragraph FontSize="14">
+                                <Image Source="images/resizeCol.jpg" Width=" 200" Margin="30,10,10,0"/>
+                                <LineBreak/>
+                                <LineBreak/>Hacer click y arrastrar permite cambiar el tamaño de las columnas
+                            </Paragraph>
                         </FlowDocument>
                     </FlowDocumentScrollViewer>
                 </Expander>
-                <Expander Margin="10,10,10,10" Grid.Row="1">
+                <Expander Margin="10,10,10,10" Grid.Row="1" MaxHeight="500">
                     <Expander.Header>
                         <StackPanel>
                             <Border Height="5" Width="5" />
-                            <TextBlock Foreground="White" FontSize="15" Margin="0,0,0,5">ABRIR HERRAMIENTAS</TextBlock>
+                            <TextBlock Foreground="White" FontSize="15" Margin="0,0,0,5">FUNCIONAMIENTO BASICO</TextBlock>
                         </StackPanel>
                     </Expander.Header>
+                    <FlowDocumentScrollViewer>
+                        <FlowDocument>
+                            <Paragraph FontSize="14">
+                                Zelenza Omni Tool (ZOT) funciona como un "Launcher", permite tener varias herramientas a la vez o varias instancias independientes de
+                                la misma herramienta
+                            </Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Abrir Herramientas:</Paragraph>
+                            <Paragraph FontSize="14">
+                                Para inciar una herramienta solo hay que hacer click en uno de los botones gigantes de la pagina principal
+                                <LineBreak/>
+                                <Image Source="images/TilesImg.jpg" Width=" 200" Margin="30,10,10,0"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                Se abrira la herramienta elegida sobre el menú y ya se puede usar de forma normal.
+                            </Paragraph>
+                            <Paragraph FontSize="14">
+                                Para abrir más herramientas hay que volver al menú, esto se hace pulsando el primer boton de la barra de la izquierda.
+                                <LineBreak/>
+                                <Image Source="images/menubtn.jpg" Width=" 200" Margin="30,10,10,0"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                Ahora vale con elegir que aplicacion quieres abrir, y abrirla como antes.
+                            </Paragraph>
+
+                            <Paragraph FontWeight="DemiBold" FontSize="25">La Barra de Herramientas:</Paragraph>
+                            <Paragraph>
+                                La barra de herramientas muestra un registro de todas las aplicaciones que están activas actualmente. Y permite volver a mostrarlas en pantalla
+                                o eliminarlas.
+                                <LineBreak/>
+                                Se accede a ella haciendo click en el segundo boton
+                                <LineBreak/>
+                                <Image Source="images/toolbarbtn.jpg" Width=" 200" Margin="30,10,10,0"/>
+
+                                <LineBreak/>
+                                <LineBreak/>
+                                La barra de herramientas tiene esta pinta:
+                                <LineBreak/>
+                                <Image Source="images/toolbar.jpg" Width=" 200" Margin="30,10,10,0"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                Hacer click en el titulo vuelve a abrir la herramientas, mientras que la parte roja la cierra
+                            </Paragraph>
+
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
+                </Expander>
+                <Expander Margin="10,10,10,10" Grid.Row="2" MaxHeight="500">
+                    <Expander.Header>
+                        <StackPanel>
+                            <Border Height="5" Width="5" />
+                            <TextBlock Foreground="White" FontSize="15" Margin="0,0,0,5">¿COMO AÑADIR COORDENADAS?</TextBlock>
+                        </StackPanel>
+                    </Expander.Header>
+                    <FlowDocumentScrollViewer>
+                        <FlowDocument>
+                            <Paragraph>
+                                ZOT mantiene un fichero de coordenadas de emplazamientos conjunto para todas las heramientas que la usen.
+                                De vez en cuando alguna de esas herramienta podría avisar de que le faltan las coordenadas de algun emplazamiento y hay que añadirlas
+                                manualmente (de momento) al fichero siteCoords.csv.
+                            </Paragraph>
+                            <Paragraph>
+                                Este fichero se encuentra en el subdirectorio
+                                <Italic>data/</Italic> del directorio raiz de ZOT (la carpeta que se descarga del FTP y contiene el ejecutable.
+                            </Paragraph>
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
                 </Expander>
             </Grid>
         </Expander>
@@ -73,7 +167,43 @@
                     <TextBlock Foreground="White" FontSize="20" Margin="0,0,0,5">BLACKLISTING AND OFFSET</TextBlock>
                 </StackPanel>
             </Expander.Header>
-            <Grid/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+                <Expander Margin="10,10,10,10" Grid.Row="0" MaxHeight="500">
+                    <Expander.Header>
+                        <StackPanel>
+                            <Border Height="5" Width="5" />
+                            <TextBlock Foreground="White" FontSize="15" Margin="0,0,0,5">INPUTS</TextBlock>
+                        </StackPanel>
+                    </Expander.Header>
+                    <FlowDocumentScrollViewer>
+                        <FlowDocument>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Input sites</Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Ficheros necesarios</Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Modificar Umbrales</Paragraph>
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
+                </Expander>
+                <Expander Margin="10,10,10,10" Grid.Row="1" MaxHeight="500">
+                    <Expander.Header>
+                        <StackPanel>
+                            <Border Height="5" Width="5" />
+                            <TextBlock Foreground="White" FontSize="15" Margin="0,0,0,5">FUNCIONAMIENTO</TextBlock>
+                        </StackPanel>
+                    </Expander.Header>
+                    <FlowDocumentScrollViewer>
+                        <FlowDocument>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Hojas de resultados</Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Generar Plantillas</Paragraph>
+                            <Paragraph FontWeight="DemiBold" FontSize="25">Posibles Errores</Paragraph>
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
+                </Expander>
+            </Grid>
         </Expander>
     </Grid>
 </UserControl>

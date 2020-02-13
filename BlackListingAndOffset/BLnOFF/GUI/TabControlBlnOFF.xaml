@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Items="clr-namespace:ZOT.GUI.Items"
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:blnoff="clr-namespace:ZOT.BLnOFF.GUI"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1600">
 
@@ -84,7 +86,7 @@
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SlectedBL}" Value="True">
+                                    <DataTrigger Binding="{Binding SelectedBL}" Value="True">
                                         <Setter Property="Background" Value="GreenYellow"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -118,6 +120,10 @@
                 <Grid Margin="0,0,0.4,-2.4">
                     <Items:AdvancedDataGrid Grid.Row="0" HorizontalAlignment="Left" LoadingRow="DataGrid_LoadingRow" Margin="10,10,0,0" VerticalAlignment="Top" x:Name="errGrid" RowStyle="{StaticResource OFFDatastyle}" Style="{StaticResource AzureDataGrid}"/>
                 </Grid>
+            </TabItem>
+
+            <TabItem Header="Graficas" Visibility="Visible">
+                <blnoff:Graphs x:Name="graphObject" Margin="12"></blnoff:Graphs>
             </TabItem>
 
 

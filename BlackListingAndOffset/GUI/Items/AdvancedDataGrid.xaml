@@ -15,9 +15,12 @@
           PreviewMouseUp="MouseUp_dataGrid"
           CellEditEnding="Cell_Edited"
           CanUserAddRows="False"
+          CanUserReorderColumns="False"
           ClipboardCopyMode="IncludeHeader"
           CanUserResizeColumns="True"
           Sorting="Column_Sorted"
+          MinColumnWidth="50"
+          MaxColumnWidth="500"
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>
 
@@ -54,7 +57,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                        <Border BorderThickness="0.5 0 0.5 3" Background="#FFF7F7F7" BorderBrush="#FF9EBFD9" CornerRadius="0">
+                        <Border BorderThickness="0 0 0 3" Background="#FFF7F7F7" BorderBrush="#FF9EBFD9" CornerRadius="0">
                             <Grid Height="30">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -74,7 +77,7 @@
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
-                                <Popup x:Name="pop" Width="auto" IsOpen="{Binding IsChecked, ElementName=Y,Mode=TwoWay}" Closed="Cancel_Filter" StaysOpen="True">
+                                <Popup x:Name="pop" Width="auto" IsOpen="{Binding IsChecked, ElementName=Y,Mode=TwoWay}" Closed="Cancel_Filter" StaysOpen="False">
                                     <Border BorderThickness="0.5" BorderBrush="#FF9EBFD9">
                                         <Grid Background="White" Width="170">
                                             <Grid.RowDefinitions>
@@ -112,6 +115,11 @@
                                         </Grid>
                                     </Border>
                                 </Popup>
+                                <Thumb x:Name="PART_RightHeaderGripper" Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Width="2" BorderThickness="1"
+                                        BorderBrush="{Binding VerticalGridLinesBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"
+                                        Cursor="SizeWE"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>

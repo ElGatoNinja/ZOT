@@ -1,10 +1,13 @@
-﻿<Application x:Class="ZOT.App"
+﻿<Application x:Class="ZOT.GUI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ZOT.GUI"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            <Color x:Key="ZelenzaGolden">#D6A40D</Color>
+            <SolidColorBrush x:Key="ZelenzaGoldenBrush" Color="{StaticResource ZelenzaGolden}"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedTabControl.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />

@@ -14,9 +14,11 @@ namespace ZOT.BLnOFF.Code
     /// </summary>
     class NIR48H
     {
+        private readonly string[] dataColumns = { "Fecha", "LNBTS name", "LnCell name", "Inter X2 based HO prep", "Intra HO Att"};
         private DataTable data;
-        private readonly string[] errorColumns = {"Fecha", "LNBTS name", "Tecnologia", "Intentos Inter", "Exitos Inter", "% Exitos Inter", "Errores Inter","Mejorar Inter", "Intentos Intra", "Exitos Intra", "%Exitos Intra", "Errores Intra", "Mejorar Intra"};
-        private readonly Type[] types = { typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int) };
+
+        private readonly string[] errorColumns = {"Fecha", "LNBTS name", "Tecnologia", "Intentos Inter", "Exitos Inter", "% Exitos Inter", "Errores Inter","Mejorar Inter", "Intentos Intra", "Exitos Intra", "%Exitos Intra", "Errores Intra", "Mejorar Intra","Intentos INTER+INTRA", "% Exitos INTER+INTRA", "Errores INTER+INTRA"};
+        private readonly Type[] types = { typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int), typeof(int), typeof(double),typeof(int)};
         public DataTable errors;
         
         public NIR48H(string[] lnBtsInputs, string path)
@@ -63,7 +65,7 @@ namespace ZOT.BLnOFF.Code
                                         }
                                     }
 
-                                    //se inluyen algunos calculos a las 4 columnas que se han añadido manualmente
+                                    //se incluyen algunos calculos a las 4 columnas que se han añadido manualmente
                                     if (line[9] != null && line[10] != null) //Intra
                                     {
                                         line[aux.Length + 2] = Math.Round((double)line[9] * (double)line[10] / 100.0, 0); //Exito Intra
@@ -87,7 +89,7 @@ namespace ZOT.BLnOFF.Code
             }
             catch (FileNotFoundException)
             {
-                WPFForms.ShowError("No se ha podido encontrar el fichero", path);
+                throw new FileNotFoundException("No se ha podido encontrar la NIR 48h en " + path);
             }
         }
 
@@ -112,23 +114,29 @@ namespace ZOT.BLnOFF.Code
 
                 do
                 {
-                    byte tech = TECH_NUM.GetTechFromLNCEL((string)data.Rows[i]["LNCEL name"]);
-                    if(data.Rows[i]["Inter X2 based HO prep"] != DBNull.Value)
-                        currentData[tech, 0] += (double)data.Rows[i]["Inter X2 based HO prep"];
-                    if(data.Rows[i]["Exitos HO INTER"] != DBNull.Value) 
-                        currentData[tech, 1] += (double)data.Rows[i]["Exitos HO INTER"];
-                    if(data.Rows[i]["Intra HO Att"] != DBNull.Value)
-                        currentData[tech, 2] += (double)data.Rows[i]["Intra HO Att"];
-                    if(data.Rows[i]["Exitos HO INTRA"] != DBNull.Value)
-                        currentData[tech, 3] += (double)data.Rows[i]["Exitos HO INTRA"];
-                    
+                    try
+                    {
+                        byte tech = TECH_NUM.GetTechFromLNCEL((string)data.Rows[i]["LNCEL name"]);
+                        if (data.Rows[i]["Inter X2 based HO prep"] != DBNull.Value)
+                            currentData[tech, 0] += (double)data.Rows[i]["Inter X2 based HO prep"];
+                        if (data.Rows[i]["Exitos HO INTER"] != DBNull.Value)
+                            currentData[tech, 1] += (double)data.Rows[i]["Exitos HO INTER"];
+                        if (data.Rows[i]["Intra HO Att"] != DBNull.Value)
+                            currentData[tech, 2] += (double)data.Rows[i]["Intra HO Att"];
+                        if (data.Rows[i]["Exitos HO INTRA"] != DBNull.Value)
+                            currentData[tech, 3] += (double)data.Rows[i]["Exitos HO INTRA"];
+                    }
+                    catch (FormatException fe)
+                    {
+                        Console.WriteLine("BlackListingAndOffset->AnalisisPrevio->Nir48.cs: Una de las celdas de la NIR no tiene el formato deseado. Detalles:\n " + fe.StackTrace);
+                    }
                     i++;
 
                 } while (i < data.Rows.Count && (string)data.Rows[i]["PERIOD_START_TIME"] == (string)data.Rows[i - 1]["PERIOD_START_TIME"] && (string)data.Rows[i]["LNBTS name"] == (string)data.Rows[i - 1]["LNBTS name"]);
 
                 for (byte tech_i = 0; tech_i < 5; tech_i++) // para cada nodo y fecha se saca una linea para cada tecnologia que tenga datos
                 {
-                    double perSuccessInter = 0;
+                    double successInter = 0;
                     double errInter = 0;
                     double err2ImproveInter = 0;
 
@@ -136,7 +144,7 @@ namespace ZOT.BLnOFF.Code
 
                     if (currentData[tech_i, 0] > 0)
                     {
-                        perSuccessInter = Math.Round(currentData[tech_i, 1] / currentData[tech_i, 0] * 100.0, 2); //Redondear
+                        successInter = Math.Round(currentData[tech_i, 1] / currentData[tech_i, 0] * 100.0, 2); //Redondear
                         errInter = currentData[tech_i, 0] - currentData[tech_i, 1];
                         double MaxErr = currentData[tech_i, 0] - (CONSTANTS.U_INTER.PER[tech_i] * currentData[tech_i, 0] / 100.0);
                         err2ImproveInter = 0;
@@ -146,12 +154,12 @@ namespace ZOT.BLnOFF.Code
                         }
                     }
 
-                    double perSuccessIntra = 0;
+                    double successIntra = 0;
                     double errIntra = 0;
                     double err2ImproveIntra = 0;
                     if (currentData[tech_i, 2] > 0)
                     {
-                        perSuccessIntra = Math.Round(currentData[tech_i, 3] / currentData[tech_i, 2] * 100, 2); //Redondear
+                        successIntra = Math.Round(currentData[tech_i, 3] / currentData[tech_i, 2] * 100, 2); //Redondear
                         errIntra = currentData[tech_i, 2] - currentData[tech_i, 3];
                         double MaxErr = currentData[tech_i, 2] - (CONSTANTS.U_INTRA.PER[tech_i] * currentData[tech_i, 2] / 100);
                         err2ImproveIntra = 0;
@@ -160,10 +168,17 @@ namespace ZOT.BLnOFF.Code
                             err2ImproveIntra = (errIntra - Math.Round(MaxErr, 0)) + 1;
                         }
                     }
-                    object[] aux = new object[13] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], perSuccessInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], perSuccessIntra, errIntra, err2ImproveIntra};
+
+
+                    double errInterPlusIntra = 0;
+                    errInterPlusIntra = currentData[tech_i, 2]+currentData[tech_i,0] - (currentData[tech_i, 3] + currentData[tech_i,1]);
+
+    
+                    
+                    object[] aux = new object[16] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], successInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], successIntra, errIntra, err2ImproveIntra, currentData[tech_i, 0] + currentData[tech_i, 2], currentData[tech_i, 1] + currentData[tech_i, 3], errInterPlusIntra};
                     errors.Rows.Add(aux);
+
                 }
-                
             }
         }
     }

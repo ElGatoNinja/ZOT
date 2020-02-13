@@ -49,7 +49,7 @@ namespace ZOT.GUI
 
         public void Click_ShowInfo(object sender, RoutedEventArgs e)
         {
-            infoFlyout.IsOpen = true;
+            infoFlyout.IsOpen = !infoFlyout.IsOpen;
         }
 
         //Evento generado al hacer click en una de las herramientas ya instanciadas de la barra

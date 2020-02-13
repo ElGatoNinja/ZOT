@@ -8,6 +8,37 @@
     mc:Ignorable="d"
     WindowState="Maximized"
     Title="Zelenza Omni Tool">
+    <Controls:MetroWindow.Resources>
+        <Style TargetType="Controls:Tile">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation To="{StaticResource ZelenzaGolden}"
+                                    Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
+                                    FillBehavior="HoldEnd" 
+                                    Duration="0:0:01"
+                                    SpeedRatio="5"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
+                                    FillBehavior="Stop" 
+                                    Duration="0:0:01" SpeedRatio="2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Controls:MetroWindow.Resources>
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Click="Click_ShowInfo">
@@ -48,15 +79,16 @@
         <!--Sobre este control se muestra el control que el usuario usa, y se superpone al menu-->
         <ContentControl x:Name="visibleTool" Grid.Column="1"/>
         
-        <Grid Grid.Column="0" Margin="0,27,0,0" Background="AliceBlue">
+        <Grid Grid.Column="0" Margin="0,0,0,0" Background="White">
             <Grid.RowDefinitions>
+                <RowDefinition Height="27"/>
                 <RowDefinition Height="55"/>
                 <RowDefinition Height="55"/>
             </Grid.RowDefinitions>
-            <Button x:Name="startBtn" Click="click_menuBtn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" >
+            <Button x:Name="startBtn" Click="click_menuBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}"   Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"  >
                 <iconPacks:PackIconMaterial Kind="Apps" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}} }" />
             </Button>
-            <Button x:Name="menuBtn" Click="toggle_tool_menu" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+            <Button x:Name="menuBtn" Click="toggle_tool_menu" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="BarsSolid" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
             </Button>
             

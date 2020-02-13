@@ -19,7 +19,6 @@ namespace ZOT.BLnOFF.GUI
     public partial class TabControlBLnOFF : UserControl ,IZotApp
     {
         private List<StringWorkArround> lnBtsInputGrid;
-        Task<ProgressDialogController> progressBar;
 
         #region IZOTAPP
         public string AppName
@@ -230,6 +229,15 @@ namespace ZOT.BLnOFF.GUI
             public string siteCoordErrors;
         }
 
+        public struct bgwBlnOffProgress
+        {
+            public Exception exception;
+            public string errorTitle;
+            public string errorInfo;
+            public int progres;
+            public string progresInfo;
+        }
+
         private void Launch(object sender, RoutedEventArgs e)
         {
             String[] aux = new String[lnBtsInputGrid.Count];
@@ -279,6 +287,7 @@ namespace ZOT.BLnOFF.GUI
             System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
         }
 
+        //esta a huevo para implementar una barra de progreso
         private void BackGround_Progress(object sender, ProgressChangedEventArgs e)
         {
             
@@ -287,30 +296,56 @@ namespace ZOT.BLnOFF.GUI
         //tras acabar el procesado en segundo plano se actualiza la interfaz con ellos
         private void BackGround_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
-            if (output.colindancias != null)
+            if (e.Error == null)
             {
-                colinGrid.WorkingData = output.colindancias;
-                WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
-            }
+                bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
+                if (output.colindancias != null)
+                {
+                    colinGrid.WorkingData = output.colindancias;
+                    WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
+                }
 
-            if (output.siteCoordErrors != "")
-                WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", output.siteCoordErrors);
-            
-            if (output.candBl != null)
-            {
-                candBLGrid.WorkingData = output.candBl;
-                WPFForms.FindParent<TabItem>(candBLGrid).Visibility = Visibility.Visible;
+                if (output.siteCoordErrors != "" && (bool)Is_BlnOFF_Enabled.IsChecked)
+                    WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", output.siteCoordErrors);
+
+                if (output.candBl != null)
+                {
+                    candBLGrid.WorkingData = output.candBl;
+                    WPFForms.FindParent<TabItem>(candBLGrid).Visibility = Visibility.Visible;
+                }
+                if (output.candOff != null)
+                {
+                    candOFFGrid.WorkingData = output.candOff;
+                    WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
+                }
+                if (output.error != null)
+                {
+                    errGrid.WorkingData = output.error;
+                    WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
+
+                    graphObject.Errors = output.error;
+                }
+
+
             }
-            if (output.candOff != null)
+            else
             {
-                candOFFGrid.WorkingData = output.candOff;
-                WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
-            }
-            if (output.error != null)
-            {
-                errGrid.WorkingData = output.error;
-                WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
+                //control de errores en BackGround
+                switch(e.Error.GetType().Name)
+                {
+                    case "FileNotFoundException":
+                        WPFForms.ShowError("Falta un archivo", e.Error.Message);
+                        break;
+                    case "InvalidOperationException":
+                        WPFForms.ShowError("Error critico", e.Error.Message);
+                        break;
+                    case "ArgumentException":
+                        WPFForms.ShowError("Error en los datos", e.Error.Message);
+                        break;
+                    default:
+                        WPFForms.ShowError("Error no controlado", e.Error.Message);
+                        break;
+                }
             }
         }
 
@@ -326,112 +361,111 @@ namespace ZOT.BLnOFF.GUI
 #endif
             bgwBlnOffArgument args = (bgwBlnOffArgument)e.Argument;
             bgwBlnOffResult results = new bgwBlnOffResult();
-            
-            try
+
+            if (args.BLnOffEnabled)
             {
-                if (args.BLnOffEnabled)
+
+                //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
+                Colindancias colindancias = new Colindancias();
+                RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
+                R31.completeR31(args.pathSRAN, args.pathFL18);
+
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Completar consulta31: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
+#endif
+
+                TimingAdvance TA = new TimingAdvance(args.lnBtsInputs, args.pathTA);
+
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Sacar Timing Advance: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
+#endif
+                Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18);
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
+#endif
+                    
+                foreach(DataRow dataRow in export.data.Rows)
                 {
+                    colindancias.CheckColin(dataRow, R31);
+                }
+                foreach(DataRow dataRow in R31.NotInExports())
+                {
+                    colindancias.CheckColinsNotInExports(dataRow);
+                }
+                colindancias.AddENBID();
 
-                    //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
-                    Colindancias colindancias = new Colindancias();
-                    RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
-                    R31.completeR31(args.pathSRAN, args.pathFL18);
-
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Completar consulta31: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
-#endif
-
-                    TimingAdvance TA = new TimingAdvance(args.lnBtsInputs, args.pathTA);
-
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Sacar Timing Advance: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
-#endif
-                    Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18);
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
-#endif
-
-                    foreach(DataRow dataRow in export.data.Rows)
-                    {
-                        colindancias.CheckColin(dataRow, R31);
-                    }
-                    foreach(DataRow dataRow in R31.NotInExports())
-                    {
-                        colindancias.CheckColinsNotInExports(dataRow);
-                    }
-                    colindancias.AddENBID();
-
-                    //Dibujar tablas
-                    DataView dv = colindancias.data.DefaultView;
-                    dv.Sort = "[HO errores SR] DESC";
-                    colindancias.data = dv.ToTable();
-                    results.colindancias = colindancias.data;
-                    results.siteCoordErrors = colindancias.GetSiteCoordErr();
+                //Dibujar tablas
+                DataView dv = colindancias.data.DefaultView;
+                dv.Sort = "[HO errores SR] DESC";
+                colindancias.data = dv.ToTable();
+                results.colindancias = colindancias.data;
+                results.siteCoordErrors = colindancias.GetSiteCoordErr();
   
 
 #if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Calcular Colindancias: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
+                timer.Stop();
+                Console.WriteLine("Calcular Colindancias: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
 #endif
 
-                    //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
-                    CandidatesBL candBL = new CandidatesBL(colindancias);
-                    dv = candBL.data.DefaultView;
-                    dv.Sort = "[HO errores SR] DESC";
-                    candBL.data = dv.ToTable();
-                    results.candBl = candBL.data;
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Calcular candidatas de blacklisting: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
-#endif
-
-                    CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
-                    dv = candOFF.data.DefaultView;
-                    dv.Sort = "[HO errores SR] DESC";
-                    candOFF.data = dv.ToTable();
-                    results.candOff = candOFF.data;
-
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Calcular candidatas de offset: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-                    timer.Reset();
-                    timer.Start();
-#endif
-
-                }
-                if (args.prevAnalisysEnabled)
-                {
-                    NIR48H nir = new NIR48H(args.lnBtsInputs, args.pathNIR48);
-                    results.error = nir.errors;
-#if DEBUG
-                    timer.Stop();
-                    Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
-#endif
-                }
-                e.Result = results;
+                //Se calculan las candidatas para BlackListing y para Offset, que quedaran disponibles para la edicion manual del usuario en la interfaz grafica
+                CandidatesBL candBL = new CandidatesBL(colindancias);
+                dv = candBL.data.DefaultView;
+                dv.Sort = "[HO errores SR] DESC";
+                candBL.data = dv.ToTable();
+                results.candBl = candBL.data;
 #if DEBUG
                 timer.Stop();
-                totalTimer.Stop();
-                Console.WriteLine("Tiempo Total: " + totalTimer.Elapsed.ToString(@"m\:ss\.fff"));
+                Console.WriteLine("Calcular candidatas de blacklisting: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
+#endif
+
+                CandidatesOFF candOFF = new CandidatesOFF(TA, colindancias, candBL);
+                dv = candOFF.data.DefaultView;
+                dv.Sort = "[HO errores SR] DESC";
+                candOFF.data = dv.ToTable();
+                results.candOff = candOFF.data;
+
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Calcular candidatas de offset: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
+                timer.Reset();
+                timer.Start();
+#endif
+
+            }
+            if (args.prevAnalisysEnabled)
+            {
+                NIR48H nir = new NIR48H(args.lnBtsInputs, args.pathNIR48);
+                results.error = nir.errors;
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
 #endif
             }
-            catch(Exception ex)
-            {
-                WPFForms.ShowError("Algo ha ido mal en la ejecucion" , ex.Message);
-            }
+            e.Result = results;
+#if DEBUG
+            timer.Stop();
+            totalTimer.Stop();
+            Console.WriteLine("Tiempo Total: " + totalTimer.Elapsed.ToString(@"m\:ss\.fff"));
+#endif
+
+        }
+
+        private void Graphs_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

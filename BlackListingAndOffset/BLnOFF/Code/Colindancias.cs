@@ -94,22 +94,26 @@ namespace ZOT.BLnOFF.Code
                 }
                 if (found == false)
                 {
-                    String[] aux1 = exportRow.Field<String>("srcName").Split('_');
-                    String[] aux2 = exportRow.Field<String>("dstName").Split('_');
-                    int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                    int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
-                    dist = siteCoords.Distance(site1, site2);
+                    try
+                    {
+                        String[] aux1 = exportRow.Field<String>("srcName").Split('_');
+                        String[] aux2 = exportRow.Field<String>("dstName").Split('_');
+                        int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
+                        int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
+                        dist = siteCoords.Distance(site1, site2);
 
-                    if (exportRow["x2LinkStatus"] != DBNull.Value)
-                        interfaceX2 = (int)exportRow["x2LinkStatus"];
-                    else
-                        interfaceX2 = null;
+                        if (exportRow["x2LinkStatus"] != DBNull.Value)
+                            interfaceX2 = (int)exportRow["x2LinkStatus"];
+                        else
+                            interfaceX2 = null;
 
-                    aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"],dist, null, exportRow["cellIndOffNeigh"], null, null, null, exportRow["handoverAllowed"], null, interfaceX2, "No esta en el RSLTE31" };
-                }
-                lock (data) //hay que porteger la escritura de la lista para hacer multithreading
-                {
-                    data.Rows.Add(aux);
+                        aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], dist, null, exportRow["cellIndOffNeigh"], null, null, null, exportRow["handoverAllowed"], null, interfaceX2, "No esta en el RSLTE31" };
+                        data.Rows.Add(aux);
+                    }
+                    catch (NullReferenceException)
+                    {
+                        Console.WriteLine("BlackListingAndOffset->Colindancias.cs: Alguno de los coponentes de exportRow es nullo, la linea se salta");
+                    }
                 }
             }
             catch (EvaluateException ee)
