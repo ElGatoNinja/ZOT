@@ -292,24 +292,7 @@ namespace ZOT.GUI.Items
         private void ResetFilters()
         {
             FilterHierarchy = new List<FilterHierarchyC>();
-            ItemsSource = _workingData.AsDataView();
-            for (int i = 0; i < _workingData.Columns.Count; i++)
-            {
-                List<object> columnValues = new List<object>();
-                //valores unicos de toda la columna
-                columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
-
-                FilterHierarchy.Add(new FilterHierarchyC());
-                FilterHierarchy[i].Filter = new ObservableCollection<FilterListItem>();
-                foreach (object item in columnValues)
-                {
-                    FilterHierarchy[i].Filter.Add(new FilterListItem { NotFiltered = true, Name = item.ToString(), IsTextFiltered = false, IsFilteredInOtherFilter = false });
-                    FilterHierarchy[i].priority = 0;
-                    FilterHierarchy[i].column = i;
-                }
-
-            }
-
+            WorkingData = _workingData;
         }
 
         //Deshace todos los cambios temporales que el usuario haya hecho sobre la interfaz del filtro y lo cierra

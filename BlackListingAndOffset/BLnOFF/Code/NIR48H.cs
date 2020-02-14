@@ -14,8 +14,9 @@ namespace ZOT.BLnOFF.Code
     /// </summary>
     class NIR48H
     {
-        private readonly string[] dataColumns = { "Fecha", "LNBTS name", "LnCell name", "Inter X2 based HO prep", "Intra HO Att"};
-        private DataTable data;
+        private readonly string[] dataColumns = { "PERIOD_START_TIME", "LNBTS name", "LNCEL name","Tecnologia", "Intentos Inter", "% Exitos Inter" , "Exitos HO INTER" , "Errores HO INTER", "Intentos Intra", "% Exitos Intra", "Exitos HO INTRA", "Errores HO INTRA" };
+        private readonly Type[] dataTypes = { typeof(string), typeof(string), typeof(string), typeof(string), typeof(int), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double), typeof(double), typeof(double) };
+        public DataTable data;
 
         private readonly string[] errorColumns = {"Fecha", "LNBTS name", "Tecnologia", "Intentos Inter", "Exitos Inter", "% Exitos Inter", "Errores Inter","Mejorar Inter", "Intentos Intra", "Exitos Intra", "%Exitos Intra", "Errores Intra", "Mejorar Intra","Intentos INTER+INTRA", "% Exitos INTER+INTRA", "Errores INTER+INTRA"};
         private readonly Type[] types = { typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int), typeof(int), typeof(int), typeof(double), typeof(int), typeof(int), typeof(int), typeof(double),typeof(int)};
@@ -30,18 +31,10 @@ namespace ZOT.BLnOFF.Code
                 {
                     //Establecer Columnas
                     string[] aux = reader.ReadLine().Split(';'); //Linea de titulo
-                    for (int i = 0; i < aux.Length; i++)
+                    for (int i = 0; i < dataColumns.Length; i++)
                     {
-                        data.Columns.Add(aux[i]);
-                        if (i < 4)
-                            data.Columns[aux[i]].DataType = typeof(string);
-                        else
-                            data.Columns[aux[i]].DataType = typeof(double);
+                        data.Columns.Add(dataColumns[i], dataTypes[i]);
                     }
-                    data.Columns.Add("Exitos HO INTER", typeof(double));
-                    data.Columns.Add("Fallos HO INTER", typeof(double));
-                    data.Columns.Add("Exitos HO INTRA", typeof(double));
-                    data.Columns.Add("Fallos HO INTRA", typeof(double));
 
                     while (!reader.EndOfStream)
                     {
@@ -52,29 +45,36 @@ namespace ZOT.BLnOFF.Code
                             {
                                 if (aux[2].Equals(lnBts))
                                 {
-                                    object[] line = new object[aux.Length + 4];
-                                    for (int i = 0; i < aux.Length; i++)
+                                    object[] line = new object[data.Columns.Count];
+
+                                    line[0] = aux[0]; //Fecha
+                                    line[1] = aux[2]; //Lnbts
+                                    line[2] = aux[3]; //Lncel
+                                    line[3] = TECH_NUM.GetName(TECH_NUM.GetTechFromLNCEL(aux[3])); //Tecnología
+
+                                    double? value;
+                                    Conversion.ToDouble(aux[11],out value); //Intentos Inter
+                                    line[4] = value;
+
+                                    Conversion.ToDouble(aux[12], out value); //% Exitos Inter
+                                    line[5] = value;
+
+                                    if (line[4] != null && line[5] != null) 
                                     {
-                                        if (i < 4)
-                                            line[i] = aux[i];
-                                        else
-                                        {
-                                            double? value;
-                                            Conversion.ToDouble(aux[i], out value);
-                                            line[i] = value;
-                                        }
+                                        line[6] = Math.Round((double)line[5] * (double)line[4] / 100.0, 0); //Exito Inter
+                                        line[7] = (double)line[5] - (double)line[6]; // Errores Inter
                                     }
 
-                                    //se incluyen algunos calculos a las 4 columnas que se han añadido manualmente
-                                    if (line[9] != null && line[10] != null) //Intra
+                                    Conversion.ToDouble(aux[9], out value); //Intentos Intra
+                                    line[8] = value;
+
+                                    Conversion.ToDouble(aux[10], out value); //Intentos Intra
+                                    line[9] = value;
+
+                                    if (line[9] != null && line[8] != null) 
                                     {
-                                        line[aux.Length + 2] = Math.Round((double)line[9] * (double)line[10] / 100.0, 0); //Exito Intra
-                                        line[aux.Length + 3] = (double)line[9] - (double)line[aux.Length + 2]; // Errores Intra
-                                    }
-                                    if (line[11] != null && line[12] != null) //Inter
-                                    {
-                                        line[aux.Length] = Math.Round((double)line[12] * (double)line[11] / 100.0, 0); //Exito Inter
-                                        line[aux.Length + 1] = (double)line[11] - (double)line[aux.Length]; // Errores Inter
+                                        line[10] = Math.Round((double)line[8] * (double)line[9] / 100.0, 0); //Exito Intra
+                                        line[11] = (double)line[9] - (double)line[10]; // Errores Intra
                                     }
 
 
@@ -117,12 +117,12 @@ namespace ZOT.BLnOFF.Code
                     try
                     {
                         byte tech = TECH_NUM.GetTechFromLNCEL((string)data.Rows[i]["LNCEL name"]);
-                        if (data.Rows[i]["Inter X2 based HO prep"] != DBNull.Value)
-                            currentData[tech, 0] += (double)data.Rows[i]["Inter X2 based HO prep"];
+                        if (data.Rows[i]["Intentos Inter"] != DBNull.Value)
+                            currentData[tech, 0] += (int)data.Rows[i]["Intentos Inter"];
                         if (data.Rows[i]["Exitos HO INTER"] != DBNull.Value)
                             currentData[tech, 1] += (double)data.Rows[i]["Exitos HO INTER"];
-                        if (data.Rows[i]["Intra HO Att"] != DBNull.Value)
-                            currentData[tech, 2] += (double)data.Rows[i]["Intra HO Att"];
+                        if (data.Rows[i]["Intentos Intra"] != DBNull.Value)
+                            currentData[tech, 2] += (int)data.Rows[i]["Intentos Intra"];
                         if (data.Rows[i]["Exitos HO INTRA"] != DBNull.Value)
                             currentData[tech, 3] += (double)data.Rows[i]["Exitos HO INTRA"];
                     }

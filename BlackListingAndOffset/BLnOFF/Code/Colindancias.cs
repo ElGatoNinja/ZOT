@@ -89,6 +89,7 @@ namespace ZOT.BLnOFF.Code
                             HOerrPrep = Math.Round((double)HOerrPrep, 0);
 
                         aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], dist, HOsucc, exportRow["cellIndOffNeigh"], HOatem, exportRow["handoverAllowed"], HOerrSR, HOsuccSR, HOerrPrep, interfaceX2, "" };
+                        data.Rows.Add(aux);
                         break; //solo coincidira una vez
                     }
                 }

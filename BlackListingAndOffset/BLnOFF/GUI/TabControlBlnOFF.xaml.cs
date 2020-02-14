@@ -12,13 +12,25 @@ using System.Windows.Input;
 using System.Diagnostics;
 using MahApps.Metro.Controls.Dialogs;
 using System.Threading.Tasks;
+using System.Linq;
+using LiveCharts;
+using LiveCharts.Wpf;
+using System.Windows.Media;
+using System.Windows.Data;
 
 namespace ZOT.BLnOFF.GUI
 {
     //Todo el flujo de la herramienta se controla desde esta clase
-    public partial class TabControlBLnOFF : UserControl ,IZotApp
+    public partial class TabControlBLnOFF : UserControl, IZotApp
     {
+        private readonly string[] interColorsLines = {"1A2C33","345766", "4E8399", "68AECC", "82DAFF" };
+        private readonly string[] intraColorsLines = {"781B18", "9E231F", "BF2B26", "E6342E", "FF3A33"};
         private List<StringWorkArround> lnBtsInputGrid;
+
+        //se usan para hacer las graficas
+        private DataTable erroresAMejorar;
+        private DataTable nirPlotData;
+        public List<SectorListItem> Sectors { get; set; }
 
         #region IZOTAPP
         public string AppName
@@ -46,7 +58,7 @@ namespace ZOT.BLnOFF.GUI
             lnBtsVisualGrid.ItemsSource = lnBtsInputGrid;
 
             //relacciona las funciones que permiten pegar celdas por lotes con la grid de inputs
-            CommandBinding PasteCmdBinding = new CommandBinding(ApplicationCommands.Paste,PasteExecuted);
+            CommandBinding PasteCmdBinding = new CommandBinding(ApplicationCommands.Paste, PasteExecuted);
             lnBtsVisualGrid.CommandBindings.Add(PasteCmdBinding);
 
             //Recuperar ultimos paths usados
@@ -71,7 +83,7 @@ namespace ZOT.BLnOFF.GUI
             for (int i = 0; i < rows.Length; i++)
             {
                 string value = rows[i].Split('\t')[0].Trim();
-                lnBtsInputGrid[index + i].LnBtsName = value; 
+                lnBtsInputGrid[index + i].LnBtsName = value;
             }
         }
 
@@ -83,7 +95,7 @@ namespace ZOT.BLnOFF.GUI
             }
             catch (Exception)
             {
-                RSLTE31_path.Text =ZOTFiles.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31");
+                RSLTE31_path.Text = ZOTFiles.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31");
             }
         }
         private void TA_Click(object sender, RoutedEventArgs e)
@@ -116,11 +128,11 @@ namespace ZOT.BLnOFF.GUI
             {
                 SRAN_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export SRAN", Path.GetDirectoryName(SRAN_path.Text));
             }
-            catch(Exception)
+            catch (Exception)
             {
                 SRAN_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export SRAN");
             }
-           
+
         }
         private void FL18_Click(object sender, RoutedEventArgs e)
         {
@@ -128,7 +140,7 @@ namespace ZOT.BLnOFF.GUI
             {
                 FL18_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export FL18", Path.GetDirectoryName(SRAN_path.Text));
             }
-            catch(Exception)
+            catch (Exception)
             {
                 FL18_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export FL18");
             }
@@ -148,9 +160,9 @@ namespace ZOT.BLnOFF.GUI
         private void BL_template_gen(object sender, RoutedEventArgs e)
         {
             DataTable data = ((DataView)candBLGrid.ItemsSource).ToTable();
-            string output_path = ZOTFiles.FileSaver("Archivos CSV |*csv","csv","Exportando plantilla de Blacklisting");
+            string output_path = ZOTFiles.FileSaver("Archivos CSV |*csv", "csv", "Exportando plantilla de Blacklisting");
             using (StreamWriter writer = new StreamWriter(output_path))
-            {                
+            {
                 writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handowerAllowed;removeAllowed;;");
                 foreach (DataRow row in data.Rows)
                 {
@@ -226,6 +238,7 @@ namespace ZOT.BLnOFF.GUI
             public DataTable candBl;
             public DataTable candOff;
             public DataTable error;
+            public DataTable nirPlotData;
             public string siteCoordErrors;
         }
 
@@ -290,7 +303,7 @@ namespace ZOT.BLnOFF.GUI
         //esta a huevo para implementar una barra de progreso
         private void BackGround_Progress(object sender, ProgressChangedEventArgs e)
         {
-            
+
         }
 
         //tras acabar el procesado en segundo plano se actualiza la interfaz con ellos
@@ -319,11 +332,51 @@ namespace ZOT.BLnOFF.GUI
                     WPFForms.FindParent<TabItem>(candOFFGrid).Visibility = Visibility.Visible;
                 }
                 if (output.error != null)
-                {
+                {   //se genera la tabla de analis previo
                     errGrid.WorkingData = output.error;
                     WPFForms.FindParent<TabItem>(errGrid).Visibility = Visibility.Visible;
 
-                    graphObject.Errors = output.error;
+                    //se genera la gárafica por nodos
+                    this.erroresAMejorar = output.error;
+
+                    List<string> sites = erroresAMejorar.AsEnumerable().Select(col => (string)col[1]).Distinct().ToList();
+                    siteListBox_1.ItemsSource = sites;
+                    siteListBox_1.SelectedItem = sites[0];
+
+                    List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
+                    techListBox_1.ItemsSource = Tech;
+                    techListBox_1.SelectedItem = Tech[0];
+
+                    UpdateGraph_1();
+                }
+                if (output.nirPlotData != null)
+                {
+                    this.nirPlotData = output.nirPlotData;
+
+                    List<string> sites = erroresAMejorar.AsEnumerable().Select(col => (string)col[1]).Distinct().ToList();
+                    siteListBox_2.ItemsSource = sites;
+                    siteListBox_2.SelectedItem = sites[0];
+
+                    List<string> tech = this.nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem).Select(col => (string)col[3]).Distinct().ToList<string>();
+                    techListBox_2.ItemsSource = tech;
+                    techListBox_2.SelectedItem = tech[0];
+
+                    var cells2Plot = nirPlotData.AsEnumerable()
+                          .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                          .Select(col => (string)col[2]).Distinct().Where(item => !item.Contains("="));
+
+                    List<SectorListItem> sectors = new List<SectorListItem>();
+                    foreach (var cell in cells2Plot)
+                    {
+                        sectors.Add(new SectorListItem() { Enabled = true, Sector = TECH_NUM.GetSectorFromLNCEL(cell) });
+                    }
+                    this.Sectors = sectors;
+
+                    Binding codeBinding = new Binding("Sectors");
+                    codeBinding.Source = this;
+                    sectorListBox.SetBinding(ListBox.ItemsSourceProperty, codeBinding);
+
+                    UpdateGraph_2();
                 }
 
 
@@ -331,7 +384,7 @@ namespace ZOT.BLnOFF.GUI
             else
             {
                 //control de errores en BackGround
-                switch(e.Error.GetType().Name)
+                switch (e.Error.GetType().Name)
                 {
                     case "FileNotFoundException":
                         WPFForms.ShowError("Falta un archivo", e.Error.Message);
@@ -392,12 +445,12 @@ namespace ZOT.BLnOFF.GUI
                 timer.Reset();
                 timer.Start();
 #endif
-                    
-                foreach(DataRow dataRow in export.data.Rows)
+
+                foreach (DataRow dataRow in export.data.Rows)
                 {
                     colindancias.CheckColin(dataRow, R31);
                 }
-                foreach(DataRow dataRow in R31.NotInExports())
+                foreach (DataRow dataRow in R31.NotInExports())
                 {
                     colindancias.CheckColinsNotInExports(dataRow);
                 }
@@ -409,7 +462,7 @@ namespace ZOT.BLnOFF.GUI
                 colindancias.data = dv.ToTable();
                 results.colindancias = colindancias.data;
                 results.siteCoordErrors = colindancias.GetSiteCoordErr();
-  
+
 
 #if DEBUG
                 timer.Stop();
@@ -449,6 +502,7 @@ namespace ZOT.BLnOFF.GUI
             {
                 NIR48H nir = new NIR48H(args.lnBtsInputs, args.pathNIR48);
                 results.error = nir.errors;
+                results.nirPlotData = nir.data;
 #if DEBUG
                 timer.Stop();
                 Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -463,10 +517,233 @@ namespace ZOT.BLnOFF.GUI
 
         }
 
-        private void Graphs_Loaded(object sender, RoutedEventArgs e)
+        #region GRAPHS
+        private void Node_ComBox_Changed_Graph_1(object sender, SelectionChangedEventArgs e)
         {
+            List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
+            techListBox_1.ItemsSource = Tech;
+            techListBox_1.SelectedItem = Tech[0];
 
+            UpdateGraph_1();
         }
+
+        private void Tech_ComBox_Changed_Graph_1(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateGraph_1();
+        }
+
+        private void UpdateGraph_1()
+        {
+            int maxBarAxis = erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (int)col[3] + (int)col[8]).Max<int>();
+            List<string> xAxis = erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (string)col[0]).ToList<string>();
+
+            SeriesCollection data = new SeriesCollection
+            {
+                    new StackedColumnSeries
+                    {
+                        Values = new ChartValues<int>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (int)col[3]).ToList<int>()),
+                        //StackMode = StackMode.Values,
+                        DataLabels = true,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#78B4CC")),
+                        ScalesYAt = 0,
+                        Title ="Intentos HO Inter"
+                    },
+                    new StackedColumnSeries
+                    {
+                        Values = new ChartValues<int>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (int)col[8]).ToList<int>()),
+                        StackMode = StackMode.Values,
+                        DataLabels = true,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF897D")),
+                        ScalesYAt = 0,
+                        Title ="Intentos HO Intra"
+                    },
+                    new LineSeries
+                    {
+                        Values = new ChartValues<double>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (double)col[5]).ToList<double>()),
+                        ScalesYAt = 1,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#30CC5A6F")),
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#CC5A6F")),
+                        StrokeThickness = 3,
+                        Title =" % Exitos HO Inter"
+
+
+                    },
+                    new LineSeries
+                    {
+                        Values = new ChartValues<double>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (double)col[10]).ToList<double>()),
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#30407F99")),
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#407F99")),
+                        ScalesYAt = 1,
+                        StrokeThickness = 3,
+                        Title ="% Exitos HO Intra"
+
+
+                    }
+                };
+
+
+            graphObject_1.DrawGraph(data, maxBarAxis, xAxis);
+        }
+
+        private void Node_ComBox_Changed_Graph_2(object sender, SelectionChangedEventArgs e)
+        {
+            List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
+            techListBox_2.ItemsSource = Tech;
+            techListBox_2.SelectedItem = Tech[0];
+
+            var cells2Plot = nirPlotData.AsEnumerable()
+                              .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                             .Select(col => (string)col[2]).Distinct();
+
+            List<SectorListItem> sectors = new List<SectorListItem>();
+            foreach (var cell in cells2Plot)
+            {
+                sectors.Add(new SectorListItem(){ Enabled = true, Sector = TECH_NUM.GetSectorFromLNCEL(cell)});
+            }
+            this.Sectors = sectors;
+
+            Binding codeBinding = new Binding("Sectors");
+            codeBinding.Source = this;
+            sectorListBox.SetBinding(ListBox.ItemsSourceProperty, codeBinding);
+            UpdateGraph_2();
+        }
+
+        private void Tech_ComBox_Changed_Graph_2(object sender, SelectionChangedEventArgs e)
+        {
+            var cells2Plot = nirPlotData.AsEnumerable()
+                  .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                 .Select(col => (string)col[2]).Distinct();
+
+            List<SectorListItem> sectors = new List<SectorListItem>();
+            foreach (var cell in cells2Plot)
+            {
+                sectors.Add(new SectorListItem() { Enabled = true, Sector = TECH_NUM.GetSectorFromLNCEL(cell) });
+            }
+            this.Sectors = sectors;
+
+            Binding codeBinding = new Binding("Sectors");
+            codeBinding.Source = this;
+            sectorListBox.SetBinding(ListBox.ItemsSourceProperty, codeBinding);
+            UpdateGraph_2();
+        }
+
+        private void Toggle_Inter(object sender, RoutedEventArgs e)
+        {
+            UpdateGraph_2();
+        }
+
+        private void Toggle_Intra(object sender, RoutedEventArgs e)
+        {
+            UpdateGraph_2();
+        }
+
+        private void Sectors_Changed(object sender, RoutedEventArgs e)
+        {
+            UpdateGraph_2();
+        }
+
+        private void UpdateGraph_2()
+        {
+            var plotSet = nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem
+               && !((string)row[2]).Contains("=") && Sectors.Where(sector => sector.Enabled).Any(condition => condition.Sector == TECH_NUM.GetSectorFromLNCEL((string)row[2])));
+
+            List<string> xAxis = nirPlotData.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[2] == (string)techListBox_2.SelectedItem)
+                                .Select(col => (string)col[0]).ToList<string>();
+
+
+            var cells2Plot = nirPlotData.AsEnumerable()
+                              .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                             .Select(col => (string)col[2]);
+
+
+            SeriesCollection data = new SeriesCollection();
+
+            var plotSectors = Sectors.Where(item => item.Enabled).ToList();
+
+            if ((bool)checkInter.IsChecked)
+            {
+                for(int i = 0; i< plotSectors.Count;i++) // Intentos
+                {
+                    data.Add(new StackedColumnSeries
+                    {
+                        Values = new ChartValues<int>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (int)col["Intentos Inter"])),
+                        StackMode = StackMode.Values,
+                        DataLabels = true,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA"+interColorsLines[i])),
+                        ScalesYAt = 0,
+                        Title = "Intentos HO Inter s" + plotSectors[i].Sector
+                    });
+                }
+
+                
+            }
+            if ((bool)checkIntra.IsChecked)
+            {
+                for (int i = 0; i < plotSectors.Count; i++) // Intentos
+                {
+                    data.Add(new StackedColumnSeries
+                    {
+                        Values = new ChartValues<int>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (int)col["Intentos Intra"])),
+                        StackMode = StackMode.Values,
+                        DataLabels = true,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA" + intraColorsLines[i])),
+                        ScalesYAt = 0,
+                        Title = "Intentos HO Intra s" + plotSectors[i].Sector
+                    });
+                }
+            }
+            if ((bool)checkInter.IsChecked)
+            { 
+                for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
+                {
+                    data.Add(new LineSeries
+                    {
+                        Values = new ChartValues<double>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (double)col["% Exitos Inter"])),
+                        ScalesYAt = 1,
+                        StrokeThickness = 2.5,
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#"+interColorsLines[i])),
+                        Fill = Brushes.Transparent,
+                        Title = " % Exitos HO Inter s" + plotSectors[i].Sector
+
+                    });
+                }
+
+            }
+            if ((bool)checkIntra.IsChecked)
+            {
+                for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
+                {
+                    data.Add(new LineSeries
+                    {
+                        Values = new ChartValues<double>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (double)col["% Exitos Intra"])),
+                        ScalesYAt = 1,
+                        StrokeThickness = 2.5,
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#"+intraColorsLines[i])),
+                        Fill = Brushes.Transparent,
+                        Title = " % Exitos HO Intra s" + plotSectors[i].Sector,
+                    });
+                }
+            }
+            
+            //arreglar lo de los ejes, te puedes inspirar en UpdateGraph_1(), y la ordenacion de las fechas, buena suerte, y pregunta cosas a la gente 
+            graphObject_2.DrawGraph(data, 50000, xAxis);
+        }
+
+
+        #endregion
     }
 
     public class StringWorkArround : INotifyPropertyChanged
@@ -475,7 +752,36 @@ namespace ZOT.BLnOFF.GUI
         public string LnBtsName
         {
             get { return _value; }
-            set { _value = value; OnPropertyChanged("LnBtsName"); }        
+            set { _value = value; OnPropertyChanged("LnBtsName"); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyname)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyname));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checkbox y texto para habilitar o desabilitar sectores en la grafica
+    /// </summary>
+    public class SectorListItem : INotifyPropertyChanged
+    {
+        private bool enabled = true;
+        private int sector;
+        public bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; OnPropertyChanged("Enabled"); }
+        }
+
+        public int Sector
+        {
+            get { return sector; }
+            set { sector = value; OnPropertyChanged("Sector"); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

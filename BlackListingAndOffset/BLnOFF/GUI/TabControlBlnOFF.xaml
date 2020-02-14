@@ -78,6 +78,7 @@
                             <DataGridTextColumn Header="lnBts Name" Binding="{Binding LnBtsName}" CanUserReorder="False" CanUserResize="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Colindancias" Visibility="Collapsed">
@@ -122,8 +123,43 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Graficas" Visibility="Visible">
-                <blnoff:Graphs x:Name="graphObject" Margin="12"></blnoff:Graphs>
+            <TabItem Header="Plot Nodo" Visibility="Visible">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ComboBox  x:Name="siteListBox_1" SelectionChanged="Node_ComBox_Changed_Graph_1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="50,0,0,0" />
+                    <ComboBox  x:Name="techListBox_1" SelectionChanged="Tech_ComBox_Changed_Graph_1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="400,0,0,0" />
+                    <blnoff:Graphs x:Name="graphObject_1" Grid.Row="1" Margin="12"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Plot Celdas" Visibility="Visible">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Nodo:" Margin="50,10,0,0"/>
+                    <Label Content="Banda:" Margin="400,10,0,0"/>
+                    <ComboBox  x:Name="siteListBox_2" SelectionChanged="Node_ComBox_Changed_Graph_2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="50,0,0,0" />
+                    <ComboBox  x:Name="techListBox_2" SelectionChanged="Tech_ComBox_Changed_Graph_2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="400,0,0,0" />
+                    <Label Content="Sectores:" HorizontalAlignment="Right" Margin="0,0,250,0" VerticalAlignment="Center"/>
+                    <ListBox x:Name="sectorListBox" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,150,0" Width="100" Height="90">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" Click="Sectors_Changed"/>
+                                    <TextBlock Text="{Binding Sector}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <CheckBox Content="Inter" x:Name="checkInter" IsChecked="True" Click="Toggle_Inter" HorizontalAlignment="Right" Margin="0,0,50,30" VerticalAlignment="Center"/>
+                    <CheckBox Content="Intra" IsChecked="True" x:Name="checkIntra" Click="Toggle_Intra" HorizontalAlignment="Right" Margin="0,30,51,0" VerticalAlignment="Center"/>
+                    <blnoff:Graphs x:Name="graphObject_2" Grid.Row="1" Margin="12"/>
+                </Grid>
             </TabItem>
 
 

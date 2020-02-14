@@ -231,6 +231,11 @@ namespace ZOT.resources
                 string[] aux = LNCELname.Split('_');
                 return (byte)(Convert.ToInt32(aux[aux.Length - 1]) % 10);
             }
+            public static byte GetSectorFromLNCEL(string LNCELname)
+            {
+                string[] aux = LNCELname.Split('_');
+                return (byte)(Convert.ToInt32(aux[aux.Length - 1]) / 10);
+            }
 
             /// <summary>
             /// Retorna el nombre de la tecnología de 4G correspondiente
