@@ -57,8 +57,8 @@ namespace ZOT.BLnOFF.GUI
         /// <param name="xAxis"> Coleccion de fechas que se quieren poner en el eje x</param>
         public void DrawGraph(SeriesCollection data, int maxBarAxis, List<string> xAxis)
         {
+            graph.DisableAnimations = true;
             this.xAxis = xAxis;
-
             graph.AxisY.Clear();
             graph.AxisY.Add(new Axis
             {
@@ -88,7 +88,7 @@ namespace ZOT.BLnOFF.GUI
             datesAxisSlider.Maximum = xAxis.Count;
             datesAxisSlider.UpperValue = datesAxisSlider.Maximum;
             datesAxisSlider.Minimum = 0;
-            datesAxisSlider.LowerValue = 0;
+            datesAxisSlider.LowerValue = datesAxisSlider.UpperValue - 60 ;
             intentsAxisSlider.Maximum = maxBarAxis * 1.5;
             intentsAxisSlider.Value = maxBarAxis;
             percentAxisSlider.LowerValue = 80;

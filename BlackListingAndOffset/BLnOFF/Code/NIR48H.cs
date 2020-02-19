@@ -175,7 +175,7 @@ namespace ZOT.BLnOFF.Code
 
     
                     
-                    object[] aux = new object[16] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], successInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], successIntra, errIntra, err2ImproveIntra, currentData[tech_i, 0] + currentData[tech_i, 2], currentData[tech_i, 1] + currentData[tech_i, 3], errInterPlusIntra};
+                    object[] aux = new object[16] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], successInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], successIntra, errIntra, err2ImproveIntra, currentData[tech_i, 0] + currentData[tech_i, 2], (currentData[tech_i, 1] + currentData[tech_i, 3]) / (currentData[tech_i, 0] + currentData [tech_i,2]) * 100 , errInterPlusIntra};
                     errors.Rows.Add(aux);
 
                 }

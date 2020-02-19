@@ -17,6 +17,8 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using System.Windows.Media;
 using System.Windows.Data;
+using System.Globalization;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace ZOT.BLnOFF.GUI
 {
@@ -522,7 +524,7 @@ namespace ZOT.BLnOFF.GUI
         {
             List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
             techListBox_1.ItemsSource = Tech;
-            techListBox_1.SelectedItem = Tech[0];
+            techListBox_1.SelectedItem = Tech[Tech.Count-1];
 
             UpdateGraph_1();
         }
@@ -530,6 +532,36 @@ namespace ZOT.BLnOFF.GUI
         private void Tech_ComBox_Changed_Graph_1(object sender, SelectionChangedEventArgs e)
         {
             UpdateGraph_1();
+        }
+
+        private List<String> sort_fechas(List<String> ld)
+
+        {
+            List<String> fechas = new List<String>();
+            char separator = '.';
+            
+            foreach(String fecha in ld)
+            {
+                String aux = "";
+                String[] strings = fecha.Split(separator);
+                aux = aux + strings[2] + "/" + strings[0] + "/" + strings[1];
+                fechas.Add(aux);
+            }
+
+            fechas.Sort();
+            List<String> fechas2 = new List<String>();
+            separator = '/';
+            foreach (String fecha in fechas)
+            {
+                String aux = "";
+                String[] strings = fecha.Split(separator);
+                aux = aux + strings[2] + "/" + strings[1] + "/" + strings[0];
+                fechas2.Add(aux);
+            }
+            
+
+            return fechas2;
+    
         }
 
         private void UpdateGraph_1()
@@ -540,6 +572,7 @@ namespace ZOT.BLnOFF.GUI
             List<string> xAxis = erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (string)col[0]).ToList<string>();
+            List<string> xAxis2 = sort_fechas(xAxis);
 
             SeriesCollection data = new SeriesCollection
             {
@@ -552,7 +585,8 @@ namespace ZOT.BLnOFF.GUI
                         DataLabels = true,
                         Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#78B4CC")),
                         ScalesYAt = 0,
-                        Title ="Intentos HO Inter"
+                        Title ="Intentos HO Inter",
+
                     },
                     new StackedColumnSeries
                     {
@@ -571,10 +605,11 @@ namespace ZOT.BLnOFF.GUI
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (double)col[5]).ToList<double>()),
                         ScalesYAt = 1,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#30CC5A6F")),
+                        Fill = Brushes.Transparent,
                         Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#CC5A6F")),
                         StrokeThickness = 3,
-                        Title =" % Exitos HO Inter"
+                        Title =" % Exitos HO Inter",
+                        Opacity = 0
 
 
                     },
@@ -583,19 +618,50 @@ namespace ZOT.BLnOFF.GUI
                         Values = new ChartValues<double>(erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (double)col[10]).ToList<double>()),
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#30407F99")),
+                        Fill = Brushes.Transparent,
                         Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#407F99")),
                         ScalesYAt = 1,
                         StrokeThickness = 3,
                         Title ="% Exitos HO Intra"
 
 
+
+                    },
+                    /* new StackedColumnSeries
+                    {
+                        Values = new ChartValues<int>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (int)col[13]).ToList<int>()),
+                        //StackMode = StackMode.Values,
+                        DataLabels = true,
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#7058CC")),
+                        ScalesYAt = 0,
+                        Title ="Intentos HO Inter + Intra"
+                    },
+                    */
+
+                      new LineSeries
+                    {
+                        Values = new ChartValues<double>(erroresAMejorar.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                                .Select(col => (double)col[14]).ToList<double>()),
+                        Fill = Brushes.Transparent,
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#941C99")),
+                        ScalesYAt = 1,
+                        StrokeThickness = 3,
+                        Title ="% Exitos HO Inter + Intra",
+                        Opacity = 0
+
+
                     }
+
                 };
 
 
-            graphObject_1.DrawGraph(data, maxBarAxis, xAxis);
+            graphObject_1.DrawGraph(data, maxBarAxis, xAxis2);
         }
+
+
 
         private void Node_ComBox_Changed_Graph_2(object sender, SelectionChangedEventArgs e)
         {
@@ -663,7 +729,9 @@ namespace ZOT.BLnOFF.GUI
                                 .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[2] == (string)techListBox_2.SelectedItem)
                                 .Select(col => (string)col[0]).ToList<string>();
 
-
+            List<String> xAxis2 = sort_fechas(xAxis);
+           
+            
             var cells2Plot = nirPlotData.AsEnumerable()
                               .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
                              .Select(col => (string)col[2]);
@@ -737,7 +805,7 @@ namespace ZOT.BLnOFF.GUI
                     });
                 }
             }
-            
+           
             //arreglar lo de los ejes, te puedes inspirar en UpdateGraph_1(), y la ordenacion de las fechas, buena suerte, y pregunta cosas a la gente 
             graphObject_2.DrawGraph(data, 50000, xAxis);
         }
