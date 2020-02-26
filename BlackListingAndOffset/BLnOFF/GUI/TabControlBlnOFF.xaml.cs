@@ -165,7 +165,7 @@ namespace ZOT.BLnOFF.GUI
             string output_path = ZOTFiles.FileSaver("Archivos CSV |*csv", "csv", "Exportando plantilla de Blacklisting");
             using (StreamWriter writer = new StreamWriter(output_path))
             {
-                writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handowerAllowed;removeAllowed;;");
+                writer.WriteLine("Objeto;mrbtsId;lnBtsId;lnCelId;lnRelId;handoverAllowed;removeAllowed;;");
                 foreach (DataRow row in data.Rows)
                 {
                     if ((bool)row["SelectedBL"])
