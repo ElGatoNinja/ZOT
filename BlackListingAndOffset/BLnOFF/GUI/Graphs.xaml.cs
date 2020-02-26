@@ -79,7 +79,7 @@ namespace ZOT.BLnOFF.GUI
                 Labels = xAxis,
                 LabelsRotation = 60,
                 Separator = new LiveCharts.Wpf.Separator { Step = 1 }
-            });
+            }); 
             
             graph.Series = data;
 

@@ -147,7 +147,7 @@ namespace ZOT.GUI.Items
             backUpFilterList = new ObservableCollection<FilterListItem>(FilterHierarchy[column].Filter.Select(item => (FilterListItem)item.Clone()));
         }
 
-        //Hace invisibles para el usuario las columnas que estén filtradas por texto
+        //Hace invisibles para el usuario las columnas que estén filtradas por texto 
         private void Text_Filter_Changed(object sender, EventArgs e)
         {
             try

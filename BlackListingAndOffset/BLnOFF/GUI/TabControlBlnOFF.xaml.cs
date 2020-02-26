@@ -21,7 +21,7 @@ using System.Globalization;
 using Xamarin.Forms.PlatformConfiguration;
 
 namespace ZOT.BLnOFF.GUI
-{
+{ 
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl, IZotApp
     {

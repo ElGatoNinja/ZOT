@@ -23,7 +23,7 @@
           MaxColumnWidth="500"
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>
-
+ 
         <Style TargetType="{x:Type DataGridCell}">
             <EventSetter Event="PreviewMouseDown" Handler="MouseDown_Cell"/>
             <Style.Triggers>
