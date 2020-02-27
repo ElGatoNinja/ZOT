@@ -372,7 +372,9 @@ namespace ZOT.GUI.Items
                             }
                             else if(_selectedCell.Content is CheckBox) //si la celda tiene un checkbox
                             {
-                                if (isFiltered) { ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked; }
+                                if (isFiltered) //Arrastrar no funciona perfectamente, aquí se comprueba si se ha realizado algún filtrado, porque el comportamiento es distinto frente a si no
+                                { ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked; }
+
                                 else _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
                                 
                             }

@@ -203,6 +203,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="48H\GUI\TabControlBlnOFF.xaml.cs">
+      <DependentUpon>TabControlBlnOFF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BLnOFF\Code\CandidatesBL.cs" />
     <Compile Include="BLnOFF\Code\CandidatesOFF.cs" />
     <Compile Include="BLnOFF\Code\CONSTANTS.cs" />
@@ -227,6 +230,10 @@
     </Compile>
     <Compile Include="resources\ZOTlib.cs" />
     <Compile Include="resources\SiteCoords.cs" />
+    <Page Include="48H\GUI\TabControlBlnOFF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="BLnOFF\GUI\Graphs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,6 +350,7 @@
     <Resource Include="GUI\images\toolbar.JPG" />
     <Resource Include="GUI\images\toolbarbtn.jpg" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
