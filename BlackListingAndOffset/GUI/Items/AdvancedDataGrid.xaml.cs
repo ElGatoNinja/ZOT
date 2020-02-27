@@ -29,6 +29,7 @@ namespace ZOT.GUI.Items
         public AdvancedDataGridFlags Flags { get; }
         private DataGridCell _selectedCell;
         private List<ListBox> temporalListBoxContainer = new List<ListBox>();
+        private bool isFiltered = false;
 
         #region INITIALIZATION
         public AdvancedDataGrid()
@@ -272,6 +273,7 @@ namespace ZOT.GUI.Items
 
             backUpFilterList = null;
             temporalListBoxContainer = new List<ListBox>(); //Al reasignar ItemsSource los filtros desplegables se joden, misterios de la naturaleza
+            isFiltered = true;
         }
 
         //Vuelve a marcar todo en la interfaz del filtro o si esta todo marcado lo quita todo para que el usuario pueda marcar solo una
@@ -300,6 +302,7 @@ namespace ZOT.GUI.Items
         {
             FilterHierarchy = new List<FilterHierarchyC>();
             WorkingData = _workingData;
+            isFiltered = false;
         }
 
         //Deshace todos los cambios temporales que el usuario haya hecho sobre la interfaz del filtro y lo cierra
@@ -369,8 +372,9 @@ namespace ZOT.GUI.Items
                             }
                             else if(_selectedCell.Content is CheckBox) //si la celda tiene un checkbox
                             {
-                                //_workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
-                                ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
+                                if (isFiltered) { ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked; }
+                                else _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
+                                
                             }
                         }
                         else
