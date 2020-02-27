@@ -25,8 +25,8 @@ namespace ZOT.BLnOFF.GUI
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl, IZotApp
     {
-        private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "68AECC", "82DAFF" };
-        private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "E6342E", "FF3A33"};
+        private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff" };
+        private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136" };
         private List<StringWorkArround> lnBtsInputGrid;
 
         //se usan para hacer las graficas
