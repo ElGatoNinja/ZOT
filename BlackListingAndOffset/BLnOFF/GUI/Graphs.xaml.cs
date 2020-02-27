@@ -78,7 +78,7 @@ namespace ZOT.BLnOFF.GUI
             {
                 Labels = xAxis,
                 LabelsRotation = 60,
-                Separator = new LiveCharts.Wpf.Separator { Step = 1 }
+                Separator = new LiveCharts.Wpf.Separator { Step = 2 }
             }); 
             
             graph.Series = data;
@@ -113,6 +113,7 @@ namespace ZOT.BLnOFF.GUI
                 datesAxisSlider.LowerValue = e.OldLowerValue;
                 return;
             }
+            if((datesAxisSlider.UpperValue - datesAxisSlider.LowerValue) < 50)
             graph.AxisX[0] = new Axis
             {
                 MaxValue = (int)e.NewUpperValue,
@@ -121,6 +122,25 @@ namespace ZOT.BLnOFF.GUI
                 LabelsRotation = 60,
                 Separator = new LiveCharts.Wpf.Separator { Step = 1 }
             };
+
+            else if ((datesAxisSlider.UpperValue - datesAxisSlider.LowerValue) < 70)
+                graph.AxisX[0] = new Axis
+                {
+                    MaxValue = (int)e.NewUpperValue,
+                    MinValue = (int)e.NewLowerValue,
+                    Labels = xAxis,
+                    LabelsRotation = 60,
+                    Separator = new LiveCharts.Wpf.Separator { Step = 2 }
+                };
+            else
+                graph.AxisX[0] = new Axis
+                {
+                    MaxValue = (int)e.NewUpperValue,
+                    MinValue = (int)e.NewLowerValue,
+                    Labels = xAxis,
+                    LabelsRotation = 60,
+                    Separator = new LiveCharts.Wpf.Separator { Step = 3 }
+                };
         }
 
         private void Percent_Range_Changed(object sender, RangeSelectionChangedEventArgs e)

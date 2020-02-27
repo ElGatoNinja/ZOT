@@ -47,7 +47,7 @@ namespace ZOT.BLnOFF.Code
                                 {
                                     object[] line = new object[data.Columns.Count];
 
-                                    line[0] = aux[0]; //Fecha
+                                    line[0] = change_fecha(aux[0]); //Fecha
                                     line[1] = aux[2]; //Lnbts
                                     line[2] = aux[3]; //Lncel
                                     line[3] = TECH_NUM.GetName(TECH_NUM.GetTechFromLNCEL(aux[3])); //Tecnología
@@ -93,12 +93,21 @@ namespace ZOT.BLnOFF.Code
             }
         }
 
+        private String change_fecha(String fecha)
+        {
+            char separator = '.';
+            String aux = "";
+            String[] strings = fecha.Split(separator);
+            aux = aux + strings[2] + "/" + strings[0] + "/" + strings[1];
+            return aux;
+        }
+
 
         // Analiza los errores de los datos guardados y añade las conclusiones como columnas al dataset
         private void ProcessData()
         {
             DataView dv = data.DefaultView;
-            dv.Sort = "[LNBTS name] DESC, [PERIOD_START_TIME] ASC";
+            dv.Sort = " [PERIOD_START_TIME] ASC";
             data = dv.ToTable();
 
             errors = new DataTable();

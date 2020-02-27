@@ -77,8 +77,15 @@ namespace ZOT.GUI.Items
                             FilterHierarchy[i].priority = 0;
                             FilterHierarchy[i].column = i;
                         }
-
+                        var aux = FilterHierarchy[i].Filter.OrderBy(x => x.Name).ToList();
+                        FilterHierarchy[i].Filter.Clear();
+                        foreach(FilterListItem f in aux)
+                        {
+                            FilterHierarchy[i].Filter.Add(f);
+                        }
                     }
+                    
+
                 }
                 catch (NullReferenceException)  //causado por inicializacion sin ItemSource, es decir la mayoria de las veces
                 {
@@ -362,8 +369,8 @@ namespace ZOT.GUI.Items
                             }
                             else if(_selectedCell.Content is CheckBox) //si la celda tiene un checkbox
                             {
-                                _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
-                                //((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)selectedCell.Content).IsChecked;
+                                //_workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
+                                ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
                             }
                         }
                         else

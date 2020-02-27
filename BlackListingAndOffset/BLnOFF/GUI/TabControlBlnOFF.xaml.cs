@@ -25,8 +25,8 @@ namespace ZOT.BLnOFF.GUI
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl, IZotApp
     {
-        private readonly string[] interColorsLines = {"1A2C33","345766", "4E8399", "68AECC", "82DAFF" };
-        private readonly string[] intraColorsLines = {"781B18", "9E231F", "BF2B26", "E6342E", "FF3A33"};
+        private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "68AECC", "82DAFF" };
+        private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "E6342E", "FF3A33"};
         private List<StringWorkArround> lnBtsInputGrid;
 
         //se usan para hacer las graficas
@@ -534,24 +534,15 @@ namespace ZOT.BLnOFF.GUI
             UpdateGraph_1();
         }
 
+     
+
         private List<String> sort_fechas(List<String> ld)
 
         {
-            List<String> fechas = new List<String>();
-            char separator = '.';
             
-            foreach(String fecha in ld)
-            {
-                String aux = "";
-                String[] strings = fecha.Split(separator);
-                aux = aux + strings[2] + "/" + strings[0] + "/" + strings[1];
-                fechas.Add(aux);
-            }
-
-            fechas.Sort();
             List<String> fechas2 = new List<String>();
-            separator = '/';
-            foreach (String fecha in fechas)
+            char separator = '/';
+            foreach (String fecha in ld)
             {
                 String aux = "";
                 String[] strings = fecha.Split(separator);
@@ -725,7 +716,7 @@ namespace ZOT.BLnOFF.GUI
             var plotSet = nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem
                && !((string)row[2]).Contains("=") && Sectors.Where(sector => sector.Enabled).Any(condition => condition.Sector == TECH_NUM.GetSectorFromLNCEL((string)row[2])));
 
-            List<string> xAxis = nirPlotData.AsEnumerable()
+            List<string> xAxis = erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[2] == (string)techListBox_2.SelectedItem)
                                 .Select(col => (string)col[0]).ToList<string>();
 
@@ -807,7 +798,7 @@ namespace ZOT.BLnOFF.GUI
             }
            
             //arreglar lo de los ejes, te puedes inspirar en UpdateGraph_1(), y la ordenacion de las fechas, buena suerte, y pregunta cosas a la gente 
-            graphObject_2.DrawGraph(data, 50000, xAxis);
+            graphObject_2.DrawGraph(data, 50000, xAxis2);
         }
 
 
