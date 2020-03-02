@@ -162,7 +162,7 @@
                     </ListBox>
                     <CheckBox Content="Inter" x:Name="checkInter" IsChecked="True" Click="Toggle_Inter" HorizontalAlignment="Right" Margin="0,0,50,30" VerticalAlignment="Center"/>
                     <CheckBox Content="Intra" IsChecked="True" x:Name="checkIntra" Click="Toggle_Intra" HorizontalAlignment="Right" Margin="0,30,51,0" VerticalAlignment="Center"/>
-                    <blnoff:Graphs x:Name="graphObject_2" Grid.Row="1" Margin="12"/>
+                    <blnoff:Graphs x:Name="graphObject_2" Grid.Row="1" Margin="12" />
                 </Grid>
             </TabItem>
 

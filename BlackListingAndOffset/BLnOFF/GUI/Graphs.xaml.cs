@@ -58,6 +58,7 @@ namespace ZOT.BLnOFF.GUI
         public void DrawGraph(SeriesCollection data, int maxBarAxis, List<string> xAxis)
         {
             graph.DisableAnimations = true;
+            
             this.xAxis = xAxis;
             graph.AxisY.Clear();
             graph.AxisY.Add(new Axis
@@ -82,6 +83,7 @@ namespace ZOT.BLnOFF.GUI
             }); 
             
             graph.Series = data;
+            
 
             
             //tras dibujar la grafica se ajustan los sliders para estar acordes a los datos

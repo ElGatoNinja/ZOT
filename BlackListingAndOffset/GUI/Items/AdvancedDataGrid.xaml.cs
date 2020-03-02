@@ -54,6 +54,7 @@ namespace ZOT.GUI.Items
             {
                 ItemsSource = value.DefaultView;
                 _workingData = value;
+
                 FilterHierarchy = null;
                 LastSortOrder = new DataGridSortOrder();
                 backUpFilterList = null;
@@ -114,7 +115,7 @@ namespace ZOT.GUI.Items
         private void FilterBtn_Initialized_From_Template(object sender, EventArgs e)
         {
             //inicializacion vacía
-            if (_workingData == null) return;
+            if (WorkingData == null) return;
             if (((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column == null) return;
 
             int column = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
@@ -182,7 +183,7 @@ namespace ZOT.GUI.Items
             var timer = new Stopwatch();
             timer.Start();
 #endif
-
+            
             int index = ((DataGridColumnHeader)((Control)sender).TemplatedParent).Column.DisplayIndex;
             if (FilterHierarchy[index].priority == 0)
             {
@@ -203,10 +204,13 @@ namespace ZOT.GUI.Items
             timer.Start();
 #endif
 
+            
+
             List<DataRow> auxData = _workingData.AsEnumerable().ToList();
             for (int i = 0; i < orderedFilterHierarchy[0].priority ; i++)
             {
                 //se filtra el dataset con cada filtro que tenga prioridad > 0
+                
                 auxData = auxData.AsEnumerable().Where(row => orderedFilterHierarchy[i].Filter
                                     .Where(item =>
                                     {
@@ -232,6 +236,7 @@ namespace ZOT.GUI.Items
                         filterItem.IsFilteredInOtherFilter = false;
                     }
                 }
+                
             }
 #if DEBUG
             timer.Stop();
@@ -263,17 +268,20 @@ namespace ZOT.GUI.Items
 #endif
 
 
+            /*
             //se ordena por la ultima columna ordenada
             if (LastSortOrder.order == ListSortDirection.Ascending)
                 auxData = auxData.AsEnumerable().OrderBy(item => item[LastSortOrder.column]).ToList();
             else if (LastSortOrder.order == ListSortDirection.Descending)
                 auxData = auxData.AsEnumerable().OrderByDescending(item => item[LastSortOrder.column]).ToList();
-
-            ItemsSource = auxData.CopyToDataTable().AsDataView();
-
+                */
+            
+            
+            WorkingData = auxData.CopyToDataTable().AsDataView().ToTable();        
             backUpFilterList = null;
             temporalListBoxContainer = new List<ListBox>(); //Al reasignar ItemsSource los filtros desplegables se joden, misterios de la naturaleza
             isFiltered = true;
+
         }
 
         //Vuelve a marcar todo en la interfaz del filtro o si esta todo marcado lo quita todo para que el usuario pueda marcar solo una
@@ -416,11 +424,17 @@ namespace ZOT.GUI.Items
         {
 
             this._selectedCell = (DataGridCell)sender;
-
+            
             if(((DataGridCell)sender).Content is CheckBox && !Flags.MultiEdit) //solo 1 click para cambiar las cell con checkbox de true a false
             {
                 e.Handled = true;
+
+               
                 ((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex] = !(bool)((DataRowView)((DataGridCell)sender).DataContext).Row[((DataGridCell)sender).Column.DisplayIndex];
+               
+                
+              
+
             }
         }
 
