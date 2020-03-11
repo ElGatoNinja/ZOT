@@ -30,6 +30,7 @@ namespace ZOT.GUI.Items
         private DataGridCell _selectedCell;
         private List<ListBox> temporalListBoxContainer = new List<ListBox>();
         private bool isFiltered = false;
+        
 
         #region INITIALIZATION
         public AdvancedDataGrid()
@@ -54,14 +55,12 @@ namespace ZOT.GUI.Items
             {
                 ItemsSource = value.DefaultView;
                 _workingData = value;
-
                 FilterHierarchy = null;
                 LastSortOrder = new DataGridSortOrder();
                 backUpFilterList = null;
                 Flags.ResetState();
                 _selectedCell = null;
                 temporalListBoxContainer = new List<ListBox>();
-
                 FilterHierarchy = new List<FilterHierarchyC>() ;
                 try
                 {
@@ -174,6 +173,62 @@ namespace ZOT.GUI.Items
             catch (NullReferenceException) { } //Durante la actualizacion de los datos tras el filtrado
         }
 
+        private void Filtrar(Object sender, RoutedEventArgs e)
+        {
+            int column = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
+            List<Object> columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
+            var aux = FilterHierarchy[column].Filter.Where(x => x.NotFiltered == true).Distinct().ToList();
+            Console.WriteLine("VECTOR: " + aux.Count);
+            string filtro = WorkingData.DefaultView.RowFilter;
+            if (aux.Count == 1)
+            {
+                if (!isFiltered)
+                {
+                    filtro += " [" + WorkingData.Columns[column].ColumnName + "] = '" + aux[0].Name + "' ";
+                }
+                else
+                {
+                    filtro += "AND ([" + WorkingData.Columns[column].ColumnName + "] = '" + aux[0].Name + "' ) ";
+                }
+            }
+            else
+            {
+                if (!isFiltered)
+                {
+                    filtro += "( [" + WorkingData.Columns[column].ColumnName + "]  IN ( '" + aux[0].Name + "' , " ;
+                    for (int i = 1; i < aux.Count - 1; i++)
+                    {
+
+                        filtro = filtro + "'" + aux[i].Name + "' , ";
+                        Console.WriteLine("COLUMNA: " + WorkingData.Columns[column].ColumnName);
+                        Console.WriteLine("VALOR: " + aux[i].Name);
+
+                    }
+                    
+
+                }
+                else
+                {
+                    filtro += " AND ( [" + WorkingData.Columns[column].ColumnName + "] IN ( '" + aux[0].Name + "' , ";
+                    for (int i = 1; i < aux.Count - 1; i++)
+                    {
+                        filtro = filtro + "'" + aux[i].Name + "' , ";
+                        Console.WriteLine("COLUMNA: " + WorkingData.Columns[column].ColumnName);
+                        Console.WriteLine("VALOR: " + aux[i].Name);
+
+                    }
+
+                }
+                filtro = filtro + "'" + aux[aux.Count - 1].Name + "' ) )";
+            }
+            Console.WriteLine("FILTRO: " + filtro);
+            WorkingData.DefaultView.RowFilter = filtro;
+            isFiltered = true;
+            var aux2 = FilterHierarchy[column].Filter.Where(x => x.NotFiltered == false).Distinct().ToList();
+            
+           
+            
+        }
 
         //Aquí sucede la autentica magia, coge todas las elecciones individuales de cada filtro y las aplica a todo el dataset, permitiendo
         //hacer filtros compuestos de todo el data set
@@ -277,7 +332,8 @@ namespace ZOT.GUI.Items
                 */
             
             
-            WorkingData = auxData.CopyToDataTable().AsDataView().ToTable();        
+            ItemsSource = auxData.CopyToDataTable().AsDataView().ToTable().AsDataView();
+            _workingData = auxData.CopyToDataTable().AsDataView().ToTable();
             backUpFilterList = null;
             temporalListBoxContainer = new List<ListBox>(); //Al reasignar ItemsSource los filtros desplegables se joden, misterios de la naturaleza
             isFiltered = true;
@@ -308,8 +364,9 @@ namespace ZOT.GUI.Items
         //devuelve todos los filtros y el dataset a su estado inicial
         private void ResetFilters()
         {
-            FilterHierarchy = new List<FilterHierarchyC>();
-            WorkingData = _workingData;
+            //FilterHierarchy = new List<FilterHierarchyC>();
+            WorkingData.DefaultView.RowFilter = "";
+            
             isFiltered = false;
         }
 
@@ -380,8 +437,8 @@ namespace ZOT.GUI.Items
                             }
                             else if(_selectedCell.Content is CheckBox) //si la celda tiene un checkbox
                             {
-                                if (isFiltered) { ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked; }
-                                else _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
+                                 //(isFiltered) { ((DataView)(this.ItemsSource)).Table.Rows[row.GetIndex()][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked; }
+                                 _workingData.Rows[_workingData.Rows.IndexOf(((DataRowView)row.Item).Row)][cell.Column.DisplayIndex] = ((CheckBox)_selectedCell.Content).IsChecked;
                                 
                             }
                         }

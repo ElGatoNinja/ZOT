@@ -109,7 +109,7 @@
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
-                                            <Button Grid.Row="3" Content="Filtrar" HorizontalAlignment="Right" VerticalAlignment="Center" IsDefault="True" Margin="0,0,90,0" Width="70" Click="Filter_Click" Height="28"/>
+                                            <Button Grid.Row="3" Content="Filtrar" HorizontalAlignment="Right" VerticalAlignment="Center" IsDefault="True" Margin="0,0,90,0" Width="70" Click="Filtrar" Height="28"/>
                                             <Button Grid.Row="3" Content="Cancelar" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="70" Click="Cancel_Filter" Height="28"/>
                                         </Grid>
                                     </Border>
