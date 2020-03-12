@@ -88,7 +88,7 @@
                                             </Grid.RowDefinitions>
                                             <TextBox x:Name="searchBox" Grid.Row="0" Text="" TextChanged="Text_Filter_Changed" Margin="1,1,1,1" Grid.RowSpan="1"/>
                                             <Button Grid.Row="1" Content="Filtrar Todo" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,1.6" Width="Auto" Click="Clean_Filter"/>
-                                            <ListBox x:Name="filerList" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" Initialized="FilterList_Initialized_From_Template" Margin="0,2.4,0,36.4" Grid.RowSpan="2">
+                                            <ListBox x:Name="filterList" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible"  Initialized="FilterList_Initialized_From_Template" Margin="0,2.4,0,36.4" Grid.RowSpan="2">
                                                 <ListBox.Resources>
                                                     <Style TargetType="ListBoxItem">
                                                         <Style.Triggers>
@@ -109,7 +109,7 @@
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
-                                            <Button Grid.Row="3" Content="Filtrar" HorizontalAlignment="Right" VerticalAlignment="Center" IsDefault="True" Margin="0,0,90,0" Width="70" Click="Filtrar" Height="28"/>
+                                            <Button Grid.Row="3"  Content="Filtrar" HorizontalAlignment="Right" VerticalAlignment="Center" IsDefault="True" Margin="0,0,90,0" Width="70" Click="Filtrar" Height="28"/>
                                             <Button Grid.Row="3" Content="Cancelar" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="70" Click="Cancel_Filter" Height="28"/>
                                         </Grid>
                                     </Border>
