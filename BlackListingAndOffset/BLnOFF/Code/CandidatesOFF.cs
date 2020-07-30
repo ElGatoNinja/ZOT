@@ -62,50 +62,58 @@ namespace ZOT.BLnOFF.Code
             dt.Sort = " [ENBID SOURCE] desc,[LnCell Source] desc,[HO errores SR] desc";
             data = dt.ToTable();
 
+
             //seleccion de lineas a las que hacer off, se marcan en verde
-            int currentLnCell = (int)data.Rows[0]["LnCell Source"];
-            int asignedOFF = 0;
-            for (int i = 0; i < data.Rows.Count; i++)
+            try
             {
-                if ((int)data.Rows[i]["LnCell Source"] == currentLnCell)
+                int currentLnCell = (int)data.Rows[0]["LnCell Source"];
+                int asignedOFF = 0;
+                for (int i = 0; i < data.Rows.Count; i++)
                 {
-                    if ((int)data.Rows[i]["Cols disp OFF"] > asignedOFF)
+                    if ((int)data.Rows[i]["LnCell Source"] == currentLnCell)
                     {
-                        //solo aplica offset si no aplica BL 
-                        DataRow[] posibleBLandOFF = candBL.data.Select("[Name SOURCE] = '" + data.Rows[i]["Name SOURCE"] + "' AND [Name TARGET] = '" + data.Rows[i]["Name Target"] + "'");
-                        if (posibleBLandOFF.Length > 0)
+                        if ((int)data.Rows[i]["Cols disp OFF"] > asignedOFF)
                         {
-                            if (!(bool)posibleBLandOFF[0]["SelectedBL"])
+                            //solo aplica offset si no aplica BL 
+                            DataRow[] posibleBLandOFF = candBL.data.Select("[Name SOURCE] = '" + data.Rows[i]["Name SOURCE"] + "' AND [Name TARGET] = '" + data.Rows[i]["Name Target"] + "'");
+                            if (posibleBLandOFF.Length > 0)
+                            {
+                                if (!(bool)posibleBLandOFF[0]["SelectedBL"])
+                                {
+                                    data.Rows[i]["SelectedOFF"] = true;
+                                    data.Rows[i]["CandidataBL"] = false;
+                                    asignedOFF++;
+                                }
+                                else
+                                {
+                                    data.Rows[i]["SelectedOFF"] = false;
+                                    data.Rows[i]["CandidataBL"] = true;
+                                }
+                            }
+                            else
                             {
                                 data.Rows[i]["SelectedOFF"] = true;
                                 data.Rows[i]["CandidataBL"] = false;
                                 asignedOFF++;
                             }
-                            else
-                            {
-                                data.Rows[i]["SelectedOFF"] = false;
-                                data.Rows[i]["CandidataBL"] = true;
-                            }
                         }
                         else
                         {
-                            data.Rows[i]["SelectedOFF"] = true;
+                            data.Rows[i]["SelectedOFF"] = false;
                             data.Rows[i]["CandidataBL"] = false;
-                            asignedOFF++;
                         }
                     }
                     else
                     {
-                        data.Rows[i]["SelectedOFF"] = false;
-                        data.Rows[i]["CandidataBL"] = false;
+                        currentLnCell = (int)data.Rows[i]["LnCell Source"];
+                        asignedOFF = 0;
+                        i--;
                     }
                 }
-                else
-                {
-                    currentLnCell = (int)data.Rows[i]["LnCell Source"];
-                    asignedOFF = 0;
-                    i--;
-                }
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                Console.WriteLine("No hay candidatas");
             }
         }
     }

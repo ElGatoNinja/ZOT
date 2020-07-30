@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using ZOT.resources;
 using System.Xml;
+using ZOT.resources.ZOTlib;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -26,7 +27,7 @@ namespace ZOT.BLnOFF.Code
             foreach (DataRow row in colin.data.Rows)
             {
                
-                int tech_num = row.Field<int>("LnCell SOURCE") % 10; //siendo las unidades el numero de LTE (decenas el sector) 
+                int tech_num = row.Field<int>("LnCell SOURCE") % 10; //siendo las unidades el numero de LTE (decenas el sector)
                 if (row["Distance"] != DBNull.Value && (double)row["Distance"] >= CONSTANTS.BL.MAX_DIST[tech_num] && (row["HO Success(%)"] != DBNull.Value)  && (double)row["HO Success(%)"] < CONSTANTS.BL.MIN_SUCCESS_HANDOVER) 
                 {
                     //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco, si hiciera falta)
@@ -55,29 +56,37 @@ namespace ZOT.BLnOFF.Code
             dt.Sort = " [ENBID SOURCE] desc,[LnCell Source] desc,[HO errores SR] desc";
             data = dt.ToTable();
 
-            //seleccion de lineas a las que hacer blacklisting, se marcan en verde
-            int currentLnCell = (int)data.Rows[0]["LnCell Source"];
-            int asignedBl = 0;
-            for (int i = 0; i < data.Rows.Count; i++)
-            { 
-                if ((int)data.Rows[i]["LnCell Source"] == currentLnCell)
+
+            try
+            {
+                //seleccion de lineas a las que hacer blacklisting, se marcan en verde
+                int currentLnCell = (int)data.Rows[0]["LnCell Source"];
+                int asignedBl = 0;
+                for (int i = 0; i < data.Rows.Count; i++)
                 {
-                    if ((int)data.Rows[i]["Cols disp BL"] > asignedBl)
+                    if ((int)data.Rows[i]["LnCell Source"] == currentLnCell)
                     {
-                        data.Rows[i]["SelectedBL"] = true;
-                        asignedBl++;
+                        if ((int)data.Rows[i]["Cols disp BL"] > asignedBl)
+                        {
+                            data.Rows[i]["SelectedBL"] = true;
+                            asignedBl++;
+                        }
+                        else
+                        {
+                            data.Rows[i]["SelectedBL"] = false;
+                        }
                     }
                     else
                     {
-                        data.Rows[i]["SelectedBL"] = false;
+                        currentLnCell = (int)data.Rows[i]["LnCell Source"];
+                        asignedBl = 0;
+                        i--;
                     }
                 }
-                else
-                {
-                    currentLnCell = (int)data.Rows[i]["LnCell Source"];
-                    asignedBl = 0;
-                    i--;
-                }
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                Console.WriteLine("No hay candidatas");
             }
         }
     }

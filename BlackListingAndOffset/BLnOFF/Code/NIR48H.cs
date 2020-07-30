@@ -39,52 +39,93 @@ namespace ZOT.BLnOFF.Code
                     while (!reader.EndOfStream)
                     {
                         aux = reader.ReadLine().Split(';');
+
+
                         if (aux.Length > 4)
                         {
+
                             foreach (string lnBts in lnBtsInputs)
                             {
+
+
                                 if (aux[2].Equals(lnBts))
                                 {
                                     object[] line = new object[data.Columns.Count];
 
                                     line[0] = change_fecha(aux[0]); //Fecha
+
                                     line[1] = aux[2]; //Lnbts
-                                    line[2] = aux[3]; //Lncel
+
+                                    line[2] = aux[3].Replace("=", String.Empty); //Lncel
                                     line[3] = TECH_NUM.GetName(TECH_NUM.GetTechFromLNCEL(aux[3])); //Tecnología
 
                                     double? value;
-                                    Conversion.ToDouble(aux[11],out value); //Intentos Inter
+                                    Conversion.ToDouble(aux[11], out value); //Intentos Inter
                                     line[4] = value;
 
-                                    Conversion.ToDouble(aux[12], out value); //% Exitos Inter
+                                    Conversion.ToDouble(aux[12], out value); // Exitos Inter
                                     line[5] = value;
-
-                                    if (line[4] != null && line[5] != null) 
-                                    {
-                                        line[6] = Math.Round((double)line[5] * (double)line[4] / 100.0, 0); //Exito Inter
-                                        line[7] = (double)line[5] - (double)line[6]; // Errores Inter
-                                    }
 
                                     Conversion.ToDouble(aux[9], out value); //Intentos Intra
                                     line[8] = value;
 
-                                    Conversion.ToDouble(aux[10], out value); //Intentos Intra
+                                    Conversion.ToDouble(aux[10], out value); //Exitos Intra
                                     line[9] = value;
 
-                                    if (line[9] != null && line[8] != null) 
+                                    if (line[4] == null && line[5] == null && line[8] == null && line[9] == null)
                                     {
-                                        line[10] = Math.Round((double)line[8] * (double)line[9] / 100.0, 0); //Exito Intra
-                                        line[11] = (double)line[9] - (double)line[10]; // Errores Intra
+                                        continue;
                                     }
 
+                                    else
+                                    {
 
+                                        if (line[4] != null && line[5] != null)
+                                        {
+
+                                            line[6] = Math.Round((double)line[5] * (double)line[4] / 100.0, 0); //Exito Inter
+                                            line[7] = (double)line[5] - (double)line[6];
+                                        }
+                                        else
+                                        {
+                                            line[4] = 0;
+                                            line[5] = 0;
+                                            line[6] = 0;
+                                            line[7] = 0;
+                                        }
+
+                                        if (line[9] != null && line[8] != null)
+                                        {
+                                            line[10] = Math.Round((double)line[8] * (double)line[9] / 100.0, 0); //Exito Intra
+                                            line[11] = (double)line[9] - (double)line[10]; // Errores Intra
+                                        }
+                                        else
+                                        {
+                                            line[8] = 0;
+                                            line[9] = 0;
+                                            line[10] = 0;
+                                            line[11] = 0;
+                                        }
+
+
+
+                                    }
                                     data.Rows.Add(line);
-                                    break;
+
+                              
+                                   
+                                    
+
+
                                 }
                             }
                         }
+                        else continue;
+                        
                     }
+                  
                 }
+                
                 ProcessData();
             }
             catch (FileNotFoundException)
@@ -93,6 +134,8 @@ namespace ZOT.BLnOFF.Code
             }
         }
 
+
+        // Cambia el formato de las fechas para que se ordenen correctamente
         private String change_fecha(String fecha)
         {
             char separator = '.';
@@ -107,7 +150,7 @@ namespace ZOT.BLnOFF.Code
         private void ProcessData()
         {
             DataView dv = data.DefaultView;
-            dv.Sort = " [PERIOD_START_TIME] ASC";
+            dv.Sort = "PERIOD_START_TIME ASC, [LNCEL name] ASC";
             data = dv.ToTable();
 
             errors = new DataTable();
@@ -138,6 +181,7 @@ namespace ZOT.BLnOFF.Code
                     catch (FormatException fe)
                     {
                         Console.WriteLine("BlackListingAndOffset->AnalisisPrevio->Nir48.cs: Una de las celdas de la NIR no tiene el formato deseado. Detalles:\n " + fe.StackTrace);
+
                     }
                     i++;
 
@@ -148,6 +192,7 @@ namespace ZOT.BLnOFF.Code
                     double successInter = 0;
                     double errInter = 0;
                     double err2ImproveInter = 0;
+                    double successInterIntra = 0;
 
                     if (currentData[tech_i, 0] <= 0 && currentData[tech_i, 2] <= 0) continue; //Si no hubiera datos ni de inter ni de intra se salta la linea
 
@@ -181,10 +226,12 @@ namespace ZOT.BLnOFF.Code
 
                     double errInterPlusIntra = 0;
                     errInterPlusIntra = currentData[tech_i, 2]+currentData[tech_i,0] - (currentData[tech_i, 3] + currentData[tech_i,1]);
+                    successInterIntra = (currentData[tech_i, 1] + currentData[tech_i, 3]) / (currentData[tech_i, 0] + currentData[tech_i, 2]) * 100;
+                    successInterIntra = Math.Round(successInterIntra, 2);
 
-    
-                    
-                    object[] aux = new object[16] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], successInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], successIntra, errIntra, err2ImproveIntra, currentData[tech_i, 0] + currentData[tech_i, 2], (currentData[tech_i, 1] + currentData[tech_i, 3]) / (currentData[tech_i, 0] + currentData [tech_i,2]) * 100 , errInterPlusIntra};
+
+
+                    object[] aux = new object[16] { data.Rows[i-1]["PERIOD_START_TIME"], data.Rows[i-1]["LNBTS name"], TECH_NUM.GetName(tech_i), currentData[tech_i, 0], currentData[tech_i, 1], successInter, errInter, err2ImproveInter, currentData[tech_i, 2], currentData[tech_i,3], successIntra, errIntra, err2ImproveIntra, currentData[tech_i, 0] + currentData[tech_i, 2], successInterIntra , errInterPlusIntra};
                     errors.Rows.Add(aux);
 
                 }

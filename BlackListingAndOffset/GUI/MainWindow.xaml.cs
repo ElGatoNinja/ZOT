@@ -43,7 +43,7 @@ namespace ZOT.GUI
 
         public void click_menuBtn(object sender, RoutedEventArgs e)
         {
-            visibleTool.Visibility = Visibility.Collapsed;
+            visibleTool.Visibility = Visibility.Hidden;
             infoPage.Visibility = Visibility.Collapsed;
         }
 

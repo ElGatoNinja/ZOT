@@ -52,6 +52,10 @@
                                 <Bold>Ctrl+D:</Bold> Al activarse, el sombreado de las celdas cambia de azul a rosa, hacer click en una celda y arrastrar
                                     replica el valor de la primera celda en todas las demás. Despues de usarse una vez, se desactiva para no cambiar valores de celdas por error.
                                 <LineBreak/>
+                                <Bold>Ctrl+Z:</Bold> Deshace el último filtro realizado
+                                <LineBreak/>
+                                <Bold>Ctrl+Y:</Bold> Rehace el último filtro deshecho
+                                <LineBreak/>
                                 <Image Source="images/CtrlD_1.JPG" Width=" 200" Margin="30,10,10,0"/>
 
                             </Paragraph>

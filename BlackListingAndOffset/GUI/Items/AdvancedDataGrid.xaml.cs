@@ -12,6 +12,8 @@ using System.ComponentModel;
 using ZOT.resources.ZOTlib;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace ZOT.GUI.Items
 {
@@ -21,10 +23,12 @@ namespace ZOT.GUI.Items
     public partial class AdvancedDataGrid : DataGrid
     {
         private DataTable _workingData;
-        public List<FilterHierarchyC> FilterHierarchy { get; set; }
-        public List <FilterHierarchyC> copia { get; set; }
+        public List <FilterHierarchyC> FilterHierarchy{ get; set; }
+        public List<List<FilterHierarchyC>> copia;
+        public int posicion = 0;
+        public string[] filtros;
         private int activeFilters = 0;
-
+        public bool multiple = false;
         private ObservableCollection<FilterListItem> backUpFilterList = null;
         private DataGridSortOrder LastSortOrder;
         public AdvancedDataGridFlags Flags { get; }
@@ -41,6 +45,8 @@ namespace ZOT.GUI.Items
 
             InitializeComponent();
         }
+
+       
 
         /// <summary>
         /// Establece el origen de datos con el que la tabla va a trabajar 
@@ -61,8 +67,12 @@ namespace ZOT.GUI.Items
                 backUpFilterList = null;
                 Flags.ResetState();
                 _selectedCell = null;
-                temporalListBoxContainer = new List<ListBox>();
-                FilterHierarchy = new List<FilterHierarchyC>() ;
+                copia = null;
+                filtros = new string[value.Columns.Count];
+                filtros[0] = "";
+                temporalListBoxContainer = new List<ListBox>(Columns.Count);
+                copia = new List<List<FilterHierarchyC>>(Columns.Count);
+                FilterHierarchy = new List<FilterHierarchyC>();
                 try
                 {
                     for (int i = 0; i < value.Columns.Count; i++)
@@ -70,8 +80,8 @@ namespace ZOT.GUI.Items
                         List<object> columnValues = new List<object>();
                         //valores unicos de toda la columna
                         columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
-
                         FilterHierarchy.Add(new FilterHierarchyC());
+
                         FilterHierarchy[i].Filter = new ObservableCollection<FilterListItem>();
                         foreach (object item in columnValues)
                         {
@@ -84,10 +94,29 @@ namespace ZOT.GUI.Items
                         foreach(FilterListItem f in aux)
                         {
                             FilterHierarchy[i].Filter.Add(f);
+                            
                         }
                     }
+                    for (int i=0; i<value.Columns.Count; i++)
+                    {
+                        for (int j = 0; j < value.Columns.Count; j++)
+                        {
+                            List<object> columnValues = new List<object>();
+                            //valores unicos de toda la columna
+                            columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[j]).Distinct().ToList();
+                            copia.Add(new List<FilterHierarchyC>());
+                            copia[i].Add(new FilterHierarchyC());
+                            copia[i][j].Filter = new ObservableCollection<FilterListItem>();
+                            foreach (FilterListItem item in FilterHierarchy[j].Filter)
+                            {
+                                copia[i][j].Filter.Add((FilterListItem)item.Clone());
+                               
+                            }
+                        
 
-                    copia = FilterHierarchy;
+                        }
+                    }
+  
                 }
                 
                 catch (NullReferenceException)  //causado por inicializacion sin ItemSource, es decir la mayoria de las veces
@@ -105,10 +134,12 @@ namespace ZOT.GUI.Items
         //crea bindings en runtime, esto es necesario porque los filtros se crean dinamicamente tras vincular el dataset y saber cuantas columnas tiene
         private void FilterList_Initialized_From_Template(object sender,EventArgs e)
         {
+            
             if (((ListBox)sender).DataContext.GetType() == typeof(string))
-            {
-                temporalListBoxContainer.Add((ListBox)sender);
-            }
+                {
+                    temporalListBoxContainer.Add((ListBox)sender);
+                }
+           
         }
 
         //cada vez que se filtra, se reinician las columnas y por tanto los filtros, hay que comprobar si esta columna esta filtrada
@@ -150,14 +181,22 @@ namespace ZOT.GUI.Items
         private void On_Filter_Open(object sender, RoutedEventArgs e)
         {
             //crea una copia que permite al usuario editar tranquilamente permitiendo resetear los valores del filtro en caso de cancelar
-            int column = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;  
+
+            int column = ((DataGridColumnHeader)((ToggleButton)sender).TemplatedParent).Column.DisplayIndex;
+            
             Binding codeBinding = new Binding("FilterHierarchy[" + column + "].Filter");
             codeBinding.Source = this;
             temporalListBoxContainer[column].SetBinding(ListBox.ItemsSourceProperty, codeBinding);
+            
+
+            Console.WriteLine("BINDING: " + temporalListBoxContainer[column].GetBindingExpression(ListBox.ItemsSourceProperty).ToString());
+            
+           
             //backUpFilterList = new ObservableCollection<FilterListItem>(FilterHierarchy[column].Filter.Select(item => (FilterListItem)item.Clone()));
 
 
         }
+
 
         //Hace invisibles para el usuario las columnas que estén filtradas por texto 
         private void Text_Filter_Changed(object sender, EventArgs e)
@@ -178,17 +217,20 @@ namespace ZOT.GUI.Items
         }
 
         //Nuevo método de filtrado. Este método usa el campo DefaultView.RowFilter para filtrar la vista, el cuál es una cadena. En caso de necesitar
-        // modificar el campo por algun motivo la sintáxis de la cadenase encuentra en internet facilmente.
+        // modificar el campo por algun motivo la sintáxis de la cadena se encuentra en internet facilmente.
 
         private void Filtrar(Object sender, RoutedEventArgs e)
         {
+            if(_workingData.DefaultView.RowFilter == "")
+            {
+                isFiltered = false;
+            }
             int column = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
             List<Object> columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
-            var aux = FilterHierarchy[column].Filter.Where(x => x.NotFiltered == true).Distinct().ToList(); // Se obtiene la lista de elementos de la columna con el checkbox marcado
-
+            var aux = FilterHierarchy[column].Filter.Where(x => (x.NotFiltered == true) && (x.IsTextFiltered == false) && (x.IsFilteredInOtherFilter == false)).Distinct().ToList(); // Se obtiene la lista de elementos de la columna con el checkbox marcado
             string filtro = _workingData.DefaultView.RowFilter; // Se coge el filtro anterior si lo hubiera.
 
-            if(aux.Count == 0)
+            if (aux.Count == 0 || aux.Count == columnValues.Count)
             {
                 return;  //Si no se ha marcado ninguna checkbox el método no hace nada
             }
@@ -196,55 +238,75 @@ namespace ZOT.GUI.Items
             {
                 if (!isFiltered) //También se comprueba si ya se había filtrado anteriormente
                 {
-                    filtro += " [" + _workingData.Columns[column].ColumnName + "] = '" + aux[0].Name + "' ";
+                    filtro += " ([" + _workingData.Columns[column].ColumnName + "] IN ('" + aux[0].Name + "' ))";
+                    
                 }
                 else
                 {
-                    filtro += "AND ([" + _workingData.Columns[column].ColumnName + "] = '" + aux[0].Name + "' ) ";
+                    filtro += "AND ([" + _workingData.Columns[column].ColumnName + "] IN ('" + aux[0].Name + "' )) ";
                 }
             }
             else
             {
                 if (!isFiltered)
                 {
-                    filtro += "( [" + _workingData.Columns[column].ColumnName + "]  IN ( '" + aux[0].Name + "' , " ;
+                    filtro += "( [" + _workingData.Columns[column].ColumnName + "]  IN ( '" + aux[0].Name + "' , ";
                     for (int i = 1; i < aux.Count - 1; i++)
                     {
                         filtro = filtro + "'" + aux[i].Name + "' , ";
                     }
                 }
-                
+
                 else
                 {
                     filtro += " AND ( [" + _workingData.Columns[column].ColumnName + "] IN ( '" + aux[0].Name + "' , ";
                     for (int i = 1; i < aux.Count - 1; i++)
                     {
                         filtro = filtro + "'" + aux[i].Name + "' , ";
-                      
+
                     }
 
                 }
-                filtro = filtro + "'" + aux[aux.Count - 1].Name + "' ) )";
+                filtro = filtro + "'" + aux[aux.Count - 1].Name + "' ))";
             }
-            _workingData.DefaultView.RowFilter = filtro; //Se asigna al campo la cadena formada
-            isFiltered = true;
-
-
-            for(int i = 0; i< Columns.Count; i++)   //Se recorren las columnas para actualizar la listas de filtros desplegables
+            if (filtro != _workingData.DefaultView.RowFilter)
             {
+                posicion++;
+                activeFilters++;
+                filtros[posicion] = filtro;
+                isFiltered = true;
+                try
+                {
+                    _workingData.DefaultView.RowFilter = filtro; //Se asigna al campo la cadena formada
+                }
+                catch(EvaluateException)
+                {
+                    WPFForms.ShowError("Has intentado filtrar una columna de valores numéricos dejando el valor vacío.", "Desmarca el valor vacío.");
+                    Undo_Filter();
+                    
+                }
+               
+                
+            }
+            
+            for (int i = 0; i < Columns.Count; i++)   //Se recorren las columnas para actualizar la listas de filtros desplegables
+            {
+                
                 columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
                 List<String> StringValues = columnValues.Select(s => s.ToString()).ToList();
 
-                for(int j = 0; j< FilterHierarchy[i].Filter.Count; j++ ){
+                for (int j = 0; j < FilterHierarchy[i].Filter.Count; j++)
+                {
 
                     if (!(StringValues.Contains(FilterHierarchy[i].Filter[j].Name)))
                     {
                         FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = true;
-                        copia[i].Filter[j].IsFilteredInOtherFilter = true;         
-                        
+                        copia[posicion][i].Filter[j].IsFilteredInOtherFilter = true;
                     }
-                }
+                }    
             }
+            
+
         }
 
 
@@ -347,8 +409,6 @@ namespace ZOT.GUI.Items
             else if (LastSortOrder.order == ListSortDirection.Descending)
                 auxData = auxData.AsEnumerable().OrderByDescending(item => item[LastSortOrder.column]).ToList();
                 
-            
-            
             ItemsSource = auxData.CopyToDataTable().AsDataView().ToTable().AsDataView();
             _workingData = auxData.CopyToDataTable().AsDataView().ToTable();
             backUpFilterList = null;
@@ -379,44 +439,116 @@ namespace ZOT.GUI.Items
                     item.NotFiltered = true;
                 }
             }
-            copia = FilterHierarchy;
+           
+            
         }
         //devuelve todos los filtros y el dataset a su estado inicial
         private void ResetFilters()
         {
-            for(int i = 0; i< FilterHierarchy.Count; i++)
+            for (int h = 0; h < activeFilters; h++)
             {
-                for(int j = 0; j< FilterHierarchy[i].Filter.Count; j++)
+                for (int i = 0; i < FilterHierarchy.Count; i++)
                 {
-                    FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = false;
+                    for (int j = 0; j < FilterHierarchy[i].Filter.Count; j++)
+                    {
+                        FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = false;
+                        FilterHierarchy[i].Filter[j].NotFiltered = true;
+                        copia[h][i].Filter[j].IsFilteredInOtherFilter = false;
+                        copia[h][i].Filter[j].NotFiltered = true;
+                    }
                 }
             }
-            copia = FilterHierarchy;
-            _workingData.DefaultView.RowFilter = "";
             
+            
+            Array.Clear(filtros, 1, filtros.Length-1);
+            _workingData.DefaultView.RowFilter = "";
+            posicion = 0;
             isFiltered = false;
+        }
+
+        private void Undo_Filter()
+        {
+           
+            if(posicion > 0)
+            {
+                posicion--;
+                if(posicion == 0)
+                {
+                    isFiltered = false;
+                }
+                
+                for(int i = 0; i< Columns.Count; i++)
+                {
+                    for (int j =0; j<copia[posicion][i].Filter.Count; j++)
+                    {
+                        if (!FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter == copia[posicion][i].Filter[j].IsFilteredInOtherFilter)
+                        {
+                            FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = false;
+                        }
+                    }
+                }
+                _workingData.DefaultView.RowFilter = filtros[posicion];
+            }
+
+            
+        }
+        private void Redo_Filter()
+        {
+            if(!(filtros[posicion + 1] == null))
+            {
+                if(posicion == 0)
+                {
+                    isFiltered = true;
+                }
+                posicion++;
+                
+                for (int i = 0; i < Columns.Count; i++)
+                {
+
+                    
+                    for (int j = 0; j < copia[posicion][i].Filter.Count; j++)
+                    {
+                        if (!FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter == copia[posicion][i].Filter[j].IsFilteredInOtherFilter)
+                        {
+                            FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = true;
+                        }
+                    }
+                }
+                _workingData.DefaultView.RowFilter = filtros[posicion];
+
+            }
+            
         }
 
         //Deshace todos los cambios temporales que el usuario haya hecho sobre la interfaz del filtro y lo cierra
         private void Cancel_Filter(object sender, EventArgs e)
         {
-            if (backUpFilterList == null) { return; }
+            //if (backUpFilterList == null) { return; }
 
-            else
-            {
+            
+            
                 int column = 0;
                 if (sender is Popup)
                     column = ((DataGridColumnHeader)((Popup)sender).TemplatedParent).Column.DisplayIndex;
                 else if (sender is Button)
                     column = ((DataGridColumnHeader)((Control)sender).TemplatedParent).Column.DisplayIndex;
 
-                FilterHierarchy[column].Filter = copia[column].Filter;
+               
                 //backUpFilterList = null;
                 if (sender is Button)
                 {
                     WPFForms.FindParent<Popup>((Button)sender).IsOpen = false;
                 }
+            for (int j = 0; j < copia[posicion][column].Filter.Count; j++)
+            {
+                if (!FilterHierarchy[column].Filter[j].NotFiltered == copia[posicion][column].Filter[j].NotFiltered)
+                {
+                    FilterHierarchy[column].Filter[j].NotFiltered = !(bool)FilterHierarchy[column].Filter[j].NotFiltered;
+                }
             }
+            
+
+
         }
 
         private void Column_Sorted(object sender, DataGridSortingEventArgs e)
@@ -602,6 +734,16 @@ namespace ZOT.GUI.Items
                     e.Handled = true;
                     ResetFilters();
                 }
+                else if(e.Key == Key.Z)
+                {
+                    e.Handled = true;
+                    Undo_Filter();
+                }
+                else if(e.Key == Key.Y)
+                {
+                    e.Handled = true;
+                    Redo_Filter();
+                }
                 else if(e.Key == Key.H)
                 {
                     e.Handled = true;
@@ -617,6 +759,8 @@ namespace ZOT.GUI.Items
     /// <summary>
     /// La clase que se usa dentro de la interfaz desplegable del filtro
     /// </summary>
+    
+        [Serializable]
     public class FilterListItem : ICloneable, INotifyPropertyChanged
     {
         private bool notFiltered = true;

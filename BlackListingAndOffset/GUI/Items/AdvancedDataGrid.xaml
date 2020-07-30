@@ -15,12 +15,13 @@
           PreviewMouseUp="MouseUp_dataGrid"
           CellEditEnding="Cell_Edited"
           CanUserAddRows="False"
-          CanUserReorderColumns="False"
+          
           ClipboardCopyMode="IncludeHeader"
           CanUserResizeColumns="True"
           Sorting="Column_Sorted"
           MinColumnWidth="50"
           MaxColumnWidth="500"
+          
           DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DataGrid.Resources>
  

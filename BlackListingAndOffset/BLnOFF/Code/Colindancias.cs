@@ -60,7 +60,9 @@ namespace ZOT.BLnOFF.Code
                         String[] aux1 = exportRow.Field<String>("srcName").Split('_');
                         String[] aux2 = exportRow.Field<String>("dstName").Split('_');
                         int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                        int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
+                        int site2;
+                        int.TryParse(aux2[aux2.Length - 2], out site2);
+                        site2 = site2 / 100;
 
                         dist = siteCoords.Distance(site1, site2);
                         if (dist > 0.01)
@@ -144,7 +146,7 @@ namespace ZOT.BLnOFF.Code
             {
                 aux1 = line.Field<String>("Source LNCEL name").Split('_');
                 String[] aux2 = null;
-                if (line.Field<String>("Target LNCEL name") != "UNKNOWN")
+                if (line.Field<String>("Target LNCEL name") != "UNKNOWN" && line.Field<String>("Target LNCEL name") != null)
                 {
                     aux2 = line.Field<String>("Target LNCEL name").Split('_');
                     int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
@@ -203,17 +205,24 @@ namespace ZOT.BLnOFF.Code
             data = auxdv.ToTable();
 
             int i = 0;
-            string enbid = (string)data.Rows[0]["ENBID SOURCE"];
-         
-            while (true)
+            try
             {
-                while ( i < data.Rows.Count && ((string)data.Rows[i]["ENBID SOURCE"] == enbid || (string)data.Rows[i]["ENBID SOURCE"] == ""))
+                string enbid = (string)data.Rows[0]["ENBID SOURCE"];
+
+                while (true)
                 {
-                    data.Rows[i]["ENBID SOURCE"] = enbid;
-                    i++;
+                    while (i < data.Rows.Count && ((string)data.Rows[i]["ENBID SOURCE"] == enbid || (string)data.Rows[i]["ENBID SOURCE"] == ""))
+                    {
+                        data.Rows[i]["ENBID SOURCE"] = enbid;
+                        i++;
+                    }
+                    if (i >= data.Rows.Count) break;
+                    enbid = (string)data.Rows[i]["ENBID SOURCE"];
                 }
-                if (i >= data.Rows.Count) break; 
-                enbid = (string)data.Rows[i]["ENBID SOURCE"];
+            }
+            catch (IndexOutOfRangeException oor)
+            {
+                Console.WriteLine("No hay nodos que cumplan las condiciones");
             }
         }
 

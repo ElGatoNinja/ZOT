@@ -29,7 +29,6 @@ namespace ZOT.BLnOFF.GUI
         private List<string> xAxis;
 
             
-        
         public Graphs()
         {
             InitializeComponent();
@@ -63,13 +62,18 @@ namespace ZOT.BLnOFF.GUI
             graph.AxisY.Clear();
             graph.AxisY.Add(new Axis
             {
+                FontSize = 14,
                 Title = "Intentos",
+                FontWeight = FontWeights.ExtraBlack,
+                Position = AxisPosition.LeftBottom
 
             });
             graph.AxisY[0].Separator.StrokeThickness = 0;
             graph.AxisY.Add(new Axis
             {
-                Title = "Tasa de errores",
+                FontSize = 14,
+                Title = "% de Exito HO",
+                FontWeight = FontWeights.ExtraBlack,
                 Position = AxisPosition.RightTop
             });
 
@@ -79,18 +83,19 @@ namespace ZOT.BLnOFF.GUI
             {
                 Labels = xAxis,
                 LabelsRotation = 60,
+                FontSize = 14,
+                FontWeight = FontWeights.ExtraBlack,
                 Separator = new LiveCharts.Wpf.Separator { Step = 2 }
-            }); 
+
+            }) ; 
             
             graph.Series = data;
-            
-
             
             //tras dibujar la grafica se ajustan los sliders para estar acordes a los datos
             datesAxisSlider.Maximum = xAxis.Count;
             datesAxisSlider.UpperValue = datesAxisSlider.Maximum;
             datesAxisSlider.Minimum = 0;
-            datesAxisSlider.LowerValue = datesAxisSlider.UpperValue - 60 ;
+            datesAxisSlider.LowerValue = datesAxisSlider.UpperValue - 90;
             intentsAxisSlider.Maximum = maxBarAxis * 1.5;
             intentsAxisSlider.Value = maxBarAxis;
             percentAxisSlider.LowerValue = 80;
@@ -101,6 +106,8 @@ namespace ZOT.BLnOFF.GUI
             e.Handled = true;
             graph.AxisY[0] = new Axis
             {
+                FontSize = 14,
+                FontWeight = FontWeights.ExtraBlack,
                 MaxValue = e.NewValue,
             };
             graph.AxisY[0].Separator.StrokeThickness = 0;
@@ -118,6 +125,8 @@ namespace ZOT.BLnOFF.GUI
             if((datesAxisSlider.UpperValue - datesAxisSlider.LowerValue) < 50)
             graph.AxisX[0] = new Axis
             {
+                FontSize = 14,
+                FontWeight = FontWeights.ExtraBlack,
                 MaxValue = (int)e.NewUpperValue,
                 MinValue = (int)e.NewLowerValue,
                 Labels = xAxis,
@@ -128,6 +137,8 @@ namespace ZOT.BLnOFF.GUI
             else if ((datesAxisSlider.UpperValue - datesAxisSlider.LowerValue) < 70)
                 graph.AxisX[0] = new Axis
                 {
+                    FontSize = 14,
+                    FontWeight = FontWeights.ExtraBlack,
                     MaxValue = (int)e.NewUpperValue,
                     MinValue = (int)e.NewLowerValue,
                     Labels = xAxis,
@@ -137,6 +148,8 @@ namespace ZOT.BLnOFF.GUI
             else
                 graph.AxisX[0] = new Axis
                 {
+                    FontSize = 14,
+                    FontWeight = FontWeights.ExtraBlack,
                     MaxValue = (int)e.NewUpperValue,
                     MinValue = (int)e.NewLowerValue,
                     Labels = xAxis,
@@ -150,16 +163,19 @@ namespace ZOT.BLnOFF.GUI
             e.Handled = true;
             if (e.NewUpperValue - e.NewLowerValue < 1) //si el tamaño del eje tiende a 0, habrá un error en la gráfica
             {
+
                 percentAxisSlider.UpperValue = e.OldUpperValue+0.1;
                 percentAxisSlider.LowerValue = e.OldLowerValue-0.1;
                 return;
             }
             graph.AxisY[1] = new Axis
             {
+                FontSize = 14,
+                FontWeight = FontWeights.ExtraBlack,
                 MaxValue = e.NewUpperValue,
                 MinValue = e.NewLowerValue,
                 
-                Title = "Tasa de Errores",
+                Title = "% Exito HO",
                 Position = AxisPosition.RightTop
             };
         }

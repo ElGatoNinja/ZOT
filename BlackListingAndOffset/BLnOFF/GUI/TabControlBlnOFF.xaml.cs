@@ -28,6 +28,8 @@ namespace ZOT.BLnOFF.GUI
         private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff" };
         private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136" };
         private List<StringWorkArround> lnBtsInputGrid;
+        BackgroundWorker worker = new BackgroundWorker();
+        
 
         //se usan para hacer las graficas
         private DataTable erroresAMejorar;
@@ -151,6 +153,7 @@ namespace ZOT.BLnOFF.GUI
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            
         }
 
         private void Constant_Editor(object sender, RoutedEventArgs e)
@@ -255,6 +258,9 @@ namespace ZOT.BLnOFF.GUI
 
         private void Launch(object sender, RoutedEventArgs e)
         {
+
+            Progress_Bar.Value = Progress_Bar.Minimum;
+
             String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;
             for (int i = 0; i < lnBtsInputGrid.Count; i++)
@@ -288,7 +294,7 @@ namespace ZOT.BLnOFF.GUI
             args.BLnOffEnabled = (bool)Is_BlnOFF_Enabled.IsChecked;
             args.prevAnalisysEnabled = (bool)Is_PrevAnalysis_Enabled.IsChecked;
 
-            BackgroundWorker worker = new BackgroundWorker();
+           
             worker.WorkerReportsProgress = true;
             worker.DoWork += BackGround_Work;
             worker.ProgressChanged += BackGround_Progress;
@@ -302,15 +308,20 @@ namespace ZOT.BLnOFF.GUI
             System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
         }
 
-        //esta a huevo para implementar una barra de progreso
+
+
+        //esta a huevo para implementar una barra de 
+
         private void BackGround_Progress(object sender, ProgressChangedEventArgs e)
         {
-
+            Console.WriteLine("Progreso: " + e.ProgressPercentage);
+            Progress_Bar.Value = e.ProgressPercentage;
         }
 
         //tras acabar el procesado en segundo plano se actualiza la interfaz con ellos
         private void BackGround_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
+            Progress_Bar.Value = 100;
             if (e.Error == null)
             {
                 bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
@@ -377,7 +388,7 @@ namespace ZOT.BLnOFF.GUI
                     Binding codeBinding = new Binding("Sectors");
                     codeBinding.Source = this;
                     sectorListBox.SetBinding(ListBox.ItemsSourceProperty, codeBinding);
-
+                   
                     UpdateGraph_2();
                 }
 
@@ -409,6 +420,7 @@ namespace ZOT.BLnOFF.GUI
         private void BackGround_Work(object sender, DoWorkEventArgs e)
         {
 #if DEBUG
+            int porc = 0;
             var totalTimer = new Stopwatch();
             totalTimer.Start();
             var timer = new Stopwatch();
@@ -446,17 +458,24 @@ namespace ZOT.BLnOFF.GUI
                 Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
                 timer.Reset();
                 timer.Start();
+                porc = 5;
+                worker.ReportProgress(porc);
 #endif
-
+               
                 foreach (DataRow dataRow in export.data.Rows)
                 {
+                    
                     colindancias.CheckColin(dataRow, R31);
+                    
                 }
+               
                 foreach (DataRow dataRow in R31.NotInExports())
                 {
                     colindancias.CheckColinsNotInExports(dataRow);
                 }
                 colindancias.AddENBID();
+                porc = 15;
+                worker.ReportProgress(porc);
 
                 //Dibujar tablas
                 DataView dv = colindancias.data.DefaultView;
@@ -464,6 +483,8 @@ namespace ZOT.BLnOFF.GUI
                 colindancias.data = dv.ToTable();
                 results.colindancias = colindancias.data;
                 results.siteCoordErrors = colindancias.GetSiteCoordErr();
+
+                porc = 25;
 
 
 #if DEBUG
@@ -479,6 +500,7 @@ namespace ZOT.BLnOFF.GUI
                 dv.Sort = "[HO errores SR] DESC";
                 candBL.data = dv.ToTable();
                 results.candBl = candBL.data;
+                porc = 50;
 #if DEBUG
                 timer.Stop();
                 Console.WriteLine("Calcular candidatas de blacklisting: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -491,6 +513,9 @@ namespace ZOT.BLnOFF.GUI
                 dv.Sort = "[HO errores SR] DESC";
                 candOFF.data = dv.ToTable();
                 results.candOff = candOFF.data;
+
+                porc = 75;
+                worker.ReportProgress(porc);
 
 #if DEBUG
                 timer.Stop();
@@ -511,6 +536,9 @@ namespace ZOT.BLnOFF.GUI
 #endif
             }
             e.Result = results;
+
+            porc = 100;
+            worker.ReportProgress(porc);
 #if DEBUG
             timer.Stop();
             totalTimer.Stop();
@@ -524,8 +552,12 @@ namespace ZOT.BLnOFF.GUI
         {
             List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
             techListBox_1.ItemsSource = Tech;
-            techListBox_1.SelectedItem = Tech[Tech.Count-1];
+            techListBox_1.SelectedItem = Tech[0];
 
+            int maxBarAxis = erroresAMejorar.AsEnumerable()
+                               .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
+                               .Select(col => (int)col[3] + (int)col[8]).Max<int>();
+            
             UpdateGraph_1();
         }
 
@@ -557,9 +589,12 @@ namespace ZOT.BLnOFF.GUI
 
         private void UpdateGraph_1()
         {
-            int maxBarAxis = erroresAMejorar.AsEnumerable()
+            
+            /*int maxBarAxis = erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (int)col[3] + (int)col[8]).Max<int>();
+                                */
+                
             List<string> xAxis = erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (string)col[0]).ToList<string>();
@@ -572,9 +607,9 @@ namespace ZOT.BLnOFF.GUI
                         Values = new ChartValues<int>(erroresAMejorar.AsEnumerable()
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (int)col[3]).ToList<int>()),
-                        //StackMode = StackMode.Values,
+                        StackMode = StackMode.Values,
                         DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#78B4CC")),
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#44bdec")),
                         ScalesYAt = 0,
                         Title ="Intentos HO Inter",
 
@@ -586,7 +621,7 @@ namespace ZOT.BLnOFF.GUI
                                 .Select(col => (int)col[8]).ToList<int>()),
                         StackMode = StackMode.Values,
                         DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF897D")),
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ec7568")),
                         ScalesYAt = 0,
                         Title ="Intentos HO Intra"
                     },
@@ -597,10 +632,10 @@ namespace ZOT.BLnOFF.GUI
                                 .Select(col => (double)col[5]).ToList<double>()),
                         ScalesYAt = 1,
                         Fill = Brushes.Transparent,
-                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#CC5A6F")),
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#44bdec")),
                         StrokeThickness = 3,
                         Title =" % Exitos HO Inter",
-                        Opacity = 0
+                        Opacity = 0 
 
 
                     },
@@ -610,7 +645,7 @@ namespace ZOT.BLnOFF.GUI
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (double)col[10]).ToList<double>()),
                         Fill = Brushes.Transparent,
-                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#407F99")),
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ec7568")),
                         ScalesYAt = 1,
                         StrokeThickness = 3,
                         Title ="% Exitos HO Intra"
@@ -637,7 +672,7 @@ namespace ZOT.BLnOFF.GUI
                                 .Where(row => (string)row[1] == (string)siteListBox_1.SelectedItem && (string)row[2] == (string)techListBox_1.SelectedItem)
                                 .Select(col => (double)col[14]).ToList<double>()),
                         Fill = Brushes.Transparent,
-                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#941C99")),
+                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#78177C")),
                         ScalesYAt = 1,
                         StrokeThickness = 3,
                         Title ="% Exitos HO Inter + Intra",
@@ -649,16 +684,16 @@ namespace ZOT.BLnOFF.GUI
                 };
 
 
-            graphObject_1.DrawGraph(data, maxBarAxis, xAxis2);
+            graphObject_1.DrawGraph(data, 50000, xAxis2);
         }
 
 
 
         private void Node_ComBox_Changed_Graph_2(object sender, SelectionChangedEventArgs e)
         {
-            List<string> Tech = this.erroresAMejorar.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem).Select(col => (string)col[2]).Distinct().ToList<string>();
+            List<string> Tech = this.nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem).Select(col => (string)col[3]).Distinct().ToList<string>();
             techListBox_2.ItemsSource = Tech;
-            techListBox_2.SelectedItem = Tech[0];
+            techListBox_2.SelectedItem = Tech[Tech.Count-1];
 
             var cells2Plot = nirPlotData.AsEnumerable()
                               .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
@@ -711,16 +746,75 @@ namespace ZOT.BLnOFF.GUI
             UpdateGraph_2();
         }
 
+        private void InsertEmpty()  //Metodo para añadir valores vacios a la tabla de celdas. Se usa para rellenar las fechas donde hay sectores sin datos, para que se represente bien la gráfica.
+                                    //Si puedes encontrar la forma de que se represente bien sin necesidad de insertar valores mejor, yo no la encontré.
+        {
+            var xAxis = nirPlotData.AsEnumerable()
+                               .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                               .Select(col => (string)col[0]).Distinct();
+
+            List<string> fechasaux = new List<string>();
+            int max = 0;
+            string lnbtsaux = "";
+            List<string> celdasaux = new List<string>();
+            List<List<string>> celdasaux2 = new List<List<string>>();
+            foreach (string fecha in xAxis)
+            {
+                List<string> lnbts = nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem && (string)row[0] == fecha)
+                    .Select(col => (string)col[1]).ToList();
+                List<string> celdas = nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem && (string)row[0] == fecha)
+                    .Select(col => (string)col[2]).ToList();
+
+                int count = celdas.Count;
+                if (count == Sectors.Count)
+                {
+                    lnbtsaux = lnbts[0];
+                    celdasaux = celdas;
+                    max = count;
+
+                }
+                else
+                {
+                    fechasaux.Add(fecha);
+                    celdasaux2.Add(celdas);
+                }
+            }
+
+            for (int i = 0; i < fechasaux.Count; i++)
+            {
+                List<string> aux3 = celdasaux.Except(celdasaux2[i]).ToList();
+                for (int j = 0; j < aux3.Count; j++)
+                {
+
+                    object[] empty = new object[12] { fechasaux[i], lnbtsaux, aux3[j], (string)techListBox_2.SelectedItem, 0, 0, 0, 0, 0, 0, 0, 0 };
+                    nirPlotData.Rows.Add(empty);
+
+                }
+
+                DataView dv = nirPlotData.DefaultView;
+                dv.Sort = "PERIOD_START_TIME ASC, [LNCEL name] ASC";
+                nirPlotData = dv.ToTable();
+
+
+
+            }
+            fechasaux.Clear();
+        }
+
         private void UpdateGraph_2()
         {
-            var plotSet = nirPlotData.AsEnumerable().Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem
-               && !((string)row[2]).Contains("=") && Sectors.Where(sector => sector.Enabled).Any(condition => condition.Sector == TECH_NUM.GetSectorFromLNCEL((string)row[2])));
+        
+            var xAxis = nirPlotData.AsEnumerable()
+                                .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[3] == (string)techListBox_2.SelectedItem)
+                                .Select(col => (string)col[0]).Distinct();
 
-            List<string> xAxis = erroresAMejorar.AsEnumerable()
-                                .Where(row => (string)row[1] == (string)siteListBox_2.SelectedItem && (string)row[2] == (string)techListBox_2.SelectedItem)
-                                .Select(col => (string)col[0]).ToList<string>();
 
-            List<String> xAxis2 = sort_fechas(xAxis);
+
+
+            InsertEmpty();
+
+           List<string> xAxis2 = xAxis.ToList();
+           xAxis2 = sort_fechas(xAxis2);
            
             
             var cells2Plot = nirPlotData.AsEnumerable()
@@ -728,74 +822,125 @@ namespace ZOT.BLnOFF.GUI
                              .Select(col => (string)col[2]);
 
 
+
             SeriesCollection data = new SeriesCollection();
 
             var plotSectors = Sectors.Where(item => item.Enabled).ToList();
 
-            if ((bool)checkInter.IsChecked)
-            {
-                for(int i = 0; i< plotSectors.Count;i++) // Intentos
-                {
-                    data.Add(new StackedColumnSeries
-                    {
-                        Values = new ChartValues<int>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (int)col["Intentos Inter"])),
-                        StackMode = StackMode.Values,
-                        DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA"+interColorsLines[i])),
-                        ScalesYAt = 0,
-                        Title = "Intentos HO Inter s" + plotSectors[i].Sector
-                    });
-                }
 
-                
-            }
-            if ((bool)checkIntra.IsChecked)
-            {
-                for (int i = 0; i < plotSectors.Count; i++) // Intentos
-                {
-                    data.Add(new StackedColumnSeries
-                    {
-                        Values = new ChartValues<int>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (int)col["Intentos Intra"])),
-                        StackMode = StackMode.Values,
-                        DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA" + intraColorsLines[i])),
-                        ScalesYAt = 0,
-                        Title = "Intentos HO Intra s" + plotSectors[i].Sector
-                    });
-                }
-            }
-            if ((bool)checkInter.IsChecked)
-            { 
-                for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
-                {
-                    data.Add(new LineSeries
-                    {
-                        Values = new ChartValues<double>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (double)col["% Exitos Inter"])),
-                        ScalesYAt = 1,
-                        StrokeThickness = 2.5,
-                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#"+interColorsLines[i])),
-                        Fill = Brushes.Transparent,
-                        Title = " % Exitos HO Inter s" + plotSectors[i].Sector
 
-                    });
-                }
+            if ((bool)checkInter.IsChecked){
 
-            }
-            if ((bool)checkIntra.IsChecked)
-            {
-                for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
-                {
-                    data.Add(new LineSeries
+                        for (int i = 0; i < plotSectors.Count; i++) // Intentos
+                        {
+                            try
+                            {
+                                data.Add(new StackedColumnSeries
+                                {
+                                    Values = new ChartValues<int>(nirPlotData.AsEnumerable().Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector && (string)row[1] == (string)siteListBox_2.SelectedItem
+                                    && (string)row[3] == (string)techListBox_2.SelectedItem).Select(col => (int)col[4]).ToList<int>()),
+                                    StackMode = StackMode.Values,
+                                    DataLabels = true,
+                                    Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA" + interColorsLines[i])),
+                                    ScalesYAt = 0,
+                                    Title = "Intentos HO Inter s" + plotSectors[i].Sector
+                                });
+                            }
+
+                            catch (InvalidCastException ice)
+                            {
+
+                                Console.WriteLine("HAY VALORES VACIOS " + ice.StackTrace);
+                                
+
+                            }
+
+                        }
+                    }
+                    if ((bool)checkIntra.IsChecked)
                     {
-                        Values = new ChartValues<double>(plotSet.Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector).Select(col => (double)col["% Exitos Intra"])),
-                        ScalesYAt = 1,
-                        StrokeThickness = 2.5,
-                        Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#"+intraColorsLines[i])),
-                        Fill = Brushes.Transparent,
-                        Title = " % Exitos HO Intra s" + plotSectors[i].Sector,
-                    });
+                        for (int i = 0; i < plotSectors.Count; i++) // Intentos
+                        {
+                            try
+                            {
+                                data.Add(new StackedColumnSeries
+                                {
+                                    Values = new ChartValues<int>(nirPlotData.AsEnumerable().Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector && (string)row[1] == (string)siteListBox_2.SelectedItem 
+                                    && (string)row[3] == (string)techListBox_2.SelectedItem).Select(col => (int)col[8]).ToList<int>()),
+                                    StackMode = StackMode.Values,
+                                    DataLabels = true,
+                                    Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#AA" + intraColorsLines[i])),
+                                    ScalesYAt = 0,
+                                    
+                                    Title = "Intentos HO Intra s" + plotSectors[i].Sector
+                                });
+                            }
+                            catch (InvalidCastException ice)
+                            {
+
+                                Console.WriteLine("HAY VALORES VACIOS " + ice.StackTrace);
+                                
+
+                            }
+                        }
+                    }
+                    if ((bool)checkInter.IsChecked)
+                    {
+                        for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
+                        {
+                            try
+                            {
+                        data.Add(new LineSeries
+                        {
+                            Values = new ChartValues<double>(nirPlotData.AsEnumerable().Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector && (string)row[1] == (string)siteListBox_2.SelectedItem 
+                            && (string)row[3] == (string)techListBox_2.SelectedItem).Select(col => (double)col[5]).ToList<double>()),
+                            ScalesYAt = 1,
+                            StrokeThickness = 2.5,
+                            Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#" + interColorsLines[i])),
+                            Fill = Brushes.Transparent,
+                            Title = " % Exitos HO Inter s" + plotSectors[i].Sector
+
+
+                        }) ;
+                            }
+                            catch (InvalidCastException ice)
+                            {
+
+                                Console.WriteLine("HAY VALORES VACIOS " + ice.StackTrace);
+                                
+
+                            }
+                        }
+
+                    }
+                    if ((bool)checkIntra.IsChecked)
+                    {
+                        for (int i = 0; i < plotSectors.Count; i++) //Tasa de Exito
+                        {
+                            try
+                            {
+                                data.Add(new LineSeries
+                                {
+                                    Values = new ChartValues<double>(nirPlotData.AsEnumerable().Where(row => TECH_NUM.GetSectorFromLNCEL((string)row["LNCEL name"]) == (byte)plotSectors[i].Sector && (string)row[1] == (string)siteListBox_2.SelectedItem 
+                                    && (string)row[3] == (string)techListBox_2.SelectedItem).Select(col => (double)col[9]).ToList<double>()),
+                                    ScalesYAt = 1,
+                                    StrokeThickness = 2.5,
+                                    Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom("#" + intraColorsLines[i])),
+                                    Fill = Brushes.Transparent,
+                                    Title = " % Exitos HO Intra s" + plotSectors[i].Sector,
+                                });
+                            }
+                            catch (InvalidCastException ice)
+                            {
+
+                                Console.WriteLine("HAY VALORES VACIOS " + ice.StackTrace);
+                                
+
+                            }
+                        }
+
+                    
                 }
-            }
            
             //arreglar lo de los ejes, te puedes inspirar en UpdateGraph_1(), y la ordenacion de las fechas, buena suerte, y pregunta cosas a la gente 
             graphObject_2.DrawGraph(data, 50000, xAxis2);

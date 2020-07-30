@@ -7,8 +7,9 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:blnoff="clr-namespace:ZOT.BLnOFF.GUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1600">
+             mc:Ignorable="d"
+            >
+
 
     <UserControl.Resources>
         <Style x:Key="BLDatastyle" TargetType="{x:Type DataGridRow}">
@@ -30,6 +31,7 @@
         </Style>
     </UserControl.Resources>
 
+    
     <Grid Background="White">
         <Controls:MetroAnimatedTabControl Height="auto" Width="auto">
             <TabItem Header="Inicio">
@@ -59,14 +61,14 @@
                     <Label Content="Timing Advance:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,162,0,0" VerticalAlignment="Top" Width="107" Grid.Column="1" Height="26"/>
                     <Label Content="Export SRAN:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,228,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
                     <Label Content="Export FL18:" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Margin="57,293,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26"/>
-
+                    <ProgressBar x:Name="Progress_Bar" Grid.Row="0" Grid.Column="2" Width="300" Height="20" Minimum="0" Maximum="100"></ProgressBar>
                     <Label Content="Analisis Previo" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="54,10.4,0,0" FontWeight="Bold" FontSize="16" Height="32" Width="120" Grid.Row="1"/>
                     <Controls:ToggleSwitch x:Name="Is_PrevAnalysis_Enabled" IsChecked="True" OnLabel="On" OffLabel="Off" Margin="64,47.4,0,0" Grid.Column="1" Width="100" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="1" />
                     <TextBox x:Name="NIR_path" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Left" Height="26" Margin="57,108.4,0,0" TextWrapping="Wrap" Text="D:\NIR.csv" VerticalAlignment="Top" Width="443" Grid.Column="1" Grid.Row="1"/>
                     <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Right" Margin="0,103.4,19.6,0" VerticalAlignment="Top" Width="103" Click="NIR_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}" Grid.Row="1"/>
                     <Label Content="NIR Completa:"  IsEnabled="{Binding IsChecked, ElementName=Is_PrevAnalysis_Enabled}" HorizontalAlignment="Left" Margin="57,87.4,0,0" VerticalAlignment="Top" Width="87" Grid.Column="1" Height="26" Grid.Row="1"/>
-
-                    <Button Content="Iniciar" Grid.Column="1" HorizontalAlignment="Right" Height="35" Margin="0,9.8,19.6,0" VerticalAlignment="Top" Width="129" Click="Launch" Style="{DynamicResource AccentedSquareButtonStyle}" Grid.Row="2"/>
+                    
+                        <Button Content="Iniciar" Grid.Column="1" HorizontalAlignment="Right" Height="35" Margin="0,9.8,19.6,0" VerticalAlignment="Top" Width="129" Click="Launch" Style="{DynamicResource AccentedSquareButtonStyle}" Grid.Row="2"/>
                     <Button Content="Editar Umbrales" Grid.Column="1" HorizontalAlignment="Right" Margin="0,10,169.6,-14.2" VerticalAlignment="Top" Width="129" Height="35" Click="Constant_Editor" Style="{DynamicResource SquareButtonStyle}" Grid.Row="2"/>
 
                     <GroupBox Header="INPUT SITES" HorizontalAlignment="Left" Height="689" Margin="81,27,0,0" VerticalAlignment="Top" Width="232" Grid.RowSpan="3"/>
@@ -148,7 +150,7 @@
                     <Label Content="Nodo:" Margin="50,10,0,0"/>
                     <Label Content="Banda:" Margin="400,10,0,0"/>
                     <ComboBox  x:Name="siteListBox_2" SelectionChanged="Node_ComBox_Changed_Graph_2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="50,0,0,0" />
-                    <ComboBox  x:Name="techListBox_2" SelectionChanged="Tech_ComBox_Changed_Graph_2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="400,0,0,0" />
+                    <ComboBox  x:Name="techListBox_2" SelectionChanged="Tech_ComBox_Changed_Graph_2"  HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" Height="30" Margin="400,0,0,0" />
                     <Label Content="Sectores:" HorizontalAlignment="Right" Margin="0,0,250,0" VerticalAlignment="Center"/>
                     <ListBox x:Name="sectorListBox" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,150,0" Width="100" Height="90">
                         <ListBox.ItemTemplate>
@@ -170,4 +172,5 @@
 
         </Controls:MetroAnimatedTabControl>
     </Grid>
+    
 </UserControl>
