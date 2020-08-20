@@ -7,7 +7,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     mc:Ignorable="d"
     WindowState="Maximized"
-    Title="Zelenza Omni Tool">
+    Title="Zelenza Omni Tool    -   v2.1">
     <Controls:MetroWindow.Resources>
         <Style TargetType="Controls:Tile">
             <Style.Triggers>

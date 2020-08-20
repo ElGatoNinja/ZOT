@@ -17,8 +17,10 @@ namespace ZOT.BLnOFF.Code
             string directionFL18 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathFL18);
 
             int i = 0;
+            
             while (i < cellNames.Length)
             {
+               
                 //no se pueden hacer busquedas sql con mas de 99 OR y AND, así que el siguiente bucle hace consultas "paginadas"
                 //hace una busqueda para cada 98 emplazamientos, 98 * (1OR) = 98 OR
                 string SQLconditions = "A_LTE_MRBTS_LNBTS_LNCEL.cellName = \"" + cellNames[i] + "\"";

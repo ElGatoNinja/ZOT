@@ -258,8 +258,10 @@ namespace ZOT.BLnOFF.GUI
 
         private void Launch(object sender, RoutedEventArgs e)
         {
+            //Empieza a girar el cursor
+            Cursor = Cursors.Wait;
 
-            Progress_Bar.Value = Progress_Bar.Minimum;
+         //   Progress_Bar.Value = Progress_Bar.Minimum;
 
             String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;
@@ -315,13 +317,16 @@ namespace ZOT.BLnOFF.GUI
         private void BackGround_Progress(object sender, ProgressChangedEventArgs e)
         {
             Console.WriteLine("Progreso: " + e.ProgressPercentage);
-            Progress_Bar.Value = e.ProgressPercentage;
+           // Progress_Bar.Value = e.ProgressPercentage;
         }
 
         //tras acabar el procesado en segundo plano se actualiza la interfaz con ellos
         private void BackGround_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            Progress_Bar.Value = 100;
+           
+
+
+           // Progress_Bar.Value = 100;
             if (e.Error == null)
             {
                 bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
@@ -392,10 +397,14 @@ namespace ZOT.BLnOFF.GUI
                     UpdateGraph_2();
                 }
 
-
+                //Paramos de girar el cursor
+                Cursor = Cursors.Arrow;
             }
             else
             {
+                //Paramos de girar el cursor
+                Cursor = Cursors.Arrow;
+
                 //control de errores en BackGround
                 switch (e.Error.GetType().Name)
                 {
