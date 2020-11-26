@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.ComponentModel;
+using System.Windows.Input;
 using ZOT.resources.ZOTlib;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 
 namespace ZOT.GUI.Items
 {
@@ -124,11 +121,17 @@ namespace ZOT.GUI.Items
                     temporalListBoxContainer = new List<ListBox>();
                 }
             }
-        }
+
+
+
+
+
+    }
 
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString(); //numera las lineas
+
         }
 
         //crea bindings en runtime, esto es necesario porque los filtros se crean dinamicamente tras vincular el dataset y saber cuantas columnas tiene
@@ -278,6 +281,7 @@ namespace ZOT.GUI.Items
                 try
                 {
                     _workingData.DefaultView.RowFilter = filtro; //Se asigna al campo la cadena formada
+                    //_workingData.DefaultView.RowFilter = ""; //test para quitar filtros
                 }
                 catch(EvaluateException)
                 {
@@ -310,7 +314,201 @@ namespace ZOT.GUI.Items
         }
 
 
-            // Método de filtrado antiguo, daba problemas con el Ctrl-D y Ctrl-F
+
+
+        /** Pelayo - 2020
+         * Metodo que filtra una unica columna
+         */
+
+        private void FiltrarColumna(int col)
+        {
+            if (_workingData.DefaultView.RowFilter == "")
+            {
+                isFiltered = false;
+            }
+            int column = col;
+            List<Object> columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
+            var aux = FilterHierarchy[column].Filter.Where(x => (x.NotFiltered == true) && (x.IsTextFiltered == false) && (x.IsFilteredInOtherFilter == false)).Distinct().ToList(); // Se obtiene la lista de elementos de la columna con el checkbox marcado
+            string filtro = _workingData.DefaultView.RowFilter; // Se coge el filtro anterior si lo hubiera.
+
+            if (aux.Count == 0 || aux.Count == columnValues.Count)
+            {
+                return;  //Si no se ha marcado ninguna checkbox el método no hace nada
+            }
+            if (aux.Count == 1) //Es necesario diferenciar si solo se ha marcado un elemento 
+            {
+                if (!isFiltered) //También se comprueba si ya se había filtrado anteriormente
+                {
+                    filtro += " ([" + _workingData.Columns[column].ColumnName + "] IN ('" + aux[0].Name + "' ))";
+
+                }
+                else
+                {
+                    filtro += "AND ([" + _workingData.Columns[column].ColumnName + "] IN ('" + aux[0].Name + "' )) ";
+                }
+            }
+            else
+            {
+                if (!isFiltered)
+                {
+                    filtro += "( [" + _workingData.Columns[column].ColumnName + "]  IN ( '" + aux[0].Name + "' , ";
+                    for (int i = 1; i < aux.Count - 1; i++)
+                    {
+                        filtro = filtro + "'" + aux[i].Name + "' , ";
+                    }
+                }
+
+                else
+                {
+                    filtro += " AND ( [" + _workingData.Columns[column].ColumnName + "] IN ( '" + aux[0].Name + "' , ";
+                    for (int i = 1; i < aux.Count - 1; i++)
+                    {
+                        filtro = filtro + "'" + aux[i].Name + "' , ";
+
+                    }
+
+                }
+                filtro = filtro + "'" + aux[aux.Count - 1].Name + "' ))";
+            }
+            if (filtro != _workingData.DefaultView.RowFilter)
+            {
+                posicion++;
+                activeFilters++;
+                filtros[posicion] = filtro;
+                isFiltered = true;
+                try
+                {
+                    _workingData.DefaultView.RowFilter = filtro; //Se asigna al campo la cadena formada
+                    //_workingData.DefaultView.RowFilter = ""; //test para quitar filtros
+                }
+                catch (EvaluateException)
+                {
+                    WPFForms.ShowError("Has intentado filtrar una columna de valores numéricos dejando el valor vacío.", "Desmarca el valor vacío.");
+                    Undo_Filter();
+
+                }
+
+
+            }
+
+            for (int i = 0; i < Columns.Count; i++)   //Se recorren las columnas para actualizar la listas de filtros desplegables
+            {
+
+                columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
+                List<String> StringValues = columnValues.Select(s => s.ToString()).ToList();
+
+                for (int j = 0; j < FilterHierarchy[i].Filter.Count; j++)
+                {
+
+                    if (!(StringValues.Contains(FilterHierarchy[i].Filter[j].Name)))
+                    {
+                        FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = true;
+                        copia[posicion][i].Filter[j].IsFilteredInOtherFilter = true;
+                    }
+                }
+            }
+
+
+        }
+
+
+        // Pelayo - 2020
+         //Metodo que resetea el filtro desde donde se llama
+         
+        private void Reset(Object sender, RoutedEventArgs e)
+        {
+            //sacamos la columna que se esta filtrando
+            int column = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
+            //sacamos los valores
+            List<Object> columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
+
+            try
+                {
+                //Aveces funciona uno otras otro, asi que hago los dos
+                    _workingData.DefaultView.RowFilter = null; //Se asigna al campo la cadena formada
+                    _workingData.DefaultView.RowFilter = ""; //Se asigna al campo la cadena formada
+                }
+                catch (EvaluateException)
+                {
+                    WPFForms.ShowError("Erro al resetear filtros", "No se puede resetear esta columna");
+
+                }
+
+            //se actualizan los filtros solo en la columna que se dio al boton
+            //despues de quitar filtros el valor de las columnas cambia (columnValues)
+                columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
+                List<String> StringValues = columnValues.Select(s => s.ToString()).ToList();
+
+                for (int j = 0; j < FilterHierarchy[column].Filter.Count; j++)
+                {
+
+                    if ((StringValues.Contains(FilterHierarchy[column].Filter[j].Name)))
+                    {
+                        FilterHierarchy[column].Filter[j].IsFilteredInOtherFilter = false;
+                        copia[posicion][column].Filter[j].IsFilteredInOtherFilter = false;
+                    }
+                }
+
+            
+                    //FiltrarColumna(column);
+
+              
+        }
+
+
+
+
+        /** Pelayo - 2020
+         *Metodo que resetea todos los filtros
+         */
+        private void ResetAll(Object sender, RoutedEventArgs e)
+        {
+            //sacamos la columna que se esta filtrando
+            int column = ((DataGridColumnHeader)((Button)sender).TemplatedParent).Column.DisplayIndex;
+            List<Object> columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[column]).Distinct().ToList();
+
+            try
+            {
+                _workingData.DefaultView.RowFilter = null; //Se asigna al campo la cadena formada
+                _workingData.DefaultView.RowFilter = ""; //Se asigna al campo la cadena formada
+            }
+            catch (EvaluateException)
+            {
+                WPFForms.ShowError("Error al resetear todos los filtros", "Error en filtrado de todos.");
+
+            }
+
+            for (int i = 0; i < Columns.Count; i++)   //Se recorren las columnas para actualizar la listas de filtros desplegables
+            {
+
+                columnValues = ((DataView)(this.ItemsSource)).ToTable().AsEnumerable().Select(x => x[i]).Distinct().ToList();
+                List<String> StringValues = columnValues.Select(s => s.ToString()).ToList();
+
+                for (int j = 0; j < FilterHierarchy[i].Filter.Count; j++)
+                {
+
+                    if ((StringValues.Contains(FilterHierarchy[i].Filter[j].Name)))
+                    {
+                        FilterHierarchy[i].Filter[j].IsFilteredInOtherFilter = false;
+                        copia[posicion][i].Filter[j].IsFilteredInOtherFilter = false;
+                    }
+                }
+            }
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+        // Método de filtrado antiguo, daba problemas con el Ctrl-D y Ctrl-F
         private void Filter_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
@@ -464,6 +662,15 @@ namespace ZOT.GUI.Items
             _workingData.DefaultView.RowFilter = "";
             posicion = 0;
             isFiltered = false;
+        
+        
+
+        
+        
+        
+        
+        
+        
         }
 
         private void Undo_Filter()

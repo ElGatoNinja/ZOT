@@ -25,6 +25,8 @@ namespace ZOT.BLnOFF.GUI
     //Todo el flujo de la herramienta se controla desde esta clase
     public partial class TabControlBLnOFF : UserControl, IZotApp
     {
+
+
         private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff" };
         private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136" };
         private List<StringWorkArround> lnBtsInputGrid;
@@ -50,11 +52,15 @@ namespace ZOT.BLnOFF.GUI
 
         public TabControlBLnOFF()
         {
+
+            InitializeComponent();
+
+
+
             //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
             ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
             lnBtsInputGrid = new List<StringWorkArround>();
-            InitializeComponent();
             for (int i = 0; i < 50; i++)
             {
                 lnBtsInputGrid.Add(new StringWorkArround { LnBtsName = "" });
@@ -138,6 +144,22 @@ namespace ZOT.BLnOFF.GUI
             }
 
         }
+
+
+        private void SRAN2_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SRAN2_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export SRAN 2 ", Path.GetDirectoryName(SRAN_path.Text));
+            }
+            catch (Exception)
+            {
+                SRAN2_path.Text = ZOTFiles.FileFinder("Access data base |*mdb", "Export SRAN 2 ");
+            }
+
+        }
+
+
         private void FL18_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -236,6 +258,8 @@ namespace ZOT.BLnOFF.GUI
             public string pathNIR48;
             public bool BLnOffEnabled;
             public bool prevAnalisysEnabled;
+            public string pathSRAN2;
+            public bool srandividio;
         }
         struct bgwBlnOffResult
         {
@@ -261,7 +285,12 @@ namespace ZOT.BLnOFF.GUI
             //Empieza a girar el cursor
             Cursor = Cursors.Wait;
 
-         //   Progress_Bar.Value = Progress_Bar.Minimum;
+            //   Progress_Bar.Value = Progress_Bar.Minimum;
+
+
+
+
+
 
             String[] aux = new String[lnBtsInputGrid.Count];
             int n = 0;
@@ -295,8 +324,19 @@ namespace ZOT.BLnOFF.GUI
             args.pathNIR48 = NIR_path.Text;
             args.BLnOffEnabled = (bool)Is_BlnOFF_Enabled.IsChecked;
             args.prevAnalisysEnabled = (bool)Is_PrevAnalysis_Enabled.IsChecked;
+            args.pathSRAN2 = SRAN2_path.Text;
 
-           
+            if (estaSranDividido.IsChecked == true)
+            {
+                args.srandividio = true;
+
+            }
+            else
+            {
+                args.srandividio = false;
+            }
+
+
             worker.WorkerReportsProgress = true;
             worker.DoWork += BackGround_Work;
             worker.ProgressChanged += BackGround_Progress;
@@ -329,6 +369,11 @@ namespace ZOT.BLnOFF.GUI
            // Progress_Bar.Value = 100;
             if (e.Error == null)
             {
+
+                plotNodo.Visibility = Visibility;
+                plotceldas.Visibility = Visibility;
+
+
                 bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
                 if (output.colindancias != null)
                 {
@@ -418,7 +463,7 @@ namespace ZOT.BLnOFF.GUI
                         WPFForms.ShowError("Error en los datos", e.Error.Message);
                         break;
                     default:
-                        WPFForms.ShowError("Error no controlado", e.Error.Message);
+                        WPFForms.ShowError("No controlado", e.Error.Message);
                         break;
                 }
             }
@@ -444,7 +489,7 @@ namespace ZOT.BLnOFF.GUI
                 //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
                 Colindancias colindancias = new Colindancias();
                 RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
-                R31.completeR31(args.pathSRAN, args.pathFL18);
+                R31.completeR31(args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio);
 
 #if DEBUG
                 timer.Stop();
@@ -461,7 +506,7 @@ namespace ZOT.BLnOFF.GUI
                 timer.Reset();
                 timer.Start();
 #endif
-                Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18);
+                Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio);
 #if DEBUG
                 timer.Stop();
                 Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -618,7 +663,7 @@ namespace ZOT.BLnOFF.GUI
                                 .Select(col => (int)col[3]).ToList<int>()),
                         StackMode = StackMode.Values,
                         DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#44bdec")),
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#99ddf7")),
                         ScalesYAt = 0,
                         Title ="Intentos HO Inter",
 
@@ -630,7 +675,7 @@ namespace ZOT.BLnOFF.GUI
                                 .Select(col => (int)col[8]).ToList<int>()),
                         StackMode = StackMode.Values,
                         DataLabels = true,
-                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ec7568")),
+                        Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ed938a")),
                         ScalesYAt = 0,
                         Title ="Intentos HO Intra"
                     },
@@ -957,6 +1002,16 @@ namespace ZOT.BLnOFF.GUI
 
 
         #endregion
+
+        private void estaSranDividido_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void lnBtsVisualGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 
     public class StringWorkArround : INotifyPropertyChanged

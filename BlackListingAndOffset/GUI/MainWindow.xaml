@@ -7,7 +7,17 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     mc:Ignorable="d"
     WindowState="Maximized"
-    Title="Zelenza Omni Tool    -   v2.1">
+    Title="Zelenza Omni Tool    -   v2.7.2"
+    Closing="MainWindow_Closing"
+    Activated="MainWindow_Activated"                      
+
+                      
+                    
+                      
+    BorderBrush="{DynamicResource AccentColorBrush}"
+    BorderThickness="2"
+    ShowIconOnTitleBar="True"         
+                      >
     <Controls:MetroWindow.Resources>
         <Style TargetType="Controls:Tile">
             <Style.Triggers>
@@ -49,6 +59,8 @@
             </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
+    
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="55"/>
@@ -70,11 +82,24 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Controls:Tile Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Click="Launch_BLnOFF" Title="BlackListing And Offset"  Height="auto" Width="Auto">
-                <iconPacks:PackIconMaterial Kind="Cancel" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" />
+            <Controls:Tile Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Click="Launch_BLnOFF" Title="BlackListing And Offset"  Height="auto" Width="Auto" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
+                <iconPacks:PackIconMaterial Kind="HomeAnalytics" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" />
             </Controls:Tile>
-            <Controls:Tile Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="False"/>
+            <Controls:Tile Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="False" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
+                <iconPacks:PackIconMaterial Kind="MapCheck" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </Controls:Tile>
+
+            <Controls:Tile Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Click="Launch_Window48Horas" Title="48 Horas" MinWidth="50" Height="auto" Width="Auto" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
+                <iconPacks:PackIconMaterial Kind="ClockCheck" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" />
+            </Controls:Tile>        
             
+            <Controls:Tile Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="1" Click="Launch_ZelenzaWeb" Height="25" Width="85"  Background="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" HorizontalTitleAlignment="Center" Margin="3,3,3,10" VerticalTitleAlignment="Center" >
+                <Image x:Name="iconoZelenza" Source="/resources/logo-zelenza.png" Width="100" ToolTip="Muchas ideas crecen mejor cuando se trasplantan a otra mente diferente de la que surgieron"/>
+            </Controls:Tile>
+
+
+
+
         </Grid>
         <!--Sobre este control se muestra el control que el usuario usa, y se superpone al menu-->
         <ContentControl x:Name="visibleTool" Grid.Column="1"/>
@@ -84,14 +109,21 @@
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="55"/>
                 <RowDefinition Height="55"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <Button x:Name="startBtn" Click="click_menuBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}"   Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"  >
+            <Button x:Name="startBtn" ToolTip="Volver al inicio." Click="click_menuBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}"   Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"  >
                 <iconPacks:PackIconMaterial Kind="Apps" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}} }" />
             </Button>
-            <Button x:Name="menuBtn" Click="toggle_tool_menu" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+            <Button x:Name="menuBtn" ToolTip="Abre el menu lateral." Click="toggle_tool_menu" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="BarsSolid" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
             </Button>
-            
+            <Button x:Name="folderBtn" ToolTip="Abre la carpeta donde están los ficheros de las herramientas." Click="click_open_folder" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                <iconPacks:PackIconFontAwesome Kind="FolderSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
+            </Button>
+
+
+
         </Grid>
 
         <Controls:FlyoutsControl Grid.ColumnSpan="2">
@@ -104,7 +136,7 @@
             </Controls:Flyout>
         </Controls:FlyoutsControl>
 
-        <Controls:FlyoutsControl Grid.Column="1">
+        <Controls:FlyoutsControl Grid.Column="1" Height="504" VerticalAlignment="Bottom">
             <Controls:Flyout x:Name="infoFlyout" Header="Activas" Position="Right" Width="600">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <GUI:InfoPage x:Name="infoPage"/>

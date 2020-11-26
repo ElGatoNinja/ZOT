@@ -69,13 +69,14 @@ namespace ZOT.BLnOFF.Code
         /// </summary>
         /// <param name="pathSRAN">Direccion de el export SRAN</param>
         /// <param name="pathFL18">Direccion del export FL18</param>
-        public void completeR31(string pathSRAN, string pathFL18)
+        public void completeR31(string pathSRAN, string pathFL18, string pathSRAN2, bool estadividido)
         {
             var emptyData = data.AsEnumerable().Where(row => (string)row[9] == "UNKNOWN").ToList();
             if (emptyData == null)
                 return;
 
             string directionSRAN = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathSRAN);
+            string directionSRAN2 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathSRAN2);
             string directionFL18 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", pathFL18);
 
             DataTable exportData = new DataTable();
@@ -83,48 +84,105 @@ namespace ZOT.BLnOFF.Code
             //no se pueden hacer busquedas sql con mas de 99 OR y AND, así que el siguiente bucle hace consultas "paginadas"
             //hace una busqueda para cada 48 emplazamientos, 49 * (1OR + 1AND) + 1AND = 99
             int i = 0;
-            while (i < emptyData.Count)
+            while (i < emptyData.Count-1)
             {
                 string SQLconditions = "(lnCelId = " + emptyData[0][11] + " AND lnBtsId = " + emptyData[0][8] + ")";
-                for (int j = 0; j < 49 && i < emptyData.Count; j++)
+                for (int j = 0; j < 49 && i < emptyData.Count-1; j++)
                 {
-                    SQLconditions += " OR (lnCelId = " + emptyData[i][11] + " AND lnBtsId = " + emptyData[i][8] + ")";
                     i++;
+                    SQLconditions += " OR (lnCelId = " + emptyData[i][11] + " AND lnBtsId = " + emptyData[i][8] + ")";
+                    //i++;
                 }
 
                 string SQLquerry = "SELECT name, lnCelId, lnBtsId "
                     + "FROM A_LTE_MRBTS_LNBTS_LNCEL "
                     + "WHERE  " + SQLconditions + ";";
- 
-                using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
-                using (OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
+
+
+
+                if (estadividido)
                 {
-                    OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
-                    OleDbCommand commandFL18 = new OleDbCommand(SQLquerry, connectionFL18);
 
-                    //se cargan los resultados de la base de datos en una unica tabla
 
-                    try
+                    using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
+                    using (OleDbConnection connectionSRAN2 = new OleDbConnection(directionSRAN2))
+                    using (OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
                     {
-                        connectionSRAN.Open();
-                        using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
-                        {
-                            exportData.Load(SRANreader);
-                        }
+                        OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
+                        OleDbCommand commandSRAN2 = new OleDbCommand(SQLquerry, connectionSRAN2);
+                        OleDbCommand commandFL18 = new OleDbCommand(SQLquerry, connectionFL18);
 
-                        connectionFL18.Open();
-                        using (OleDbDataReader FL18reader = commandFL18.ExecuteReader())
+                        //se cargan los resultados de la base de datos en una unica tabla
+
+                        try
                         {
-                            exportData.Load(FL18reader);
+                            connectionSRAN.Open();
+                            using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader);
+                            }
+                            connectionSRAN2.Open();
+                            using (OleDbDataReader SRANreader2 = commandSRAN2.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader2);
+                            }
+
+                            connectionFL18.Open();
+                            using (OleDbDataReader FL18reader = commandFL18.ExecuteReader())
+                            {
+                                exportData.Load(FL18reader);
+                            }
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
+                                "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema " +
+                                "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje" + "  Access Database Engine se descarga de: https://www.microsoft.com/es-ES/download/details.aspx?id=13255    " + e);
+
                         }
                     }
-                    catch (InvalidOperationException)
-                    {
-                        throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
-                            "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema" +
-                            "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje");
-                    }
+
                 }
+                else
+                {
+
+
+                    using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
+                    using (OleDbConnection connectionFL18 = new OleDbConnection(directionFL18))
+                    {
+                        OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
+                        OleDbCommand commandFL18 = new OleDbCommand(SQLquerry, connectionFL18);
+
+                        //se cargan los resultados de la base de datos en una unica tabla
+
+                        try
+                        {
+                            connectionSRAN.Open();
+                            using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader);
+                            }
+
+                            connectionFL18.Open();
+                            using (OleDbDataReader FL18reader = commandFL18.ExecuteReader())
+                            {
+                                exportData.Load(FL18reader);
+                            }
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
+                                "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema " +
+                                "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje" + "  Access Database Engine se descarga de: https://www.microsoft.com/es-ES/download/details.aspx?id=13255    " + e);
+
+                        }
+                    }
+
+
+                }
+
+
+
             }
             /*busca en el dataset cada fila que se corresponde a un hueco vacío y lo rellena en la tabla
                 ENB_CO_CORTE_INGLES_TEJARES_02

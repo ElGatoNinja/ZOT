@@ -16,6 +16,10 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using ZOT.GUI.Items;
 using ZOT.resources.ZOTlib;
+using ZOT.HORAS48.GUI;
+using System.IO;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace ZOT.GUI
 {
@@ -30,10 +34,28 @@ namespace ZOT.GUI
         public Grid Grid { get { return _grid; } }
         public MainWindow()
         { 
+
             InitializeComponent();
+
+            Show();
+
             WPFForms.window = this; //permite a ZOTlib lanzar mensajes sobre esta ventana
             _grid = toolBar;
             toolsMenuFlyout.IsOpen = false;
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
         }
 
         public void toggle_tool_menu(object sender, RoutedEventArgs e)
@@ -45,7 +67,20 @@ namespace ZOT.GUI
         {
             visibleTool.Visibility = Visibility.Hidden;
             infoPage.Visibility = Visibility.Collapsed;
+        } 
+        
+        public void click_open_folder(object sender, RoutedEventArgs e)
+        {
+            String pathFolder = System.IO.Path.Combine(Environment.CurrentDirectory, @"Data");
+
+            Process.Start("explorer.exe", pathFolder);
+
+
         }
+
+
+
+
 
         public void Click_ShowInfo(object sender, RoutedEventArgs e)
         {
@@ -69,8 +104,64 @@ namespace ZOT.GUI
         }
         private void Launch_BLnOFF(object sender, RoutedEventArgs e)
         {
-            StartApp(new ZOT.BLnOFF.GUI.TabControlBLnOFF());
+
+            try
+            {
+                StartApp(new ZOT.BLnOFF.GUI.TabControlBLnOFF());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+          
+
+
+            /*
+            Window UserControlNewWindow = new Window
+            {
+                Title = "Some Title",
+                Content = new ZOT.BLnOFF.GUI.TabControlBLnOFF()
+            };
+
+            UserControlNewWindow.ShowDialog();
+            */
+
         }
+
+        private void Launch_48H(object sender, RoutedEventArgs e)
+        {
+            
+            Formulario48 form48 = new Formulario48();
+            form48.Show();
+        }
+
+        
+        private void Launch_Window48Horas(object sender, RoutedEventArgs e)
+        {
+            Ventana48H w = new Ventana48H();
+            w.Show();
+
+        }
+
+
+
+
+
+
+        
+        private void Launch_ComprobarTipoObra(object sender, RoutedEventArgs e)
+        {
+
+            ComprobarTipoObra cto = new ComprobarTipoObra();
+            cto.Show();
+        }
+        
+        private void Launch_ZelenzaWeb(object sender, RoutedEventArgs e)
+        {
+            //System.Diagnostics.Process.Start("https://www.zelenza.com");
+
+        }
+
 
         private void StartApp(IZotApp app)
         {
@@ -94,6 +185,27 @@ namespace ZOT.GUI
  
             visibleTool.Visibility = Visibility.Visible;
         }
+    
+
+        void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            Console.WriteLine("Cerrando ZOT");
+            Environment.Exit(1);
+        }
+
+        void MainWindow_Activated(object sender, EventArgs e)
+        {
+            //Me aburria
+            String[] fraseRandom = new string[] { "Muchas ideas crecen mejor cuando se trasplantan a otra mente diferente de la que surgieron - Oliver Wendell Holmes", "Juntarse es un comienzo, seguir juntos es un progreso y trabajar juntos es un éxito - Henry Ford.", "Any fool can write code that a computer can undertand. Good programmers write code that humans can understand.", "No importa lo despacio que vayas, siempre y cuando no te detengas - Confucio", "No esperes que las oportunidades lleguen solas. Tienes que hacer que ocurra - Dnis Diderot", "No busques los errores, busca la solución - Henry Ford (Y sino envia un email :) )", " Si crees que puedes, ya estás a medio camino - Theodore Roosevelt", "Trabajo deprisa para vivir despacio.", "Push yourself, because no one else is going to do it for you.", "Great things never come from comfort zones." };
+            Random rnd = new Random();
+            int numerorandom = rnd.Next(0, 10);
+            iconoZelenza.ToolTip.ToString();
+
+
+            iconoZelenza.ToolTip = fraseRandom[numerorandom].ToString();
+        }
+
+
     }
 
     /// <summary>

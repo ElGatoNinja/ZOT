@@ -3,7 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ZOT.GUI"
              DispatcherUnhandledException="Application_DispatcherUnhandledException"
-             StartupUri="MainWindow.xaml">
+             
+             StartupUri="INICIO.xaml">
+    <!--              StartupUri="MainWindow.xaml"> -->
+
+
+
+
+
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="ZelenzaGolden">#D6A40D</Color>
@@ -20,3 +27,4 @@
         </ResourceDictionary>
     </Application.Resources>
 </Application>
+
