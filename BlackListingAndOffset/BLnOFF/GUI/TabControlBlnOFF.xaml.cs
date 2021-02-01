@@ -26,6 +26,11 @@ namespace ZOT.BLnOFF.GUI
     public partial class TabControlBLnOFF : UserControl, IZotApp
     {
 
+        formColindancias fc = null;
+        FormErrores fe = null;
+        FormcandOff fco = null;
+        formcandBL fcb = null;
+        bgwBlnOffResult Copiaoutput;
 
         private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff" };
         private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136" };
@@ -57,8 +62,8 @@ namespace ZOT.BLnOFF.GUI
 
 
 
-            //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
-            ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
+           //Cargar las constantes y umbrales que se usan para hacer evaluaciones en toda la aplicación
+           ZOT.BLnOFF.Code.CONSTANTS.LoadConst();
 
             lnBtsInputGrid = new List<StringWorkArround>();
             for (int i = 0; i < 50; i++)
@@ -80,8 +85,23 @@ namespace ZOT.BLnOFF.GUI
                 SRAN_path.Text = storedPaths[2];
                 FL18_path.Text = storedPaths[3];
                 NIR_path.Text = storedPaths[4];
+                if(storedPaths[5] != null)
+                {
+                    SRAN2_path.Text = storedPaths[5];
+                }
+                else
+                {
+                    SRAN2_path.Text = "C:/";
+                }
             }
             catch (FileNotFoundException) { /*comportamiento aceptable si no existe ya se creará */}
+            catch (IndexOutOfRangeException) {
+                RSLTE31_path.Text = "C:/";
+                TA_path.Text =  "C:/";
+                SRAN_path.Text = "C:/";
+                FL18_path.Text = "C:/";
+                NIR_path.Text = "C:/";
+            }
         }
 
         private void PasteExecuted(object target, ExecutedRoutedEventArgs e)
@@ -260,6 +280,8 @@ namespace ZOT.BLnOFF.GUI
             public bool prevAnalisysEnabled;
             public string pathSRAN2;
             public bool srandividio;
+            public bool conFL18;
+            public bool rellenarLabel;
         }
         struct bgwBlnOffResult
         {
@@ -282,6 +304,17 @@ namespace ZOT.BLnOFF.GUI
 
         private void Launch(object sender, RoutedEventArgs e)
         {
+
+
+
+            //Ocultamos las demas pestañas
+            tabColindancias.Visibility = Visibility.Collapsed;
+            tabCandidatasBL.Visibility = Visibility.Collapsed;
+            tabCandidatasOFF.Visibility = Visibility.Collapsed;
+            tabErrores.Visibility = Visibility.Collapsed;
+            plotNodo.Visibility = Visibility.Collapsed;
+            plotceldas.Visibility = Visibility.Collapsed;
+
             //Empieza a girar el cursor
             Cursor = Cursors.Wait;
 
@@ -325,6 +358,7 @@ namespace ZOT.BLnOFF.GUI
             args.BLnOffEnabled = (bool)Is_BlnOFF_Enabled.IsChecked;
             args.prevAnalisysEnabled = (bool)Is_PrevAnalysis_Enabled.IsChecked;
             args.pathSRAN2 = SRAN2_path.Text;
+            
 
             if (estaSranDividido.IsChecked == true)
             {
@@ -336,6 +370,28 @@ namespace ZOT.BLnOFF.GUI
                 args.srandividio = false;
             }
 
+            if (conFL18.IsChecked == true)
+            {
+                args.conFL18 = true;
+
+            }
+            else
+            {
+                args.conFL18 = false;
+            }
+
+
+            if (cbRellenarLabels.IsChecked == true)
+            {
+                args.rellenarLabel = true;
+
+            }
+            else
+            {
+                args.rellenarLabel = false;
+            }
+
+
 
             worker.WorkerReportsProgress = true;
             worker.DoWork += BackGround_Work;
@@ -346,8 +402,10 @@ namespace ZOT.BLnOFF.GUI
             //Task<ProgressDialogController> progressBar = WPFForms.ShowProgress("Ejecutando BlackListing y Offset","Procesando consulta 31");
 
             //Guardar el path de los ultimos archivos en un fichero de texto
-            string[] storePaths = new string[5] { RSLTE31_path.Text, TA_path.Text, SRAN_path.Text, FL18_path.Text, NIR_path.Text };
+            string[] storePaths = new string[6] { RSLTE31_path.Text, TA_path.Text, SRAN_path.Text, FL18_path.Text, NIR_path.Text, SRAN2_path.Text };
             System.IO.File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, @"BlnOFF\Data\", "RememberPaths.txt"), storePaths);
+
+            
         }
 
 
@@ -370,15 +428,30 @@ namespace ZOT.BLnOFF.GUI
             if (e.Error == null)
             {
 
+
+                //Paramos de girar el cursor
+                Cursor = Cursors.Arrow;
+
                 plotNodo.Visibility = Visibility;
                 plotceldas.Visibility = Visibility;
 
 
                 bgwBlnOffResult output = (bgwBlnOffResult)e.Result;
+                Copiaoutput = output;
                 if (output.colindancias != null)
                 {
+
+
+
                     colinGrid.WorkingData = output.colindancias;
                     WPFForms.FindParent<TabItem>(colinGrid).Visibility = Visibility.Visible;
+                    tabColindancias.IsSelected = true;
+
+
+
+                   //fc = new formColindancias(output.colindancias);
+                   
+                    //fc.Show();
                 }
 
                 if (output.siteCoordErrors != "" && (bool)Is_BlnOFF_Enabled.IsChecked)
@@ -440,10 +513,10 @@ namespace ZOT.BLnOFF.GUI
                     sectorListBox.SetBinding(ListBox.ItemsSourceProperty, codeBinding);
                    
                     UpdateGraph_2();
+
+
                 }
 
-                //Paramos de girar el cursor
-                Cursor = Cursors.Arrow;
             }
             else
             {
@@ -489,7 +562,7 @@ namespace ZOT.BLnOFF.GUI
                 //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
                 Colindancias colindancias = new Colindancias();
                 RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
-                R31.completeR31(args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio);
+                R31.completeR31(args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio, args.conFL18);
 
 #if DEBUG
                 timer.Stop();
@@ -506,7 +579,7 @@ namespace ZOT.BLnOFF.GUI
                 timer.Reset();
                 timer.Start();
 #endif
-                Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio);
+                Exports export = new Exports(TA.GetColumn("LNCEL name"), args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio, args.conFL18);
 #if DEBUG
                 timer.Stop();
                 Console.WriteLine("Sacar Exports: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
@@ -522,12 +595,23 @@ namespace ZOT.BLnOFF.GUI
                     colindancias.CheckColin(dataRow, R31);
                     
                 }
+                int a = 0;
                
                 foreach (DataRow dataRow in R31.NotInExports())
                 {
                     colindancias.CheckColinsNotInExports(dataRow);
                 }
                 colindancias.AddENBID();
+
+                if (args.rellenarLabel)
+                {
+                    colindancias.rellenarLabelUnknown(args.pathSRAN, args.pathSRAN2, args.srandividio);
+                }
+
+
+
+
+
                 porc = 15;
                 worker.ReportProgress(porc);
 
@@ -1011,6 +1095,64 @@ namespace ZOT.BLnOFF.GUI
         private void lnBtsVisualGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void MetroAnimatedTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void btnFormColindancias_Click(object sender, RoutedEventArgs e)
+        {
+           
+                if (Copiaoutput.colindancias != null)
+                { 
+                    fc = new formColindancias(Copiaoutput.colindancias);
+                    fc.Show();
+
+
+            }
+            
+        }
+        private void btnFormErrores_Click(object sender, RoutedEventArgs e)
+        {
+           
+                if (Copiaoutput.error != null)
+                { 
+                    fe = new FormErrores(Copiaoutput.error);
+                    fe.Show();
+
+
+            }
+            
+        }
+
+
+    private void btnFormcandOff_Click(object sender, RoutedEventArgs e)
+        {
+           
+                if (Copiaoutput.candOff != null)
+                { 
+                    fco = new FormcandOff(Copiaoutput.candOff);
+                    fco.Show();
+
+
+                }
+            
+        }
+
+        private void btnFormcandBL_Click(object sender, RoutedEventArgs e)
+        {
+            if (Copiaoutput.candOff != null)
+            {
+                fcb = new formcandBL(Copiaoutput.candBl);
+                fcb.Show();
+            }
         }
     }
 

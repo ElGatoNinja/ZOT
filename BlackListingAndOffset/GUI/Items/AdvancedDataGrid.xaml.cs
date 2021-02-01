@@ -211,7 +211,8 @@ namespace ZOT.GUI.Items
                 {
                     filterItem.IsTextFiltered = true;
                 }
-                foreach (FilterListItem filterItem in FilterHierarchy[column].Filter.Where(item => item.Name.Contains(((TextBox)sender).Text)))
+                //Se pasa a upper para ignorar mayusuclas
+                foreach (FilterListItem filterItem in FilterHierarchy[column].Filter.Where(item => item.Name.ToUpper().Contains(  ( (TextBox)sender ).Text.ToUpper()  )  )   )
                 {
                     filterItem.IsTextFiltered = false;
                 }

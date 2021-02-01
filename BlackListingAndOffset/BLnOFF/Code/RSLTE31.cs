@@ -69,7 +69,7 @@ namespace ZOT.BLnOFF.Code
         /// </summary>
         /// <param name="pathSRAN">Direccion de el export SRAN</param>
         /// <param name="pathFL18">Direccion del export FL18</param>
-        public void completeR31(string pathSRAN, string pathFL18, string pathSRAN2, bool estadividido)
+        public void completeR31(string pathSRAN, string pathFL18, string pathSRAN2, bool estadividido, bool conFL18)
         {
             var emptyData = data.AsEnumerable().Where(row => (string)row[9] == "UNKNOWN").ToList();
             if (emptyData == null)
@@ -100,7 +100,7 @@ namespace ZOT.BLnOFF.Code
 
 
 
-                if (estadividido)
+                if (estadividido && conFL18)
                 {
 
 
@@ -143,6 +143,76 @@ namespace ZOT.BLnOFF.Code
                     }
 
                 }
+                //si srandivididor y no FL18
+                else if(estadividido && !conFL18)
+                {
+
+                    using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
+                    using (OleDbConnection connectionSRAN2 = new OleDbConnection(directionSRAN2))
+                    {
+                        OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
+                        OleDbCommand commandSRAN2 = new OleDbCommand(SQLquerry, connectionSRAN2);
+
+                        //se cargan los resultados de la base de datos en una unica tabla
+
+                        try
+                        {
+                            connectionSRAN.Open();
+                            using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader);
+                            }
+                            connectionSRAN2.Open();
+                            using (OleDbDataReader SRANreader2 = commandSRAN2.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader2);
+                            }
+
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
+                                "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema " +
+                                "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje" + "  Access Database Engine se descarga de: https://www.microsoft.com/es-ES/download/details.aspx?id=13255    " + e);
+
+                        }
+                    }
+
+
+                }
+
+                //si no esta dividio y no tiene FL18
+                else if (!estadividido && !conFL18)
+                {
+
+                    using (OleDbConnection connectionSRAN = new OleDbConnection(directionSRAN))
+                    {
+                        OleDbCommand commandSRAN = new OleDbCommand(SQLquerry, connectionSRAN);
+
+                        //se cargan los resultados de la base de datos en una unica tabla
+
+                        try
+                        {
+                            connectionSRAN.Open();
+                            using (OleDbDataReader SRANreader = commandSRAN.ExecuteReader())
+                            {
+                                exportData.Load(SRANreader);
+                            }
+
+
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            throw new InvalidOperationException("No se han podido acceder a access, podría deberse a no tener instalado Microsoft Access Engine 2010" +
+                                "Redistributable o usar una version de compilacion no compatible con la version de office instalada actualmente. En cualquier caso es un problema " +
+                                "complicado, avisad al informático más cercano. Y si no encuentra la solución dejadme un mensaje" + "  Access Database Engine se descarga de: https://www.microsoft.com/es-ES/download/details.aspx?id=13255    " + e);
+
+                        }
+                    }
+
+
+                }
+
                 else
                 {
 
@@ -201,6 +271,9 @@ namespace ZOT.BLnOFF.Code
                     }
                 }
             }
+
+
+            
         }
 
         public List<DataRow> NotInExports()

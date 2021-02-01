@@ -10,6 +10,8 @@
         Width="300" Height="120"
         Title="ZOT" 
         TextBlock.TextAlignment="Center"
+        
+        Closing="INICIO_Closing"
         >
 
 

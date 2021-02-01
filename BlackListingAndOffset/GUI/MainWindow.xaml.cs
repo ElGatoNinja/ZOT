@@ -20,6 +20,7 @@ using ZOT.HORAS48.GUI;
 using System.IO;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace ZOT.GUI
 {
@@ -77,6 +78,48 @@ namespace ZOT.GUI
 
 
         }
+        
+
+
+        public void click_load_siteCoordr(object sender, RoutedEventArgs e)
+        {
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "CSV Files|*.csv;";
+            ofd.Title = "Selecciona el Histórico Norte ";
+            String ruta = "";
+
+
+            String pathFolder = System.IO.Path.Combine(Environment.CurrentDirectory, @"Data") + "\\SiteCoord.csv";
+
+
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+               ruta = ofd.FileName;
+
+                try
+                {
+
+                    File.Copy(ruta, pathFolder, true);
+                    System.Windows.MessageBox.Show("SiteCoord actualizado correctamente.");
+                }
+                catch(Exception)
+                {
+                    System.Windows.MessageBox.Show("Error al copiar el nuevo SiteCoord");
+                }
+
+
+
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Error al cargar el fichero SiteCoord nuevo");
+            }
+
+
+        }
+
+
 
 
 
@@ -111,7 +154,7 @@ namespace ZOT.GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                System.Windows.MessageBox.Show(ex.ToString());
             }
           
 
@@ -161,6 +204,8 @@ namespace ZOT.GUI
             //System.Diagnostics.Process.Start("https://www.zelenza.com");
 
         }
+
+
 
 
         private void StartApp(IZotApp app)

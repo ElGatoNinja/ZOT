@@ -62,6 +62,14 @@ namespace ZOT.BLnOFF.GUI
         }
 
 
+
+        void INICIO_Closing(object sender, CancelEventArgs e)
+        {
+            Console.WriteLine("Cerrando ZOT");
+            Environment.Exit(1);
+        }
+
+
     }
 
 }

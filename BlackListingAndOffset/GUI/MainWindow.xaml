@@ -7,7 +7,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     mc:Ignorable="d"
     WindowState="Maximized"
-    Title="Zelenza Omni Tool    -   v2.7.2"
+    Title="Zelenza Omni Tool    -   v2.9.3"
     Closing="MainWindow_Closing"
     Activated="MainWindow_Activated"                      
 
@@ -109,8 +109,8 @@
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="55"/>
                 <RowDefinition Height="55"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="200"/>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="80"/>
             </Grid.RowDefinitions>
             <Button x:Name="startBtn" ToolTip="Volver al inicio." Click="click_menuBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}"   Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"  >
                 <iconPacks:PackIconMaterial Kind="Apps" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}} }" />
@@ -118,7 +118,12 @@
             <Button x:Name="menuBtn" ToolTip="Abre el menu lateral." Click="toggle_tool_menu" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="BarsSolid" Foreground="{Binding Path=BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
             </Button>
-            <Button x:Name="folderBtn" ToolTip="Abre la carpeta donde están los ficheros de las herramientas." Click="click_open_folder" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+
+            <Button x:Name="cargarSiteCoord" ToolTip="Formulario de carga de un nuevo SiteCoord." Click="click_load_siteCoordr" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                <iconPacks:PackIconFontAwesome Kind="LocationArrowSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
+            </Button>
+            
+            <Button x:Name="folderBtn" ToolTip="Abre la carpeta donde están los ficheros de las herramientas." Click="click_open_folder" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="FolderSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
             </Button>
 

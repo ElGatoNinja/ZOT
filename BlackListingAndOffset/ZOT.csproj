@@ -48,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
     <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -134,11 +135,17 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="AdvancedDataGridView, Version=0.1.0.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ADGV.0.1.0.10\lib\net40\AdvancedDataGridView.dll</HintPath>
+    <Reference Include="AdvancedDataGridView, Version=1.1.24722.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DG.AdvancedDataGridView.1.1.24722.8\lib\net40\AdvancedDataGridView.dll</HintPath>
     </Reference>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
+    </Reference>
+    <Reference Include="DataGridViewAutoFilter">
+      <HintPath>E:\Descargas\DataGridViewAutoFilter\DataGridViewAutoFilter\CS\DataGridViewAutoFilter\DesignerSetupDemo\bin\Debug\DataGridViewAutoFilter.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyTabs, Version=2.0.0.39, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyTabs.2.0.0\lib\net40\EasyTabs.dll</HintPath>
     </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
@@ -221,10 +228,20 @@
     <Reference Include="MahApps.Metro.IconPacks.Zondicons, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.3.1.0\lib\net47\MahApps.Metro.IconPacks.Zondicons.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyTabs.2.0.0\lib\net40\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyTabs.2.0.0\lib\net40\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Svg, Version=2.4.3.29446, Culture=neutral, PublicKeyToken=12a0bac221edeae2, processorArchitecture=MSIL">
+      <HintPath>..\packages\Svg.2.4.3\lib\Svg.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
@@ -239,6 +256,21 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="UIAutomationProvider" />
+    <Reference Include="Win32Interop.Dwmapi, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Win32Interop.Dwmapi.1.0.1\lib\Win32Interop.Dwmapi.dll</HintPath>
+    </Reference>
+    <Reference Include="Win32Interop.Gdi32, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Win32Interop.Gdi32.1.0.1\lib\Win32Interop.Gdi32.dll</HintPath>
+    </Reference>
+    <Reference Include="Win32Interop.Kernel32, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Win32Interop.Kernel32.1.0.1\lib\Win32Interop.Kernel32.dll</HintPath>
+    </Reference>
+    <Reference Include="Win32Interop.User32, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Win32Interop.User32.1.0.1\lib\Win32Interop.User32.dll</HintPath>
+    </Reference>
+    <Reference Include="Win32Interop.Uxtheme, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Win32Interop.Uxtheme.1.0.1\lib\Win32Interop.Uxtheme.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -258,6 +290,48 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BLnOFF\GUI\ayudaCandBL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\ayudaCandBL.Designer.cs">
+      <DependentUpon>ayudaCandBL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\ayudaCandOff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\ayudaCandOff.Designer.cs">
+      <DependentUpon>ayudaCandOff.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\ayudaNormal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\ayudaNormal.Designer.cs">
+      <DependentUpon>ayudaNormal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\formcandBL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\formcandBL.Designer.cs">
+      <DependentUpon>formcandBL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\FormcandOff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\FormcandOff.Designer.cs">
+      <DependentUpon>FormcandOff.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\formColindancias.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\formColindancias.Designer.cs">
+      <DependentUpon>formColindancias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\FormErrores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\FormErrores.Designer.cs">
+      <DependentUpon>FormErrores.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\INICIO.xaml.cs">
       <DependentUpon>INICIO.xaml</DependentUpon>
     </Compile>
@@ -326,6 +400,11 @@
     <Compile Include="HORAS48\GUI\Ventana48H.xaml.cs">
       <DependentUpon>Ventana48H.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="resources\Excel2.cs" />
     <Compile Include="resources\SiteCoords.cs" />
     <Compile Include="resources\ZOTlib.cs" />
@@ -382,16 +461,35 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="BLnOFF\GUI\ayudaCandBL.resx">
+      <DependentUpon>ayudaCandBL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\ayudaCandOff.resx">
+      <DependentUpon>ayudaCandOff.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\ayudaNormal.resx">
+      <DependentUpon>ayudaNormal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\formcandBL.resx">
+      <DependentUpon>formcandBL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\FormcandOff.resx">
+      <DependentUpon>FormcandOff.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\formColindancias.es.resx">
+      <DependentUpon>formColindancias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\formColindancias.resx">
+      <DependentUpon>formColindancias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\FormErrores.resx">
+      <DependentUpon>FormErrores.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HORAS48\GUI\Ayuda_48H.resx">
       <DependentUpon>Ayuda_48H.cs</DependentUpon>
     </EmbeddedResource>
@@ -427,6 +525,7 @@
     <None Include="index.md" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
+    <None Include="Properties\DataSources\ZOT.BLnOFF.Code.Colindancias.datasource" />
     <None Include="Properties\DataSources\ZOT.HORAS48.Code.Fila.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -528,6 +627,13 @@
     <Resource Include="ZOT_instalador.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\ayuda cand off.png" />
+    <None Include="resources\ayuda cand off1.png" />
+    <None Include="resources\ayuda normal.png" />
+    <None Include="resources\borrarfiltros.png" />
+    <None Include="resources\help.png" />
+    <None Include="resources\ayuda cand bl.png" />
+    <None Include="resources\help_icono.png" />
     <Content Include="resources\logo-zelenza.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

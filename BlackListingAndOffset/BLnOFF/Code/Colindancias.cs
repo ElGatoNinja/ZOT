@@ -9,6 +9,7 @@ using ZOT.resources;
 using System.Xml;
 using System.Windows.Controls;
 using System.Linq;
+using System.Data.OleDb;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -57,6 +58,15 @@ namespace ZOT.BLnOFF.Code
                         r31.inExports[r31.data.Rows.IndexOf(match)] = true;  //como esta linea existe en los exports se levanta el flag correspondiente
 
                         //Esto es una triquiñuela para sacar el codigo de emplazamiento a partir de los cell names (sacarlos en una columna de los exports podría ser beneficioso)
+
+                        //Si es UNKNOWN SALGO
+                        var dstName = exportRow.Field<string>(6);
+                        if (dstName == "UNKNOWN")
+                        {
+                            return;
+                        }
+
+
                         String[] aux1 = exportRow.Field<String>("srcName").Split('_');
                         String[] aux2 = exportRow.Field<String>("dstName").Split('_');
                         int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
@@ -99,7 +109,13 @@ namespace ZOT.BLnOFF.Code
                 {
                     try
                     {
+                        var dstName = exportRow.Field<string>(6);
+                        if(dstName == "UNKNOWN")
+                        {
+                            return;
+                        }
                         String[] aux1 = exportRow.Field<String>("srcName").Split('_');
+                        
                         String[] aux2 = exportRow.Field<String>("dstName").Split('_');
                         int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
                         int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
@@ -154,6 +170,7 @@ namespace ZOT.BLnOFF.Code
                     dist = siteCoords.Distance(site1, site2);
                 }
 
+
                 if (dist == null || dist > 0.01) //si la distancia es desconocida, se saca igual pero no aplicara ni a Blacklisting ni a offset
                 {
                     resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
@@ -184,6 +201,17 @@ namespace ZOT.BLnOFF.Code
                 Object[] aux = new object[17] { "", "", srcLnCellID, line["Source LNCEL name"], line["Target LNBTS ID"], trgLnCellID, line["Target LNCEL name"], dist, HOsucc, 15, HOatem, null, HOerrSR, HOsuccSR, HOerrPrep, null, "No esta presente en el export" };
                 lock (data) //hay que porteger la escritura de la lista para hacer multithreading
                 {
+                    if(dist == null)
+                    {
+                        aux[7] = -1;
+                    }
+                    if(trgLnCellID == null)
+                    {
+                        aux[5] = line["Target LCR ID"];
+                    }
+
+                   // var a = data[4];
+
                     data.Rows.Add(aux);
                 }
             }
@@ -225,6 +253,212 @@ namespace ZOT.BLnOFF.Code
                 Console.WriteLine("No hay nodos que cumplan las condiciones");
             }
         }
+
+
+
+        /// <summary>
+        ///Rellena los label de los UNKNOWN
+        ///Para ellos:
+        ///     - Se consulta en la tabla LNREL (si tiene un SRAN solo uno y si tiene dos los dos)
+        ///         - lnBtsId
+        ///         - LnCellId
+        ///         - ecgiAdjEnbl
+        ///         - ecgiLcrId
+        ///     
+        /// </summary>
+        public void rellenarLabelUnknown(String rutaSRAN1, String rutaSRAN2, bool estaDividido)
+        {
+            DataView auxdv = data.DefaultView;
+            data = auxdv.ToTable();
+            
+
+
+            //si no esta dividio solo miro en un SRAN
+            if (!estaDividido)
+            {
+                string directionSRAN = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", rutaSRAN1);
+
+
+                OleDbConnection connectionSRANBusqueda1 = new OleDbConnection(directionSRAN);
+                using (connectionSRANBusqueda1)
+                {
+                    //contador para sacar la row en la tabla
+                    int contadorRow2 = 0;
+                    foreach (DataRow row in data.Rows)
+                    {
+                        String isUnknown = row[6].ToString();
+                        if (isUnknown == "UNKNOWN")
+                        {
+                            var mrbtsId = row[1].ToString();
+                            var lnCelId = row[2].ToString();
+                            var ecgiAdjEnbId = row[4].ToString();
+                            var ecgiLcrId = row[5].ToString();
+
+
+                            if (mrbtsId != "" && lnCelId != "" && ecgiAdjEnbId != "" && ecgiLcrId != "")
+                            {
+                                //Lo busco en el primer export
+                                string SQLquerryBusqueda2 = "SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL WHERE(((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnBtsId) = "+ mrbtsId +") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnCelId) = " + lnCelId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId) =  " + ecgiAdjEnbId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId) =  " + ecgiLcrId + "));";
+                                    
+                                    /**
+                                 * SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId
+FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL
+WHERE (((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId)="370212"));
+                                */
+
+
+
+                                OleDbCommand commandSRANBusqueda1 = new OleDbCommand(SQLquerryBusqueda2, connectionSRANBusqueda1);
+                                connectionSRANBusqueda1.Open();
+                                using (OleDbDataReader SRANreaderBusqueda1 = commandSRANBusqueda1.ExecuteReader())
+                                {
+                                    var nuevodtName = "";
+                                    while (SRANreaderBusqueda1.Read())
+                                    {
+                                        nuevodtName = SRANreaderBusqueda1[0].ToString();
+                                    }
+                                    SRANreaderBusqueda1.Close();
+                                    if (nuevodtName != null && nuevodtName != "")
+                                    {
+                                        data.Rows[contadorRow2].SetField("Label", "LNREL-" +nuevodtName);
+                                    }
+                                }
+                                commandSRANBusqueda1.Connection.Close();
+                            }
+                        }
+                        contadorRow2++;
+                    }
+
+                    connectionSRANBusqueda1.Close();
+
+                }
+            }
+
+            //Si esta dividio tengo que hacer lo mismo en los dos
+            else
+            {
+                string directionSRAN = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", rutaSRAN1);
+                string directionSRAN2 = string.Format("provider=Microsoft.ACE.OLEDB.12.0;Data Source= {0}", rutaSRAN2);
+
+
+
+                OleDbConnection connectionSRANBusqueda1 = new OleDbConnection(directionSRAN);
+                using (connectionSRANBusqueda1)
+                {
+                    //contador para sacar la row en la tabla
+                    int contadorRow2 = 0;
+                    foreach (DataRow row in data.Rows)
+                    {
+                        String isUnknown = row[6].ToString();
+                        if (isUnknown == "UNKNOWN")
+                        {
+                            var mrbtsId = row[1].ToString();
+                            var lnCelId = row[2].ToString();
+                            var ecgiAdjEnbId = row[4].ToString();
+                            var ecgiLcrId = row[5].ToString();
+
+                            if (mrbtsId != "" && lnCelId != "" && ecgiAdjEnbId != "" && ecgiLcrId != "")
+                            {
+                                //Lo busco en el primer export
+                                string SQLquerryBusqueda2 = "SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL WHERE(((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnBtsId) = " + mrbtsId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnCelId) = " + lnCelId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId) =  " + ecgiAdjEnbId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId) =  " + ecgiLcrId + "));";
+
+                                /**
+                             * SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId
+FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL
+WHERE (((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId)="370212"));
+                            */
+
+
+
+                                OleDbCommand commandSRANBusqueda1 = new OleDbCommand(SQLquerryBusqueda2, connectionSRANBusqueda1);
+                                connectionSRANBusqueda1.Open();
+                                using (OleDbDataReader SRANreaderBusqueda1 = commandSRANBusqueda1.ExecuteReader())
+                                {
+                                    var nuevodtName = "";
+                                    while (SRANreaderBusqueda1.Read())
+                                    {
+                                        nuevodtName = SRANreaderBusqueda1[0].ToString();
+                                    }
+                                    SRANreaderBusqueda1.Close();
+                                    if (nuevodtName != null && nuevodtName != "")
+                                    {
+                                        data.Rows[contadorRow2].SetField("Label", "LNREL-" + nuevodtName);
+                                    }
+                                }
+                                commandSRANBusqueda1.Connection.Close();
+                            }
+                        }
+                        contadorRow2++;
+                    }
+
+                    connectionSRANBusqueda1.Close();
+
+
+                }
+
+
+
+                //En SRAN2
+                OleDbConnection connectionSRANBusqueda2 = new OleDbConnection(directionSRAN2);
+                using (connectionSRANBusqueda2)
+                {
+                    //contador para sacar la row en la tabla
+                    int contadorRow2 = 0;
+                    foreach (DataRow row in data.Rows)
+                    {
+                        String isUnknown = row[6].ToString();
+                        if (isUnknown == "UNKNOWN")
+                        {
+                            var mrbtsId = row[1].ToString();
+                            var lnCelId = row[2].ToString();
+                            var ecgiAdjEnbId = row[4].ToString();
+                            var ecgiLcrId = row[5].ToString();
+
+                            if (mrbtsId != "" && lnCelId != "" && ecgiAdjEnbId != "" && ecgiLcrId != "")
+                            {
+                                //Lo busco en el primer export
+                                string SQLquerryBusqueda2 = "SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL WHERE(((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnBtsId) = " + mrbtsId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnCelId) = " + lnCelId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId) =  " + ecgiAdjEnbId + ") AND((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId) =  " + ecgiLcrId + "));";
+
+
+
+
+                                OleDbCommand commandSRANBusqueda2 = new OleDbCommand(SQLquerryBusqueda2, connectionSRANBusqueda2);
+                                connectionSRANBusqueda2.Open();
+                                using (OleDbDataReader SRANreaderBusqueda2 = commandSRANBusqueda2.ExecuteReader())
+                                {
+                                    var nuevodtName = "";
+                                    while (SRANreaderBusqueda2.Read())
+                                    {
+                                        nuevodtName = SRANreaderBusqueda2[0].ToString();
+                                    }
+                                    SRANreaderBusqueda2.Close();
+                                    if (nuevodtName != null && nuevodtName != "")
+                                    {
+                                        data.Rows[contadorRow2].SetField("Label", "LNREL-" + nuevodtName);
+                                    }
+                                }
+                                commandSRANBusqueda2.Connection.Close();
+                            }
+                        }
+                        contadorRow2++;
+                    }
+
+                    connectionSRANBusqueda2.Close();
+
+                }
+
+            }
+
+
+                    //si es unknown hago la consulta a la bd y relleno
+
+                    //SELECT A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnCelId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiAdjEnbId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.ecgiLcrId, A_LTE_MRBTS_LNBTS_LNCEL_LNREL.lnRelId FROM A_LTE_MRBTS_LNBTS_LNCEL_LNREL;
+
+                }
+
+
+
+
 
         /// <summary>
         /// Obtiene una cadena con todos los emplazamientos que no se pudieron encontrar tras la ejecucion de las colindancias
