@@ -93,6 +93,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0F7F7406AD4506732C5DC05FCA52D4BE"
+        "OwnerKey" = "8:_D384E2D0E686412F87E067E16F8435AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_14F5241114CB360C46536B6EAE1FDACB"
         "OwnerKey" = "8:_D384E2D0E686412F87E067E16F8435AB"
         "MsmSig" = "8:_UNDEFINED"
@@ -429,12 +435,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9EA502075C533E679D537782B9C969E5"
-        "OwnerKey" = "8:_D384E2D0E686412F87E067E16F8435AB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9F8E0FA6F46347C4A2AA3EBFAB547506"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -760,12 +760,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9EA502075C533E679D537782B9C969E5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8BADB719608BB30D46DFE9F2329C7823"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1001,6 +995,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_6FEEB6632B704D0D1C127E3B12ADB641"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0F7F7406AD4506732C5DC05FCA52D4BE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1309,6 +1309,37 @@
                     }
                 }
             "SourcePath" = "8:MahApps.Metro.IconPacks.MaterialDesign.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3BDC676B05DB4F9A8CD1D07E12C43DBA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0F7F7406AD4506732C5DC05FCA52D4BE"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:DataGridViewAutoFilter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0F7F7406AD4506732C5DC05FCA52D4BE"
+                    {
+                    "Name" = "8:DataGridViewAutoFilter.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:DataGridViewAutoFilter.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3BDC676B05DB4F9A8CD1D07E12C43DBA"
@@ -2212,37 +2243,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9EA502075C533E679D537782B9C969E5"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:DataGridViewAutoFilter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_9EA502075C533E679D537782B9C969E5"
-                    {
-                    "Name" = "8:DataGridViewAutoFilter.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DataGridViewAutoFilter.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3BDC676B05DB4F9A8CD1D07E12C43DBA"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9F8E0FA6F46347C4A2AA3EBFAB547506"
             {
             "SourcePath" = "8:..\\BlackListingAndOffset\\Z.ico"
@@ -2932,15 +2932,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ZOT"
-        "ProductCode" = "8:{A007C9CA-934B-41F1-8BD2-EECD3B5BD463}"
-        "PackageCode" = "8:{B1613115-241B-4F93-99E2-DE5AC4D29473}"
-        "UpgradeCode" = "8:{623FD0C5-E11D-43BD-8264-6B495346C5E6}"
+        "ProductCode" = "8:{B1B5DA3B-E7EE-40FD-A663-1157A3B99B4F}"
+        "PackageCode" = "8:{1D17C658-4CD1-4872-BDFE-6AB21B5BA998}"
+        "UpgradeCode" = "8:{AA904AA7-B18F-4C85-9237-B468BE722C79}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.9.3"
+        "ProductVersion" = "8:2.9.15"
         "Manufacturer" = "8:ZELENZA"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

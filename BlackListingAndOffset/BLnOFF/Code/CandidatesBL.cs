@@ -28,28 +28,33 @@ namespace ZOT.BLnOFF.Code
             {
                
                 int tech_num = row.Field<int>("LnCell SOURCE") % 10; //siendo las unidades el numero de LTE (decenas el sector)
-                if (row["Distance"] != DBNull.Value && (double)row["Distance"] >= CONSTANTS.BL.MAX_DIST[tech_num] && (row["HO Success(%)"] != DBNull.Value)  && (double)row["HO Success(%)"] < CONSTANTS.BL.MIN_SUCCESS_HANDOVER) 
-                {
-                    //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco, si hiciera falta)
-                    int num_colin = 0;
-                    int num_colsInBL = 0;
-                    for (int i = 0;i<colin.data.Rows.Count;i++)
+                try { 
+                    if (row["Distance"] != DBNull.Value && (double)row["Distance"] >= CONSTANTS.BL.MAX_DIST[tech_num] && (row["HO Success(%)"] != DBNull.Value)  && (double)row["HO Success(%)"] < CONSTANTS.BL.MIN_SUCCESS_HANDOVER) 
                     {
-                        if ((int)colin.data.Rows[i]["LnCell SOURCE"] == (int)row["LnCell SOURCE"] && (string)colin.data.Rows[i]["ENBID SOURCE"] == (string)row["ENBID SOURCE"])
+                        //numero de colindancias totales para este LnCell ID en este emplazamiento concreto (se hace por fuerza bruta, queda como ejercicio para un futuro becario optimizar esto un poco, si hiciera falta)
+                        int num_colin = 0;
+                        int num_colsInBL = 0;
+                        for (int i = 0;i<colin.data.Rows.Count;i++)
                         {
-                            num_colin++;
-                            if (colin.data.Rows[i]["Blacklist"] != DBNull.Value && (int)colin.data.Rows[i]["Blacklist"] == 1)
-                                num_colsInBL++;
+                            if ((int)colin.data.Rows[i]["LnCell SOURCE"] == (int)row["LnCell SOURCE"] && (string)colin.data.Rows[i]["ENBID SOURCE"] == (string)row["ENBID SOURCE"])
+                            {
+                                num_colin++;
+                                if (colin.data.Rows[i]["Blacklist"] != DBNull.Value && (int)colin.data.Rows[i]["Blacklist"] == 1)
+                                    num_colsInBL++;
+                            }
                         }
-                    }
-                    //se calcula el numero de lineas que se pueden meter en BL usando el criterio mas restrictivo 
-                    int maxDispBL = (int)CONSTANTS.BL.MAX_COLIN[tech_num]-num_colsInBL;
-                    int criteria2 = (int)(num_colin * CONSTANTS.BL.MAX_PER_COLIN[tech_num] / 100.0) - num_colsInBL;
-                    if (criteria2 < maxDispBL)
-                        maxDispBL = criteria2;
+                        //se calcula el numero de lineas que se pueden meter en BL usando el criterio mas restrictivo 
+                        int maxDispBL = (int)CONSTANTS.BL.MAX_COLIN[tech_num]-num_colsInBL;
+                        int criteria2 = (int)(num_colin * CONSTANTS.BL.MAX_PER_COLIN[tech_num] / 100.0) - num_colsInBL;
+                        if (criteria2 < maxDispBL)
+                            maxDispBL = criteria2;
 
-                    object[] candidateRow = new object[17] {false, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInBL, maxDispBL };
-                    data.Rows.Add(candidateRow);
+                        object[] candidateRow = new object[17] {false, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], num_colin, num_colsInBL, maxDispBL };
+                        data.Rows.Add(candidateRow);
+                    }
+                }catch(IndexOutOfRangeException e)
+                {//Con esto salta por ejemplo si tiene vacio
+                    Console.WriteLine("Saltada la fila: " + row.ToString());
                 }
             }
             DataView dt = data.DefaultView;

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ZOT.HORAS48.GUI"
         xmlns:Items="clr-namespace:ZOT.GUI.Items" x:Class="ZOT.HORAS48.GUI.Ventana48H"
         mc:Ignorable="d"
-        Title="Ventana48H   - Modificado para SUR - v2" Height="692" Width="1324" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+        Title="Ventana48H - v2.1" Height="692" Width="1324" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
 
     <DockPanel HorizontalAlignment="Left" Width="1339" Margin="0,0,-23,0" Height="677" VerticalAlignment="Top">
         <Menu DockPanel.Dock="Top">

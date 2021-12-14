@@ -10,6 +10,8 @@ using System.Xml;
 using System.Windows.Controls;
 using System.Linq;
 using System.Data.OleDb;
+using ZOT.resources.ZOTlib;
+using System.Windows.Forms;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -39,11 +41,11 @@ namespace ZOT.BLnOFF.Code
         {
             bool found = false;
 
-            double? dist;
+            double? dist = null;
             double? HOatem;  //estos valores pueden no estar definidos en el data set, asi que tienen que ser nullables
             double? HOsucc;
             double? HOsuccSR;
-            int? interfaceX2;
+            int? interfaceX2 = null;
             Object[] aux = new object[14];
 
             try
@@ -69,10 +71,15 @@ namespace ZOT.BLnOFF.Code
 
                         String[] aux1 = exportRow.Field<String>("srcName").Split('_');
                         String[] aux2 = exportRow.Field<String>("dstName").Split('_');
-                        int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                        int site2;
+                        int site1 = 0;
+                        int site2 = 0;
+
+
+
+                        site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
                         int.TryParse(aux2[aux2.Length - 2], out site2);
                         site2 = site2 / 100;
+
 
                         dist = siteCoords.Distance(site1, site2);
                         if (dist > 0.01)
@@ -114,20 +121,52 @@ namespace ZOT.BLnOFF.Code
                         {
                             return;
                         }
-                        String[] aux1 = exportRow.Field<String>("srcName").Split('_');
-                        
-                        String[] aux2 = exportRow.Field<String>("dstName").Split('_');
-                        int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                        int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
-                        dist = siteCoords.Distance(site1, site2);
+
+
+
+
+
+                        String[] aux1 = null;
+                        String[] aux2 = null;
+
+                    
+                        aux1 = exportRow.Field<String>("srcName").Split('_');
+
+                        aux2 = exportRow.Field<String>("dstName").Split('_');
+
+
+                        try
+                        {
+                            int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
+                            int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
+                            dist = siteCoords.Distance(site1, site2);
+                        }
+                        catch (Exception)
+                        {
+                            //MessageBox.Show("Una celda no se reconoce: \n   src = " + exportRow.Field<String>("srcName") + "\n   dstName = " + exportRow.Field<String>("dstName"),  "Celda ignorada",  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            
+                            dist = -1;
+                        }
+
+
+                        try
+                        {
+
 
                         if (exportRow["x2LinkStatus"] != DBNull.Value)
                             interfaceX2 = (int)exportRow["x2LinkStatus"];
                         else
                             interfaceX2 = null;
 
+                        }
+                        catch (Exception e)
+                        {
+                            int a = 0;
+                        }
                         aux = new object[17] { exportRow["Label"], exportRow["mrbtsId"], exportRow["lnCelId"], exportRow["srcName"], exportRow["ecgiAdjEnbId"], exportRow["ecgiLcrId"], exportRow["dstName"], dist, null, exportRow["cellIndOffNeigh"], null, null, null, exportRow["handoverAllowed"], null, interfaceX2, "No esta en el RSLTE31" };
                         data.Rows.Add(aux);
+
+                       
                     }
                     catch (NullReferenceException)
                     {
@@ -143,6 +182,16 @@ namespace ZOT.BLnOFF.Code
             catch (ArgumentNullException ane)
             {
                 Console.WriteLine("Hay que actualizar la hoja de coordenadas, la ejecucion continua normalmente pero quedan colindancias sin comprobar");
+            }
+            catch (IndexOutOfRangeException)
+            {
+                int xadafsf = 0;
+                return;
+            }
+            catch (Exception)
+            {
+                int dadfadfa = 0;
+                return;
             }
 
         }
@@ -166,16 +215,27 @@ namespace ZOT.BLnOFF.Code
                 {
                     aux2 = line.Field<String>("Target LNCEL name").Split('_');
                     int site1 = Convert.ToInt32(aux1[aux1.Length - 2]) / 100;
-                    int site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
-                    dist = siteCoords.Distance(site1, site2);
+                    int site2 = -1;
+                    try
+                    {
+                        site2 = Convert.ToInt32(aux2[aux2.Length - 2]) / 100;
+
+                        dist = siteCoords.Distance(site1, site2);
+                    }
+                    catch(Exception e)
+                    {
+                        return;
+                    }
                 }
 
 
                 if (dist == null || dist > 0.01) //si la distancia es desconocida, se saca igual pero no aplicara ni a Blacklisting ni a offset
                 {
-                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
-                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
-                    resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+
+                        resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Att"], out HOatem);
+                        resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: SR"], out HOsucc);
+                        resources.ZOTlib.Conversion.ToDouble((string)line["Inter eNB neighbor HO: Prep SR"], out HOsuccSR);
+
                 }
                 else //si la distancia es 0, el site coincide y por tanto los KPI relevantes son intra en vez de inter.
                 {
@@ -184,11 +244,16 @@ namespace ZOT.BLnOFF.Code
                     resources.ZOTlib.Conversion.ToDouble((string)line["Intra eNB neighbor HO: Prep SR"], out HOsuccSR);
                 }
 
+
                 int srcLnCellID = Convert.ToInt32(aux1[aux1.Length - 1]);
+
+                
                 int? trgLnCellID = null;
                 if (aux2 != null)
                 {
                     trgLnCellID = Convert.ToInt32(aux2[aux2.Length - 1]);
+
+                    
                 }
                 double? HOerrSR = (100 - HOsucc) * HOatem / 100.0;
                 if (HOerrSR != null)
@@ -214,10 +279,19 @@ namespace ZOT.BLnOFF.Code
 
                     data.Rows.Add(aux);
                 }
+
+
+
             }
             catch(IndexOutOfRangeException ioer)
             {
                 Console.WriteLine("Error en colindancias: " + ioer.Message);
+                //Errores en los ficheros de entrada suelen acabar dando un error de este tipo al intentar parear tipos de dato inesperados
+                //simplemente se ignora la linea
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error en colindancias: " + e.Message);
                 //Errores en los ficheros de entrada suelen acabar dando un error de este tipo al intentar parear tipos de dato inesperados
                 //simplemente se ignora la linea
             }

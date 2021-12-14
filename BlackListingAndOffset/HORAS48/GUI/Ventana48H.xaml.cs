@@ -509,7 +509,7 @@ namespace ZOT.HORAS48.GUI
             var tieneEspacios = nombrefichero.IndexOf(' ') >= 0;
             if (!isValid || tieneEspacios)
             {
-                System.Windows.Forms.MessageBox.Show("El nombre del ficherono puede tener espacios en blanco, ni contener caracteres especiales");
+                System.Windows.Forms.MessageBox.Show("El nombre del fichero no puede tener espacios en blanco, ni contener caracteres especiales");
             }
             else
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZOT.resources.ZOTlib;
+using ZOT.BLnOFF.GUI;
 
 namespace ZOT.BLnOFF.Code
 {
@@ -14,6 +16,9 @@ namespace ZOT.BLnOFF.Code
     /// </summary>
     class NIR48H
     {
+        public HashSet<string> celdasMasmovilNIR = new HashSet<string>();
+
+
         private readonly string[] dataColumns = { "PERIOD_START_TIME", "LNBTS name", "LNCEL name","Tecnologia", "Intentos Inter", "% Exitos Inter" , "Exitos HO INTER" , "Errores HO INTER", "Intentos Intra", "% Exitos Intra", "Exitos HO INTRA", "Errores HO INTRA" };
         private readonly Type[] dataTypes = { typeof(string), typeof(string), typeof(string), typeof(string), typeof(int), typeof(double), typeof(double), typeof(double), typeof(int), typeof(double), typeof(double), typeof(double) };
         public DataTable data;
@@ -25,7 +30,111 @@ namespace ZOT.BLnOFF.Code
         public NIR48H(string[] lnBtsInputs, string path)
         {
             data = new DataTable();
-            try
+
+            //SACO SI EL FICHERO ES .xlsx
+            string extension = Path.GetExtension(path);
+
+            if (extension == ".xlsx")
+            {
+                celdasMasmovilNIR = new HashSet<string>();
+
+                //Si es un xlsx se pasa a .csv
+                // para ello se abre y se guarda como csv. Pero esto lo guarda con , como delimintador asi que se tiene qeu abrir el csv y cambiar las , por ;
+                // despues si un numero tiene , separando los mires se cambia elimina, con .Replace(',','')
+
+                Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+                Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(path);
+                Microsoft.Office.Interop.Excel.Worksheet ws = wb.Sheets[1];
+
+
+                Microsoft.Office.Interop.Excel.Range rngFila2 = (Microsoft.Office.Interop.Excel.Range)ws.Application.Rows[2, Type.Missing];
+                rngFila2.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+
+
+                try
+                {
+                    //Para borrar celdas masmovil
+                    int rows = ws.UsedRange.Rows.Count;
+                    int fRowIndex = ((Microsoft.Office.Interop.Excel.Range)(ws.UsedRange)).Row;
+
+                    for (int rowCounter = rows; rowCounter > 1; rowCounter--)
+                    {
+                        //Si no tiene un guion bajo la borro por ser de MasMovil
+                        String s = ws.Rows.Cells[rowCounter, 4].Value;
+                        if (! s.Contains('_') || s[0] == '=' || (s[0] == 'A' && s[1] == '9')){
+                            celdasMasmovilNIR.Add(s);
+                            ((Microsoft.Office.Interop.Excel.Range)ws.Rows[rowCounter]).Delete(Microsoft.Office.Interop.Excel.XlDeleteShiftDirection.xlShiftUp);
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                }
+
+
+
+
+
+
+
+                Console.WriteLine(Path.GetDirectoryName(path));
+                String fileName = Path.ChangeExtension(Path.GetFileName(path), null);
+                String pathCSV = Path.GetDirectoryName(path) + "\\" + fileName + "_auxiliar.csv";
+                String pathCSV_final = Path.GetDirectoryName(path) + "\\" + fileName + "_generado.csv";
+
+                if (File.Exists(pathCSV))
+                {
+                    File.Delete(pathCSV);
+                }
+                if (File.Exists(pathCSV_final))
+                {
+                    File.Delete(pathCSV_final);
+                }
+
+
+
+                ws.SaveAs(pathCSV, Microsoft.Office.Interop.Excel.XlFileFormat.xlCSV);
+
+
+                wb.Close(false, Type.Missing, Type.Missing);
+
+                excel.Quit();
+
+                var parser = new TextFieldParser(new StringReader(File.ReadAllText(pathCSV)))
+                {
+                    HasFieldsEnclosedInQuotes = true,
+                    Delimiters = new string[] { "," },
+                    TrimWhiteSpace = true
+                };
+
+                var csvSplitList = new List<string>();
+
+                // Reads all fields on the current line of the CSV file and returns as a string array
+                // Joins each field together with new delimiter "|"
+                while (!parser.EndOfData)
+                {
+                    csvSplitList.Add(String.Join(";", parser.ReadFields()));
+                }
+
+                // Newline characters added to each line and flattens List<string> into single string
+                String formattedCsvToSave = String.Join(Environment.NewLine, csvSplitList.Select(x => x));
+                formattedCsvToSave = formattedCsvToSave.Replace(",","");
+                
+
+                // Write single string to file
+                File.WriteAllText(pathCSV_final, formattedCsvToSave);
+                parser.Close();
+
+                if (File.Exists(pathCSV))
+                {
+                    File.Delete(pathCSV);
+                }
+
+                path = pathCSV_final;
+            }
+
+                try
             {
                 using (StreamReader reader = new StreamReader(path))
                 {
@@ -131,6 +240,10 @@ namespace ZOT.BLnOFF.Code
             catch (FileNotFoundException)
             {
                 throw new FileNotFoundException("No se ha podido encontrar la NIR 48h en " + path);
+            }
+            catch (Exception e)
+            {
+               
             }
         }
 

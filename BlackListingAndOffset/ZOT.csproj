@@ -123,10 +123,10 @@
     <ManifestKeyFile>ZOT_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -228,6 +228,7 @@
     <Reference Include="MahApps.Metro.IconPacks.Zondicons, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.3.1.0\lib\net47\MahApps.Metro.IconPacks.Zondicons.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyTabs.2.0.0\lib\net40\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -332,6 +333,10 @@
     <Compile Include="BLnOFF\GUI\FormErrores.Designer.cs">
       <DependentUpon>FormErrores.cs</DependentUpon>
     </Compile>
+    <Compile Include="ColindanciasTR\Code\Main.cs" />
+    <Compile Include="ColindanciasTR\GUI\VentanaColindancias.xaml.cs">
+      <DependentUpon>VentanaColindancias.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUI\INICIO.xaml.cs">
       <DependentUpon>INICIO.xaml</DependentUpon>
     </Compile>
@@ -409,6 +414,10 @@
     <Compile Include="resources\SiteCoords.cs" />
     <Compile Include="resources\ZOTlib.cs" />
     <Page Include="BLnOFF\GUI\Graphs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ColindanciasTR\GUI\VentanaColindancias.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -609,6 +618,7 @@
     <Resource Include="resources\cabeceras48H.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ColindanciasTR\Data\" />
     <Folder Include="HORAS48\Data\" />
   </ItemGroup>
   <ItemGroup>

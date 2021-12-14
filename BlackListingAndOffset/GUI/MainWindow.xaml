@@ -7,7 +7,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     mc:Ignorable="d"
     WindowState="Maximized"
-    Title="Zelenza Omni Tool    -   v2.9.3"
+    Title="Zelenza Omni Tool    -   v2.9.15"
     Closing="MainWindow_Closing"
     Activated="MainWindow_Activated"                      
 
@@ -85,7 +85,7 @@
             <Controls:Tile Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Click="Launch_BLnOFF" Title="BlackListing And Offset"  Height="auto" Width="Auto" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
                 <iconPacks:PackIconMaterial Kind="HomeAnalytics" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" />
             </Controls:Tile>
-            <Controls:Tile Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="False" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
+            <Controls:Tile x:Name="status" Grid.Column="0" Grid.Row="1"  Title="Colindancias"  Height="auto" Width="Auto" IsEnabled="True" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" Click="Launch_Colindancias" >
                 <iconPacks:PackIconMaterial Kind="MapCheck" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             </Controls:Tile>
 

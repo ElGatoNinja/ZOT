@@ -64,6 +64,7 @@
 
 
                     <TextBox x:Name="RSLTE31_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="67,90,0,0" TextWrapping="Wrap" Text="D:\R31.csv" VerticalAlignment="Top" Width="443" MaxLines="1" Grid.Column="1"/>
+
                     <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,84,10,0" VerticalAlignment="Top" Width="103" Click="R31_Click" Grid.Column="1" Height="35" Style="{DynamicResource MetroFlatButton}"/>
                     <TextBox x:Name="TA_path" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Left" Height="26" Margin="67,150,0,0" TextWrapping="Wrap" Text="D:\TA.csv" VerticalAlignment="Top" Width="443" Grid.Column="1"/>
                     <Button Content="Examinar" IsEnabled="{Binding IsChecked, ElementName=Is_BlnOFF_Enabled}" HorizontalAlignment="Right" Margin="0,144,10,0" VerticalAlignment="Top" Width="103" Click="TA_Click" Grid.Column="1" Height="32" Style="{DynamicResource MetroFlatButton}"/>
@@ -238,6 +239,26 @@
                     <blnoff:Graphs x:Name="graphObject_2" Grid.Row="1" Margin="12" />
                 </Grid>
             </TabItem>
+
+            <TabItem Header="Celdas Borradas" Visibility="Hidden" Name="tabCeldesBorradas">
+                <Grid>
+                    
+                    <ListView Margin="10" Name="Celdas_Borradas">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False" >
+                                <GridViewColumn Header="RSLTE31" DisplayMemberBinding="{Binding RSLTE31}" Width="200"/>
+                                <GridViewColumn Header="NIR" DisplayMemberBinding="{Binding NIR}" Width="200"/>
+                            </GridView>
+                        </ListView.View>
+                        
+                        
+                    </ListView>
+                    
+                    
+                </Grid>
+            </TabItem>
+            
+            
             <Items:AdvancedDataGrid Height="100" Width="100"/>
 
 

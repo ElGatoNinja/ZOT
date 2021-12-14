@@ -17,6 +17,7 @@ using MahApps.Metro.Controls;
 using ZOT.GUI.Items;
 using ZOT.resources.ZOTlib;
 using ZOT.HORAS48.GUI;
+using ZOT.Colindancias.GUI;
 using System.IO;
 using System.Diagnostics;
 using System.ComponentModel;
@@ -183,6 +184,13 @@ namespace ZOT.GUI
         {
             Ventana48H w = new Ventana48H();
             w.Show();
+
+        }
+        
+        private void Launch_Colindancias(object sender, RoutedEventArgs e)
+        {
+            VentanaColindancias col = new VentanaColindancias();
+            col.Show();
 
         }
 

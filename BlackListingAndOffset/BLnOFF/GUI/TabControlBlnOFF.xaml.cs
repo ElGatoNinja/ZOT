@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Data;
 using System.Globalization;
 using Xamarin.Forms.PlatformConfiguration;
+using System.Threading;
 
 namespace ZOT.BLnOFF.GUI
 { 
@@ -32,8 +33,11 @@ namespace ZOT.BLnOFF.GUI
         formcandBL fcb = null;
         bgwBlnOffResult Copiaoutput;
 
-        private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff" };
-        private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136" };
+        List<ItemsCeldasBorradas> celdasBorradas = null;
+
+
+        private readonly string[] interColorsLines = { "0909dc", "576dff", "00d7eb", "5cff64", "1c7d20", "e28aff", "ff0000", "6300ff", "f07a2f", "d2c155" };
+        private readonly string[] intraColorsLines = { "970e07", "fdb591", "ff3d3d", "ffba52", "ffed75", "b0a136", "b65cff", "5cff64", "f7ff5c ", "202100" };
         private List<StringWorkArround> lnBtsInputGrid;
         BackgroundWorker worker = new BackgroundWorker();
         
@@ -119,14 +123,20 @@ namespace ZOT.BLnOFF.GUI
 
         private void R31_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                RSLTE31_path.Text = ZOTFiles.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31", Path.GetDirectoryName(RSLTE31_path.Text));
-            }
-            catch (Exception)
-            {
-                RSLTE31_path.Text = ZOTFiles.FileFinder("Archivos CSV |*csv", "Consulta RSLTE31");
-            }
+
+
+                try
+                {
+                    RSLTE31_path.Text = ZOTFiles.FileFinder("Archivos R31 |*.csv;*.xlsx", "Consulta RSLTE31", Path.GetDirectoryName(RSLTE31_path.Text));
+                }
+                catch (Exception)
+                {
+                    RSLTE31_path.Text = ZOTFiles.FileFinder("Archivos R31 |*.csv;*.xlsx", "Consulta RSLTE31");
+                }
+
+            
+
+           
         }
         private void TA_Click(object sender, RoutedEventArgs e)
         {
@@ -144,12 +154,15 @@ namespace ZOT.BLnOFF.GUI
         {
             try
             {
-                NIR_path.Text = ZOTFiles.FileFinder("Archivos CSV |*csv", "NIR 48H Completa", Path.GetDirectoryName(NIR_path.Text));
+                NIR_path.Text = ZOTFiles.FileFinder("Archivos NIR |*csv; *.xlsx", "NIR 48H Completa", Path.GetDirectoryName(NIR_path.Text));
             }
             catch (Exception)
             {
-                NIR_path.Text = ZOTFiles.FileFinder("Archivos CSV |*csv", "NIR 48H Completa");
+                NIR_path.Text = ZOTFiles.FileFinder("Archivos NIR |*csv; *.xlsx", "NIR 48H Completa");
             }
+
+
+
         }
 
         private void SRAN_Click(object sender, RoutedEventArgs e)
@@ -453,6 +466,20 @@ namespace ZOT.BLnOFF.GUI
                    
                     //fc.Show();
                 }
+                if (celdasBorradas != null) { 
+                    if(celdasBorradas.Count != 0) {
+                        tabCeldesBorradas.Visibility = Visibility.Visible;
+                        try
+                        {
+                            Celdas_Borradas.ItemsSource = celdasBorradas;
+                        }
+                        catch (Exception e33)
+                        {
+                            Console.WriteLine(e33);
+                        }
+                    }
+                }
+
 
                 if (output.siteCoordErrors != "" && (bool)Is_BlnOFF_Enabled.IsChecked)
                     WPFForms.ShowError("Faltan las coordenadas de los siguientes emplazamientos", output.siteCoordErrors);
@@ -546,6 +573,17 @@ namespace ZOT.BLnOFF.GUI
         //bloquea la aplicacion
         private void BackGround_Work(object sender, DoWorkEventArgs e)
         {
+            HashSet<string> celdasMasmovilRSLTE = new HashSet<string>();
+            HashSet<string> celdasMasmovilNIR = new HashSet<string>();
+
+
+            String textoMasmovil = "";
+            Boolean mostrarCeldasMasmovil = false;
+
+
+
+
+
 #if DEBUG
             int porc = 0;
             var totalTimer = new Stopwatch();
@@ -560,9 +598,16 @@ namespace ZOT.BLnOFF.GUI
             {
 
                 //Se crean objetos que contienen las tablas de datos que se necesitan en esta herramienta
-                Colindancias colindancias = new Colindancias();
+                ZOT.BLnOFF.Code.Colindancias colindancias = new ZOT.BLnOFF.Code.Colindancias();
                 RSLTE31 R31 = new RSLTE31(args.lnBtsInputs, args.pathR31);
-                R31.completeR31(args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio, args.conFL18);
+                R31.completeR31(args.pathSRAN, args.pathFL18, args.pathSRAN2, args.srandividio, args.conFL18);         
+                celdasMasmovilRSLTE = R31.celdasMasmovilRSLTE;
+                if (celdasMasmovilRSLTE.Count > 0)
+                {
+                    mostrarCeldasMasmovil = true;
+                    textoMasmovil += "RSLTE: ";
+                    textoMasmovil = textoMasmovil + string.Join( ", " ,celdasMasmovilRSLTE.ToArray() ) + "\n";
+                }
 
 #if DEBUG
                 timer.Stop();
@@ -588,10 +633,10 @@ namespace ZOT.BLnOFF.GUI
                 porc = 5;
                 worker.ReportProgress(porc);
 #endif
-               
+                int contadorErrorCheck = 0;         
                 foreach (DataRow dataRow in export.data.Rows)
                 {
-                    
+                    contadorErrorCheck = contadorErrorCheck + 1;
                     colindancias.CheckColin(dataRow, R31);
                     
                 }
@@ -668,11 +713,42 @@ namespace ZOT.BLnOFF.GUI
                 NIR48H nir = new NIR48H(args.lnBtsInputs, args.pathNIR48);
                 results.error = nir.errors;
                 results.nirPlotData = nir.data;
+                celdasMasmovilNIR = nir.celdasMasmovilNIR;
+                if (celdasMasmovilNIR.Count > 0)
+                {
+                    mostrarCeldasMasmovil = true;
+                    textoMasmovil += "NIR: ";
+                    textoMasmovil = textoMasmovil + string.Join(", ", celdasMasmovilNIR.ToArray()) + "\n";
+                }
+
+
 #if DEBUG
                 timer.Stop();
                 Console.WriteLine("Analisis Previo: " + timer.Elapsed.ToString(@"m\:ss\.fff"));
 #endif
             }
+
+            if (mostrarCeldasMasmovil)
+            {
+
+                celdasBorradas = new List<ItemsCeldasBorradas>();
+
+
+                foreach (string celdaNIR in celdasMasmovilNIR)
+                {
+                    celdasBorradas.Add(new ItemsCeldasBorradas { RSLTE31 = "", NIR = celdaNIR });
+                }
+
+                foreach (string celdaRLSTE31 in celdasMasmovilRSLTE)
+                {
+                    celdasBorradas.Add(new ItemsCeldasBorradas { RSLTE31 = celdaRLSTE31, NIR = "" });
+                }
+
+               
+            }
+
+
+
             e.Result = results;
 
             porc = 100;
@@ -681,9 +757,19 @@ namespace ZOT.BLnOFF.GUI
             timer.Stop();
             totalTimer.Stop();
             Console.WriteLine("Tiempo Total: " + totalTimer.Elapsed.ToString(@"m\:ss\.fff"));
+           
+
+
+
+            
+
+           
+
 #endif
 
+
         }
+
 
         #region GRAPHS
         private void Node_ComBox_Changed_Graph_1(object sender, SelectionChangedEventArgs e)
@@ -989,7 +1075,10 @@ namespace ZOT.BLnOFF.GUI
                             {
 
                                 Console.WriteLine("HAY VALORES VACIOS " + ice.StackTrace);
-                                
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Excepcion :" + e);
 
                             }
 
@@ -1086,6 +1175,13 @@ namespace ZOT.BLnOFF.GUI
 
 
         #endregion
+
+
+        public struct ItemsCeldasBorradas
+        {
+            public string NIR { get; set; }
+            public string RSLTE31 { get; set; }
+        }
 
         private void estaSranDividido_Checked(object sender, RoutedEventArgs e)
         {

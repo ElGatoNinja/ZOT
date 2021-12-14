@@ -56,9 +56,10 @@ namespace ZOT.BLnOFF.GUI
         /// <param name="xAxis"> Coleccion de fechas que se quieren poner en el eje x</param>
         public void DrawGraph(SeriesCollection data, int maxBarAxis, List<string> xAxis)
         {
-            graph.DisableAnimations = true;
+           
             
             this.xAxis = xAxis;
+            graph.DisableAnimations = true;
             graph.AxisY.Clear();
             graph.AxisY.Add(new Axis
             {

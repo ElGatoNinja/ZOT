@@ -95,11 +95,14 @@ namespace ZOT.HORAS48.Code
                         objexcelapp.ActiveWorkbook.SaveCopyAs(ruta_completa);
                     }
                     objexcelapp.ActiveWorkbook.Saved = true;
+
+                    objexcelapp.ActiveWorkbook.Close();
+
                     System.Windows.Forms.Application.DoEvents();
-                    foreach (Process proc in System.Diagnostics.Process.GetProcessesByName("EXCEL"))
-                    {
-                        proc.Kill();
-                    }
+                    //foreach (Process proc in System.Diagnostics.Process.GetProcessesByName("EXCEL"))
+                    //{
+                    //    proc.Kill();
+                    //}
                     MessageBox.Show("Excel generado correctamente en: " + folderName, "Excel Correcto");
                     Process.Start("explorer.exe", folderName);
                 }
