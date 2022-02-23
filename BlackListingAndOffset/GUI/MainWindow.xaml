@@ -7,7 +7,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     mc:Ignorable="d"
     WindowState="Maximized"
-    Title="Zelenza Omni Tool    -   v2.9.15"
+    Title="Zelenza Omni Tool    -   v2.9.16"
     Closing="MainWindow_Closing"
     Activated="MainWindow_Activated"                      
 
@@ -59,8 +59,8 @@
             </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
-    
-    
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="55"/>
@@ -91,8 +91,8 @@
 
             <Controls:Tile Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Click="Launch_Window48Horas" Title="48 Horas" MinWidth="50" Height="auto" Width="Auto" HorizontalTitleAlignment="Center"  TitleFontSize="20" BorderBrush="Black" BorderThickness="1,0,1,1" Controls:ControlsHelper.MouseOverBorderBrush="#FFFF0A0A" >
                 <iconPacks:PackIconMaterial Kind="ClockCheck" Foreground="White" Width="auto" Height="auto" Margin="50,50,50,50" />
-            </Controls:Tile>        
-            
+            </Controls:Tile>
+
             <Controls:Tile Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="1" Click="Launch_ZelenzaWeb" Height="25" Width="85"  Background="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" HorizontalTitleAlignment="Center" Margin="3,3,3,10" VerticalTitleAlignment="Center" >
                 <Image x:Name="iconoZelenza" Source="/resources/logo-zelenza.png" Width="100" ToolTip="Muchas ideas crecen mejor cuando se trasplantan a otra mente diferente de la que surgieron"/>
             </Controls:Tile>
@@ -103,7 +103,7 @@
         </Grid>
         <!--Sobre este control se muestra el control que el usuario usa, y se superpone al menu-->
         <ContentControl x:Name="visibleTool" Grid.Column="1"/>
-        
+
         <Grid Grid.Column="0" Margin="0,0,0,0" Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition Height="27"/>
@@ -122,9 +122,14 @@
             <Button x:Name="cargarSiteCoord" ToolTip="Formulario de carga de un nuevo SiteCoord." Click="click_load_siteCoordr" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="LocationArrowSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
             </Button>
-            
+
             <Button x:Name="folderBtn" ToolTip="Abre la carpeta donde están los ficheros de las herramientas." Click="click_open_folder" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35" BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                 <iconPacks:PackIconFontAwesome Kind="FolderSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
+            </Button>
+
+            <Button x:Name="HistorialVersiones" ToolTip="Historial de versiones." Click="click_open_info" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="35
+                    " BorderBrush="{DynamicResource AccentColorBrush}" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="10,63,10,-27">
+                <iconPacks:PackIconFontAwesome Kind="InfoSolid" Foreground="{Binding Path=AreAnyTouchesCaptured, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" RenderTransformOrigin="0.312,2.25" />
             </Button>
 
 

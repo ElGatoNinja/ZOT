@@ -7,82 +7,93 @@
         mc:Ignorable="d"
         Title="Editor de Constantes y Umbrales" Height="450" Width="800">
     <Grid>
-        <GroupBox Header="Black List" HorizontalAlignment="Left" Height="188" Margin="30,10,0,0" VerticalAlignment="Top" Width="519"/>
+        <GroupBox Header="Black List" HorizontalAlignment="Left" Height="188" Margin="30,10,0,0" VerticalAlignment="Top" Width="548"/>
 
-        <Label Content="L1800" HorizontalAlignment="Left" Margin="223,38,0,0" VerticalAlignment="Top"/>
-        <Label Content="L800" HorizontalAlignment="Left" Margin="290,38,0,0" VerticalAlignment="Top"/>
-        <Label Content="L2600" HorizontalAlignment="Left" Margin="351,38,0,0" VerticalAlignment="Top"/>
-        <Label Content="L900" HorizontalAlignment="Left" Margin="419,38,0,0" VerticalAlignment="Top"/>
-        <Label Content="L2100" HorizontalAlignment="Left" Margin="481,38,0,0" VerticalAlignment="Top"/>
+        <Label Content="L1800" HorizontalAlignment="Left" Margin="203,39,0,0" VerticalAlignment="Top"/>
+        <Label Content="L800" HorizontalAlignment="Left" Margin="330,38,0,0" VerticalAlignment="Top"/>
+        <Label Content="L700" HorizontalAlignment="Left" Margin="270,38,0,0" VerticalAlignment="Top"/>
+        <Label Content="L2600" HorizontalAlignment="Left" Margin="394,39,0,0" VerticalAlignment="Top"/>
+        <Label Content="L900" HorizontalAlignment="Left" Margin="462,39,0,0" VerticalAlignment="Top"/>
+        <Label Content="L2100" HorizontalAlignment="Left" Margin="524,39,0,0" VerticalAlignment="Top"/>
         <Label Content="Max Distancia BL (km):" HorizontalAlignment="Left" Margin="42,64,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
         <Label Content="Min Exito Handover (%):" HorizontalAlignment="Left" Margin="42,157,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
         <Label Content="Max Colindancias (%) L800:" HorizontalAlignment="Left" Margin="42,92,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
         <Label Content="Max Colindancias L800:" HorizontalAlignment="Left" Margin="42,120,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
-        <TextBox x:Name="BL_MAX_DIST_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,63,0,0"/>
-        <TextBox x:Name="BL_MAX_DIST_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="277,63,0,0"/>
-        <TextBox x:Name="BL_MAX_DIST_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="342,63,0,0"/>
-        <TextBox x:Name="BL_MAX_DIST_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,63,0,0"/>
-        <TextBox x:Name="BL_MAX_DIST_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,63,0,0"/>
-        <TextBox x:Name="BL_MIN_SUCCESS_HANDOVER" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,157,0,0"/>
-        <TextBox x:Name="BL_MAX_PER_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,92,0,0"/>
-        <TextBox x:Name="BL_MAX_PER_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="277,92,0,0"/>
-        <TextBox x:Name="BL_MAX_PER_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="342,92,0,0"/>
-        <TextBox x:Name="BL_MAX_PER_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,92,0,0"/>
-        <TextBox x:Name="BL_MAX_PER_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,92,0,0"/>
-        <TextBox x:Name="BL_MAX_ABS_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,119,0,0"/>
-        <TextBox x:Name="BL_MAX_ABS_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="277,119,0,0"/>
-        <TextBox x:Name="BL_MAX_ABS_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="342,119,0,0"/>
-        <TextBox x:Name="BL_MAX_ABS_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,119,0,0"/>
-        <TextBox x:Name="BL_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,119,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="192,65,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="320,65,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_700" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="255,65,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="385,64,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="450,64,0,0"/>
+        <TextBox x:Name="BL_MAX_DIST_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="515,64,0,0"/>
+        <TextBox x:Name="BL_MIN_SUCCESS_HANDOVER" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="192,157,0,0"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="192,94,0,0"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_700" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="255,94,0,0" RenderTransformOrigin="-0.75,0.423"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="320,94,0,0"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="385,93,0,0"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="450,93,0,0"/>
+        <TextBox x:Name="BL_MAX_PER_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="515,93,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="192,121,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_700" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="255,121,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="320,121,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="385,120,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="450,120,0,0"/>
+        <TextBox x:Name="BL_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="515,120,0,0"/>
 
-        <GroupBox Header="Offset" HorizontalAlignment="Left" Height="191" Margin="30,203,0,0" VerticalAlignment="Top" Width="519"/>
+        <GroupBox Header="Offset" HorizontalAlignment="Left" Height="191" Margin="30,203,0,0" VerticalAlignment="Top" Width="548"/>
 
-        <Label Content="L1800" HorizontalAlignment="Left" Margin="223,231,0,0" VerticalAlignment="Top"/>
-        <Label Content="L800" HorizontalAlignment="Left" Margin="290,231,0,0" VerticalAlignment="Top"/>
-        <Label Content="L2600" HorizontalAlignment="Left" Margin="351,231,0,0" VerticalAlignment="Top"/>
-        <Label Content="L900" HorizontalAlignment="Left" Margin="419,231,0,0" VerticalAlignment="Top"/>
-        <Label Content="L2100" HorizontalAlignment="Left" Margin="481,231,0,0" VerticalAlignment="Top"/>
-        <Label Content="Min Exito Handover (%):" HorizontalAlignment="Left" Margin="42,355,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
-        <Label Content="Max Colindancias (%) L800:" HorizontalAlignment="Left" Margin="42,255,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
-        <Label Content="Max Colindancias L800:" HorizontalAlignment="Left" Margin="42,283,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
-        <TextBox x:Name="OFF_MIN_SUCCESS_HANDOVER" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,356,0,0"/>
-        <TextBox x:Name="OFF_MAX_PER_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,256,0,0"/>
-        <TextBox x:Name="OFF_MAX_PER_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="277,256,0,0"/>
-        <TextBox x:Name="OFF_MAX_PER_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="342,256,0,0"/>
-        <TextBox x:Name="OFF_MAX_PER_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,256,0,0"/>
-        <TextBox x:Name="OFF_MAX_PER_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,256,0,0"/>
-        <TextBox x:Name="OFF_MAX_ABS_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,283,0,0"/>
-        <TextBox x:Name="OFF_MAX_ABS_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="277,283,0,0"/>
-        <TextBox x:Name="OFF_MAX_ABS_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="342,283,0,0"/>
-        <TextBox x:Name="OFF_MAX_ABS_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="407,283,0,0"/>
-        <TextBox x:Name="OFF_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="472,283,0,0"/>
-        <Label Content="Percentil para rango de celda:" HorizontalAlignment="Left" Margin="42,327,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
-        <TextBox x:Name="OFF_PERCENTILE_CELL_RANGE" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="212,328,0,0"/>
+        <Label Content="L1800" HorizontalAlignment="Left" Margin="208,231,0,0" VerticalAlignment="Top"/>
+        <Label Content="L800" HorizontalAlignment="Left" Margin="333,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="L2600" HorizontalAlignment="Left" Margin="394,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="L900" HorizontalAlignment="Left" Margin="462,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="L2100" HorizontalAlignment="Left" Margin="524,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="Min Exito Handover (%):" HorizontalAlignment="Left" Margin="30,355,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
+        <Label Content="Max Colindancias (%) L800:" HorizontalAlignment="Left" Margin="30,255,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
+        <Label Content="Max Colindancias L800:" HorizontalAlignment="Left" Margin="30,283,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
+        <TextBox x:Name="OFF_MIN_SUCCESS_HANDOVER" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="197,356,0,0"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="197,256,0,0"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="320,257,0,0"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="385,257,0,0"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="450,257,0,0"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="515,257,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="197,283,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="320,284,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="385,284,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="450,284,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="515,284,0,0"/>
+        <Label Content="Percentil para rango de celda:" HorizontalAlignment="Left" Margin="30,327,0,0" VerticalAlignment="Top" Width="167" Height="27"/>
+        <TextBox x:Name="OFF_PERCENTILE_CELL_RANGE" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="197,328,0,0"/>
         <GroupBox Header="Objetivo Umbral HO Inter" HorizontalAlignment="Left" Height="187" Margin="583,10,0,0" VerticalAlignment="Top" Width="189"/>
-        <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,50,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,77,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,104,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L900 (%):" HorizontalAlignment="Left" Margin="595,131,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <TextBox x:Name="U_INTER_PER_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,50,0,0"/>
-        <TextBox x:Name="U_INTER_PER_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,79,0,0"/>
-        <TextBox x:Name="U_INTER_PER_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,106,0,0"/>
-        <TextBox x:Name="U_INTER_PER_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,133,0,0"/>
-        <GroupBox Header="Objetivo Umbral HO Intra" HorizontalAlignment="Left" Height="165" Margin="583,202,0,0" VerticalAlignment="Top" Width="189"/>
-        <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,228,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,253,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,280,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L900 (%):" HorizontalAlignment="Left" Margin="595,307,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L2100 (%):" HorizontalAlignment="Left" Margin="595,162,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <Label Content="L2100 (%):" HorizontalAlignment="Left" Margin="595,334,0,0" VerticalAlignment="Top" Width="71" Height="27"/>
-        <TextBox x:Name="U_INTRA_PER_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,337,0,0"/>
-        <TextBox x:Name="U_INTER_PER_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,161,0,0"/>
-        <TextBox x:Name="U_INTRA_PER_800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,227,0,0"/>
-        <TextBox x:Name="U_INTRA_PER_1800" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,255,0,0"/>
-        <TextBox x:Name="U_INTRA_PER_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,283,0,0"/>
-        <TextBox x:Name="U_INTRA_PER_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,309,0,0"/>
+        <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,62,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L700 (%)" HorizontalAlignment="Left" Margin="595,35,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,88,0,0" VerticalAlignment="Top" Width="71" Height="27" FontSize="10"/>
+        <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,115,0,0" VerticalAlignment="Top" Width="71" Height="27" FontSize="10"/>
+        <Label Content="L900 (%):" HorizontalAlignment="Left" Margin="595,141,0,0" VerticalAlignment="Top" Width="71" Height="27" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_700" HorizontalAlignment="Left" Height="7" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,38,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_800" HorizontalAlignment="Left" Height="7" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,62,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_1800" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,88,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_2600" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,116,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_900" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,142,0,0" FontSize="10"/>
+        <GroupBox Header="Objetivo Umbral HO Intra" HorizontalAlignment="Left" Height="182" Margin="583,200,0,0" VerticalAlignment="Top" Width="189"/>
+        <Label Content="L800 (%)" HorizontalAlignment="Left" Margin="595,250,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L1800 (%):" HorizontalAlignment="Left" Margin="595,275,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L2600 (%):" HorizontalAlignment="Left" Margin="595,302,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L900 (%):" HorizontalAlignment="Left" Margin="595,329,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <Label Content="L2100 (%):" HorizontalAlignment="Left" Margin="595,168,0,0" VerticalAlignment="Top" Width="71" Height="26" FontSize="10"/>
+        <Label Content="L2100 (%):" HorizontalAlignment="Left" Margin="595,356,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_2100" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,355,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTER_PER_2100" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,169,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_800" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,251,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_1800" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,277,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_2600" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,303,0,0" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_900" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,329,0,0" FontSize="10"/>
 
-        <Button Content="Guardar" HorizontalAlignment="Left" VerticalAlignment="Top" Width="101" Margin="683,372,0,0" Height="34" Click="Button_Save"/>
-        <Button Content="Cancelar" HorizontalAlignment="Left" VerticalAlignment="Top" Width="101" Margin="570,372,0,0" Height="34" Click="Button_Cancel"/>
+        <Button Content="Guardar" HorizontalAlignment="Left" VerticalAlignment="Top" Width="101" Margin="681,383,0,0" Height="34" Click="Button_Save"/>
+        <Button Content="Cancelar" HorizontalAlignment="Left" VerticalAlignment="Top" Width="101" Margin="570,383,0,0" Height="34" Click="Button_Cancel"/>
+        <Label Content="L700" HorizontalAlignment="Left" Margin="273,232,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="OFF_MAX_PER_COLIN_700" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="260,257,0,0"/>
+        <TextBox x:Name="OFF_MAX_ABS_COLIN_700" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap"  VerticalAlignment="Top" Width="60" Margin="260,284,0,0"/>
+        <Label Content="L700 (%)" HorizontalAlignment="Left" Margin="595,224,0,0" VerticalAlignment="Top" Width="71" Height="22" FontSize="10"/>
+        <TextBox x:Name="U_INTRA_PER_700" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap"  VerticalAlignment="Top" Width="76" Margin="671,225,0,0" FontSize="10"/>
 
     </Grid>
 </Controls:MetroWindow>

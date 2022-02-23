@@ -67,10 +67,10 @@ namespace ZOT.BLnOFF.Code
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                MAX_DIST = new double[] { values[0], values[1], values[2], values[3], values[4] };
-                MAX_PER_COLIN = new double[] { values[5], values[6], values[7], values[8], values[9] };
-                MAX_COLIN = new double[] { values[10], values[11], values[12], values[13], values[14] };
-                MIN_SUCCESS_HANDOVER = values[15];
+                MAX_DIST = new double[] { values[0], values[1], values[2], values[3], values[4], values[5] };
+                MAX_PER_COLIN = new double[] { values[6], values[7], values[8], values[9], values[10], values[11] };
+                MAX_COLIN = new double[] { values[12], values[13], values[14], values[15], values[16], values[17] };
+                MIN_SUCCESS_HANDOVER = values[18];
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -97,10 +97,10 @@ namespace ZOT.BLnOFF.Code
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                MAX_PER_COLIN = new double[] { values[0], values[1], values[2], values[3], values[4] };
-                MAX_COLIN = new double[] { values[5], values[6], values[7], values[8], values[9] };
-                PERCENTILE_CELL_RANGE = values[10];
-                MIN_SUCCESS_HANDOVER = values[11];
+                MAX_PER_COLIN = new double[] { values[0], values[1], values[2], values[3], values[4], values[5] };
+                MAX_COLIN = new double[] { values[6], values[7], values[8], values[9], values[10], values[11] };
+                PERCENTILE_CELL_RANGE = values[12];
+                MIN_SUCCESS_HANDOVER = values[13];
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -125,7 +125,7 @@ namespace ZOT.BLnOFF.Code
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                PER = new double[] { values[0], values[1], values[2], values[3], values[4] };
+                PER = new double[] { values[0], values[1], values[2], values[3], values[4], values[5] };
             }
             /// <summary>
             /// Extrae todas las constantes en un array
@@ -146,7 +146,7 @@ namespace ZOT.BLnOFF.Code
             /// <param name="values">por orden una array con los 12 valores</param>
             public static void SetConst(double[] values)
             {
-                PER = new double[] { values[0], values[1], values[2], values[3], values[4] };
+                PER = new double[] { values[0], values[1], values[2], values[3], values[4], values[5] };
             }
             /// <summary>
             /// Extrae todas las constantes en un array

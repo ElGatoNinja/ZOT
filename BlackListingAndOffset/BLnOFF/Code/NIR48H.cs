@@ -275,7 +275,8 @@ namespace ZOT.BLnOFF.Code
             int i = 0;
             while (i  < data.Rows.Count)
             {
-                double[,] currentData = new double[5, 4]; //Una matriz que contiene una fila por cada tecnología y 4 columnas de datos( 2 inter y 2 intra)
+                //PARA NUEVAS TECNOLOGIAS CAMBIAR el 6 por uno mas por cada tecnologia nueva
+                double[,] currentData = new double[6, 4]; //Una matriz que contiene una fila por cada tecnología y 4 columnas de datos( 2 inter y 2 intra)
 
                 do
                 {
@@ -300,7 +301,9 @@ namespace ZOT.BLnOFF.Code
 
                 } while (i < data.Rows.Count && (string)data.Rows[i]["PERIOD_START_TIME"] == (string)data.Rows[i - 1]["PERIOD_START_TIME"] && (string)data.Rows[i]["LNBTS name"] == (string)data.Rows[i - 1]["LNBTS name"]);
 
-                for (byte tech_i = 0; tech_i < 5; tech_i++) // para cada nodo y fecha se saca una linea para cada tecnologia que tenga datos
+
+                //PARA NUEVAS TECNOLOGIAS CAMBIAR EL 6 por uno mas por cada tecnologia nueva
+                for (byte tech_i = 0; tech_i < 6; tech_i++) // para cada nodo y fecha se saca una linea para cada tecnologia que tenga datos
                 {
                     double successInter = 0;
                     double errInter = 0;

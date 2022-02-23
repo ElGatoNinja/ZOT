@@ -22,6 +22,7 @@ using System.IO;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows.Forms;
+using ZOT.BLnOFF.GUI;
 
 namespace ZOT.GUI
 {
@@ -76,6 +77,13 @@ namespace ZOT.GUI
             String pathFolder = System.IO.Path.Combine(Environment.CurrentDirectory, @"Data");
 
             Process.Start("explorer.exe", pathFolder);
+
+
+        }        
+        public void click_open_info(object sender, RoutedEventArgs e)
+        {
+            HistorialVersiones historialVersiones = new HistorialVersiones();
+            historialVersiones.Show();
 
 
         }

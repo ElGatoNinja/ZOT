@@ -41,7 +41,7 @@ namespace ZOT.BLnOFF.GUI
 
             Random rnd = new Random();
 
-            int seg = rnd.Next(1000, 5000);
+            int seg = rnd.Next(1000, 3500);
             await PutTaskDelay(seg);
             Console.WriteLine("END " +seg.ToString() +"mseconds");
 

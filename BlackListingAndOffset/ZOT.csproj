@@ -333,6 +333,12 @@
     <Compile Include="BLnOFF\GUI\FormErrores.Designer.cs">
       <DependentUpon>FormErrores.cs</DependentUpon>
     </Compile>
+    <Compile Include="BLnOFF\GUI\HistorialVersiones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BLnOFF\GUI\HistorialVersiones.Designer.cs">
+      <DependentUpon>HistorialVersiones.cs</DependentUpon>
+    </Compile>
     <Compile Include="ColindanciasTR\Code\Main.cs" />
     <Compile Include="ColindanciasTR\GUI\VentanaColindancias.xaml.cs">
       <DependentUpon>VentanaColindancias.xaml</DependentUpon>
@@ -499,6 +505,9 @@
     <EmbeddedResource Include="BLnOFF\GUI\FormErrores.resx">
       <DependentUpon>FormErrores.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BLnOFF\GUI\HistorialVersiones.resx">
+      <DependentUpon>HistorialVersiones.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HORAS48\GUI\Ayuda_48H.resx">
       <DependentUpon>Ayuda_48H.cs</DependentUpon>
     </EmbeddedResource>
@@ -529,7 +538,9 @@
     <None Include="data\SiteCoord.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="data\Tabla.xlsx" />
+    <None Include="data\Tabla.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="docfx.json" />
     <None Include="index.md" />
     <None Include="packages.config" />

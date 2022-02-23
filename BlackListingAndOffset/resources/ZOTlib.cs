@@ -220,6 +220,11 @@ namespace ZOT.resources
             public const byte L2600 = 2;
             public const byte L900 = 3;
             public const byte L2100 = 4;
+            public const byte L700 = 5;
+            //PARA NUEVAS TECNOLOGIAS AÑADIR la tecnologia y el numero que lo identifica en el LNCEL
+
+
+
 
             /// <summary>
             /// Extrae la tecnología de los ultimos 3 numeros del LNCEL
@@ -256,6 +261,9 @@ namespace ZOT.resources
                         return "L900";
                     case 4:
                         return "L2100";
+                    case 5:
+                        return "L700";
+                    //PARA NUEVAS TECNOLOGIAS AÑADIR case xx: return "tecnologia nueva"
                     default:
                         return "error";
                 }
