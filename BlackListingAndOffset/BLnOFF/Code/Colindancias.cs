@@ -424,7 +424,13 @@ WHERE (((A_LTE_MRBTS_LNBTS_LNCEL_LNREL.mrbtsId)="370212"));
                     foreach (DataRow row in data.Rows)
                     {
                         String isUnknown = row[6].ToString();
-                        if (isUnknown == "UNKNOWN")
+                        String isLabel = row[0].ToString();
+                        if (isLabel == "")
+                        {
+                            Console.WriteLine("Label Empty");
+                        }
+
+                        if (isUnknown == "UNKNOWN" )
                         {
                             var mrbtsId = row[1].ToString();
                             var lnCelId = row[2].ToString();
